@@ -38,9 +38,9 @@
       "inherits": "default-debug",
       "toolchainFile": "${sourceDir}/cmake/toolchains/mingw.cmake",
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH": "C:/Qt/6.8.2/mingw_64",
-        "CMAKE_C_COMPILER": "C:/msys64/mingw64/bin/gcc.exe",
-        "CMAKE_CXX_COMPILER": "C:/msys64/mingw64/bin/g++.exe"
+        "CMAKE_PREFIX_PATH": "C:/Qt/6.8/mingw_64",
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++"
       }
     },
     {
@@ -48,9 +48,9 @@
       "inherits": "default-release",
       "toolchainFile": "${sourceDir}/cmake/toolchains/mingw.cmake",
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH": "C:/Qt/6.8.2/mingw_64",
-        "CMAKE_C_COMPILER": "C:/msys64/mingw64/bin/gcc.exe",
-        "CMAKE_CXX_COMPILER": "C:/msys64/mingw64/bin/g++.exe"
+        "CMAKE_PREFIX_PATH": "C:/Qt/6.8/mingw_64",
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++"
       }
     },
 
