@@ -13,10 +13,10 @@
 #
 
 # ---------------------------------------------------------------
-# 🎯 Compilers (force MinGW, avoid FPC fake gcc)
+# 🎯 Compilers (use from PATH, avoids FPC conflicts)
 # ---------------------------------------------------------------
-set(CMAKE_C_COMPILER "C:/msys64/mingw64/bin/gcc.exe" CACHE FILEPATH "C compiler" FORCE)
-set(CMAKE_CXX_COMPILER "C:/msys64/mingw64/bin/g++.exe" CACHE FILEPATH "C++ compiler" FORCE)
+set(CMAKE_C_COMPILER gcc CACHE STRING "C compiler" FORCE)
+set(CMAKE_CXX_COMPILER g++ CACHE STRING "C++ compiler" FORCE)
 
 # ---------------------------------------------------------------
 # 🏗️ System Root
