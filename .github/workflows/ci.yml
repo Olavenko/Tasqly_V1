@@ -46,35 +46,6 @@ jobs:
         fi
 
     # ---------------------------------------------------------------
-    # Print tool versions (Windows MinGW)
-    # ---------------------------------------------------------------
-    - name: Print tool versions (Windows MinGW)
-      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
-      run: |
-        echo "=== Compiler ==="
-        g++ --version || echo "g++ not found"
-        echo "=== CMake ==="
-        cmake --version || echo "cmake not found"
-        echo "=== Ninja ==="
-        ninja --version || echo "ninja not found"
-        if (Get-Command qmake -ErrorAction SilentlyContinue) {
-          qmake --version
-        } else {
-          echo "qmake not found"
-        }
-
-    # ---------------------------------------------------------------
-    # Linux: Install Qt
-    # ---------------------------------------------------------------
-    - name: Install Qt (Linux)
-      if: matrix.os == 'ubuntu-latest'
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: '6.8.2'
-        host: linux
-        target: desktop
-
-    # ---------------------------------------------------------------
     # Windows: Setup MSYS2 + MinGW + Qt
     # ---------------------------------------------------------------
     - name: Setup MSYS2
@@ -86,10 +57,10 @@ jobs:
         install: >-
           base-devel
           git
+          mingw-w64-x86_64-gcc
           mingw-w64-x86_64-gdb
           mingw-w64-x86_64-cmake
           mingw-w64-x86_64-ninja
-          mingw-w64-x86_64-gcc
 
     - name: Add MinGW to PATH
       if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
@@ -109,13 +80,32 @@ jobs:
       run: echo "C:\Qt\6.8.2\mingw_64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
     # ---------------------------------------------------------------
+    # Print tool versions (Windows MinGW, inside MSYS2)
+    # ---------------------------------------------------------------
+    - name: Print tool versions (Windows MinGW)
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
+      shell: msys2 {0}
+      run: |
+        echo "=== Compiler ==="
+        g++ --version || echo "g++ not found"
+        echo "=== CMake ==="
+        cmake --version || echo "cmake not found"
+        echo "=== Ninja ==="
+        ninja --version || echo "ninja not found"
+        if command -v qmake > /dev/null 2>&1; then
+          qmake --version
+        else
+          echo "qmake not found"
+        fi
+
+    # ---------------------------------------------------------------
     # Setup CMake
     # ---------------------------------------------------------------
     - name: Setup CMake
       uses: lukka/get-cmake@latest
 
     # ---------------------------------------------------------------
-    # Configure / Build / Test
+    # Configure
     # ---------------------------------------------------------------
     - name: Configure (Linux)
       if: matrix.os == 'ubuntu-latest'
@@ -130,6 +120,9 @@ jobs:
         cmake --preset=mingw-debug
         -DCMAKE_PREFIX_PATH="C:/Qt/6.8.2/mingw_64"
 
+    # ---------------------------------------------------------------
+    # Build
+    # ---------------------------------------------------------------
     - name: Build (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: cmake --build --preset=build-${{ matrix.compiler }}-debug
@@ -139,6 +132,9 @@ jobs:
       shell: msys2 {0}
       run: cmake --build --preset=build-mingw-debug
 
+    # ---------------------------------------------------------------
+    # Run tests
+    # ---------------------------------------------------------------
     - name: Run tests (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: ctest --preset=test-${{ matrix.compiler }}-debug --output-on-failure
