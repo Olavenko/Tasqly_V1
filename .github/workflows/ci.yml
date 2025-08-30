@@ -14,35 +14,35 @@ jobs:
         include:
           - os: ubuntu-latest
             compiler: gcc
-            qt_path: ${{ github.workspace }}/../Qt/6.8.2/gcc_64
           - os: ubuntu-latest
             compiler: clang
-            qt_path: ${{ github.workspace }}/../Qt/6.8.2/gcc_64
           - os: windows-latest
             compiler: mingw
-            qt_path: C:/Qt/6.8.2/mingw_64
 
     runs-on: ${{ matrix.os }}
-
-    env:
-      QT_PATH: ${{ matrix.qt_path }}
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
     # ---------------------------------------------------------------
-    # Print tool versions (Linux)
+    # Linux: Install Qt
     # ---------------------------------------------------------------
-    - name: Print tool versions (Linux)
+    - name: Install Qt (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.8.2'
+        host: linux
+        target: desktop
+
+    - name: Debug Qt (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
-        echo "=== Compiler ==="
-        g++ --version || echo "g++ not found"
-        echo "=== CMake ==="
-        cmake --version || echo "cmake not found"
-        echo "=== Ninja ==="
-        ninja --version || echo "ninja not found"
+        echo "Qt6_DIR=$Qt6_DIR"
+        echo "CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH"
+        which qmake || echo "qmake not found"
+        qmake --version || true
 
     # ---------------------------------------------------------------
     # Windows: Setup MSYS2 + MinGW + Qt
@@ -74,9 +74,17 @@ jobs:
         target: desktop
         arch: win64_mingw
 
+    - name: Debug Qt (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        echo "Qt6_DIR=$env:Qt6_DIR"
+        echo "CMAKE_PREFIX_PATH=$env:CMAKE_PREFIX_PATH"
+        where qmake || echo "qmake not found"
+        qmake --version || exit 0
+
     - name: Add Qt to PATH (Windows MinGW)
       if: matrix.os == 'windows-latest'
-      run: echo "${{ env.QT_PATH }}/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      run: echo "C:/Qt/6.8.2/mingw_64/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
     # ---------------------------------------------------------------
     # Setup CMake

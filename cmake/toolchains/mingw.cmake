@@ -13,11 +13,7 @@
 #
 
 # ---------------------------------------------------------------
-# 🎯 Compilers
-# ---------------------------------------------------------------
-# Force C and C++ compilers to point to MSYS2 MinGW-w64 toolchain.
-# This prevents accidental detection of other gcc.exe stubs
-# (e.g., Free Pascal’s fake gcc).
+# 🎯 Compilers (force MinGW, avoid FPC fake gcc)
 # ---------------------------------------------------------------
 set(CMAKE_C_COMPILER "C:/msys64/mingw64/bin/gcc.exe" CACHE FILEPATH "C compiler" FORCE)
 set(CMAKE_CXX_COMPILER "C:/msys64/mingw64/bin/g++.exe" CACHE FILEPATH "C++ compiler" FORCE)
@@ -25,17 +21,11 @@ set(CMAKE_CXX_COMPILER "C:/msys64/mingw64/bin/g++.exe" CACHE FILEPATH "C++ compi
 # ---------------------------------------------------------------
 # 🏗️ System Root
 # ---------------------------------------------------------------
-# Explicitly mark the system name and processor for cross-compilation.
-# (Even though MinGW64 is native, this helps CMake resolve paths.)
-# ---------------------------------------------------------------
 set(CMAKE_SYSTEM_NAME Windows)
 set(CMAKE_SYSTEM_PROCESSOR x86_64)
 
 # ---------------------------------------------------------------
 # ⚙️ Build Options
-# ---------------------------------------------------------------
-# Ensure Ninja is used as generator (set in presets).
-# Disable compiler-specific extensions for portability.
 # ---------------------------------------------------------------
 set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "Disable compiler-specific extensions" FORCE)
 
