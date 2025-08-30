@@ -28,7 +28,7 @@ jobs:
       uses: actions/checkout@v4
 
     # ---------------------------------------------------------------
-    # Linux: Install Qt
+    # Linux: Install Qt (no modules, Qt base + Quick come by default)
     # ---------------------------------------------------------------
     - name: Install Qt (Linux)
       if: matrix.os == 'ubuntu-latest'
@@ -39,7 +39,7 @@ jobs:
         target: desktop
 
     # ---------------------------------------------------------------
-    # Windows: Setup MSYS2 + MinGW + Cache
+    # Windows: Setup MSYS2 + MinGW + Qt + PATH fix
     # ---------------------------------------------------------------
     - name: Setup MSYS2
       if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
