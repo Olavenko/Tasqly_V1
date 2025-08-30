@@ -28,10 +28,29 @@ jobs:
       uses: actions/checkout@v4
 
     # ---------------------------------------------------------------
-    # Print tool versions (Diagnosis)
+    # Print tool versions (Linux)
     # ---------------------------------------------------------------
-    - name: Print tool versions
-      shell: ${{ (matrix.os == 'windows-latest' && matrix.compiler == 'mingw') && 'msys2 {0}' || 'bash' }}
+    - name: Print tool versions (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        echo "=== Compiler ==="
+        g++ --version || echo "g++ not found"
+        echo "=== CMake ==="
+        cmake --version || echo "cmake not found"
+        echo "=== Ninja ==="
+        ninja --version || echo "ninja not found"
+        if command -v qmake > /dev/null 2>&1; then
+          qmake --version
+        else
+          echo "qmake not found"
+        fi
+
+    # ---------------------------------------------------------------
+    # Print tool versions (Windows MinGW)
+    # ---------------------------------------------------------------
+    - name: Print tool versions (Windows MinGW)
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
+      shell: msys2 {0}
       run: |
         echo "=== Compiler ==="
         g++ --version || echo "g++ not found"
