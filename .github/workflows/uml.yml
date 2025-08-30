@@ -31,7 +31,7 @@ jobs:
 
       # Run UML export script (standardized)
       - name: Run UML export script
-        run: ./uml-export.sh
+        run: bash docs/uml/uml-export.sh
 
       # Upload UML diagrams as CI artifact
       - name: Upload UML diagrams

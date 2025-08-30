@@ -28,7 +28,7 @@ jobs:
 
       # Run UML export script (generates SVGs + index.html)
       - name: Run UML export script
-        run: ./uml-export.sh
+        run: bash docs/uml/uml-export.sh
 
       # Deploy diagrams (including index.html) to GitHub Pages
       - name: Deploy diagrams to GitHub Pages
