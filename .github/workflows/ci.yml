@@ -38,10 +38,6 @@ jobs:
         host: linux
         target: desktop
 
-    - name: Verify Qt (Linux)
-      if: matrix.os == 'ubuntu-latest'
-      run: ls -R ${{ github.workspace }}/Qt
-
     # ---------------------------------------------------------------
     # Windows: Setup MSYS2 + MinGW + Qt
     # ---------------------------------------------------------------
@@ -71,10 +67,6 @@ jobs:
         host: windows
         target: desktop
         arch: win64_mingw
-
-    - name: Verify Qt (Windows)
-      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
-      run: dir C:\Qt
 
     # ---------------------------------------------------------------
     # Setup CMake
