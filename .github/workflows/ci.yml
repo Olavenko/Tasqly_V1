@@ -28,18 +28,22 @@ jobs:
       uses: actions/checkout@v4
 
     # ---------------------------------------------------------------
-    # Linux: Install Qt (no modules, Qt base + Quick come by default)
+    # Linux: Install Qt
     # ---------------------------------------------------------------
     - name: Install Qt (Linux)
       if: matrix.os == 'ubuntu-latest'
       uses: jurplel/install-qt-action@v3
       with:
-        version: '6.8.*'
+        version: '6.8.2'
         host: linux
         target: desktop
 
+    - name: Verify Qt (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: ls -R ${{ github.workspace }}/Qt
+
     # ---------------------------------------------------------------
-    # Windows: Setup MSYS2 + MinGW + Qt + PATH fix
+    # Windows: Setup MSYS2 + MinGW + Qt
     # ---------------------------------------------------------------
     - name: Setup MSYS2
       if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
@@ -58,22 +62,19 @@ jobs:
     - name: Add MinGW to PATH
       if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
       run: echo "C:\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-    
-    - name: Cache Qt (Windows MinGW)
-      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
-      uses: actions/cache@v3
-      with:
-        path: C:\Qt
-        key: ${{ runner.os }}-qt-mingw-6.8
 
     - name: Install Qt (Windows MinGW)
       if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
       uses: jurplel/install-qt-action@v3
       with:
-        version: '6.8.*'
+        version: '6.8.2'
         host: windows
         target: desktop
         arch: win64_mingw
+
+    - name: Verify Qt (Windows)
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
+      run: dir C:\Qt
 
     # ---------------------------------------------------------------
     # Setup CMake
@@ -84,8 +85,18 @@ jobs:
     # ---------------------------------------------------------------
     # Configure / Build / Test
     # ---------------------------------------------------------------
-    - name: Configure (CMake Presets)
-      run: cmake --preset=${{ matrix.compiler }}-debug
+    - name: Configure (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: >
+        cmake --preset=${{ matrix.compiler }}-debug
+        -DCMAKE_PREFIX_PATH="${{ github.workspace }}/Qt/6.8.2/gcc_64"
+
+    - name: Configure (Windows MinGW)
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
+      run: >
+        cmake --preset=mingw-debug
+        -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
+        -DCMAKE_PREFIX_PATH="C:/Qt/6.8.2/mingw_64"
 
     - name: Build
       run: cmake --build --preset=build-debug
