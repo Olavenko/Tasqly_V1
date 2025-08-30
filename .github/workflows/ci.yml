@@ -87,8 +87,7 @@ jobs:
       if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
       run: >
         cmake --preset=mingw-debug
-        -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
-        -DCMAKE_PREFIX_PATH="C:/Qt/6.8.2/mingw_64"
+        DCMAKE_PREFIX_PATH="C:/Qt/6.8.2/mingw_64"
 
     - name: Build
       run: cmake --build --preset=build-debug
