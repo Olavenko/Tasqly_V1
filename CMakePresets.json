@@ -2,7 +2,7 @@
   "version": 3,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 21,
+    "minor": 25,
     "patch": 0
   },
   "configurePresets": [
@@ -25,32 +25,51 @@
         "CMAKE_BUILD_TYPE": "Release"
       }
     },
-    {
-      "name": "default-relwithdebinfo",
-      "inherits": "default-debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
-      }
-    },
 
     {
       "name": "mingw-debug",
       "inherits": "default-debug",
-      "toolchainFile": "${sourceDir}/cmake/toolchains/mingw.cmake",
       "cacheVariables": {
         "CMAKE_PREFIX_PATH": "C:/Qt/6.8.2/mingw_64",
-        "CMAKE_C_COMPILER": "/mingw64/bin/gcc",
-        "CMAKE_CXX_COMPILER": "/mingw64/bin/g++"
+        "CMAKE_C_COMPILER": {
+          "value": "/mingw64/bin/gcc",
+          "condition": {
+            "type": "equals",
+            "lhs": "${hostSystemName}",
+            "rhs": "Windows"
+          }
+        },
+        "CMAKE_CXX_COMPILER": {
+          "value": "/mingw64/bin/g++",
+          "condition": {
+            "type": "equals",
+            "lhs": "${hostSystemName}",
+            "rhs": "Windows"
+          }
+        }
       }
     },
     {
       "name": "mingw-release",
       "inherits": "default-release",
-      "toolchainFile": "${sourceDir}/cmake/toolchains/mingw.cmake",
       "cacheVariables": {
         "CMAKE_PREFIX_PATH": "C:/Qt/6.8.2/mingw_64",
-        "CMAKE_C_COMPILER": "/mingw64/bin/gcc",
-        "CMAKE_CXX_COMPILER": "/mingw64/bin/g++"
+        "CMAKE_C_COMPILER": {
+          "value": "/mingw64/bin/gcc",
+          "condition": {
+            "type": "equals",
+            "lhs": "${hostSystemName}",
+            "rhs": "Windows"
+          }
+        },
+        "CMAKE_CXX_COMPILER": {
+          "value": "/mingw64/bin/g++",
+          "condition": {
+            "type": "equals",
+            "lhs": "${hostSystemName}",
+            "rhs": "Windows"
+          }
+        }
       }
     },
 
@@ -63,82 +82,24 @@
       }
     },
     {
-      "name": "gcc-release",
-      "inherits": "default-release",
-      "cacheVariables": {
-        "CMAKE_C_COMPILER": "gcc",
-        "CMAKE_CXX_COMPILER": "g++"
-      }
-    },
-
-    {
       "name": "clang-debug",
       "inherits": "default-debug",
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang++"
       }
-    },
-    {
-      "name": "clang-release",
-      "inherits": "default-release",
-      "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++"
-      }
-    },
-
-    {
-      "name": "msvc-debug",
-      "generator": "Visual Studio 17 2022",
-      "binaryDir": "${sourceDir}/build/${presetName}",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_STANDARD": "20",
-        "CMAKE_CXX_STANDARD_REQUIRED": "ON"
-      },
-      "architecture": "x64"
-    },
-    {
-      "name": "msvc-release",
-      "generator": "Visual Studio 17 2022",
-      "binaryDir": "${sourceDir}/build/${presetName}",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_STANDARD": "20",
-        "CMAKE_CXX_STANDARD_REQUIRED": "ON"
-      },
-      "architecture": "x64"
     }
   ],
 
   "buildPresets": [
-    {
-      "name": "build-mingw-debug",
-      "configurePreset": "mingw-debug"
-    },
-    {
-      "name": "build-gcc-debug",
-      "configurePreset": "gcc-debug"
-    },
-    {
-      "name": "build-clang-debug",
-      "configurePreset": "clang-debug"
-    }
+    { "name": "build-mingw-debug", "configurePreset": "mingw-debug" },
+    { "name": "build-gcc-debug", "configurePreset": "gcc-debug" },
+    { "name": "build-clang-debug", "configurePreset": "clang-debug" }
   ],
 
   "testPresets": [
-    {
-      "name": "test-mingw-debug",
-      "configurePreset": "mingw-debug"
-    },
-    {
-      "name": "test-gcc-debug",
-      "configurePreset": "gcc-debug"
-    },
-    {
-      "name": "test-clang-debug",
-      "configurePreset": "clang-debug"
-    }
+    { "name": "test-mingw-debug", "configurePreset": "mingw-debug" },
+    { "name": "test-gcc-debug", "configurePreset": "gcc-debug" },
+    { "name": "test-clang-debug", "configurePreset": "clang-debug" }
   ]
 }
