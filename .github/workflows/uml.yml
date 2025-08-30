@@ -4,9 +4,13 @@ on:
   push:
     paths:
       - 'docs/uml/**/*.puml'
+      - 'docs/uml/config/**'
+      - 'docs/uml/uml-export.sh'
   pull_request:
     paths:
       - 'docs/uml/**/*.puml'
+      - 'docs/uml/config/**'
+      - 'docs/uml/uml-export.sh'
 
 jobs:
   generate-uml:

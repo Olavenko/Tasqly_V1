@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'docs/uml/**/*.puml'
+      - 'docs/uml/config/**'
+      - 'docs/uml/uml-export.sh'
 
 jobs:
   build-uml:
