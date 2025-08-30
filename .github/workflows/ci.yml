@@ -31,6 +31,7 @@ jobs:
     # Print tool versions (Diagnosis)
     # ---------------------------------------------------------------
     - name: Print tool versions
+      shell: ${{ (matrix.os == 'windows-latest' && matrix.compiler == 'mingw') && 'msys2 {0}' || 'bash' }}
       run: |
         echo "=== Compiler ==="
         g++ --version || echo "g++ not found"
@@ -38,8 +39,11 @@ jobs:
         cmake --version || echo "cmake not found"
         echo "=== Ninja ==="
         ninja --version || echo "ninja not found"
-        echo "=== QMake ==="
-        qmake --version || echo "qmake not found"
+        if command -v qmake > /dev/null 2>&1; then
+          qmake --version
+        else
+          echo "qmake not found"
+        fi
 
     # ---------------------------------------------------------------
     # Linux: Install Qt
@@ -67,13 +71,7 @@ jobs:
           mingw-w64-x86_64-gdb
           mingw-w64-x86_64-cmake
           mingw-w64-x86_64-ninja
-
-    - name: Upgrade GCC to latest (Windows MinGW)
-      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
-      shell: msys2 {0}
-      run: |
-        pacman -Sy --noconfirm
-        pacman -S --noconfirm mingw-w64-x86_64-gcc
+          mingw-w64-x86_64-gcc
 
     - name: Add MinGW to PATH
       if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
@@ -101,14 +99,33 @@ jobs:
     # ---------------------------------------------------------------
     # Configure / Build / Test
     # ---------------------------------------------------------------
-    - name: Configure
+    - name: Configure (Linux)
+      if: matrix.os == 'ubuntu-latest'
       run: >
         cmake --preset=${{ matrix.compiler }}-debug
-        ${{ (matrix.os == 'ubuntu-latest' && format('-DCMAKE_PREFIX_PATH={0}/Qt/6.8.2/gcc_64', github.workspace)) || '' }}
-        ${{ (matrix.os == 'windows-latest' && matrix.compiler == 'mingw' && '-DCMAKE_PREFIX_PATH=C:/Qt/6.8.2/mingw_64') || '' }}
+        -DCMAKE_PREFIX_PATH="${{ github.workspace }}/Qt/6.8.2/gcc_64"
 
-    - name: Build
+    - name: Configure (Windows MinGW)
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
+      shell: msys2 {0}
+      run: >
+        cmake --preset=mingw-debug
+        -DCMAKE_PREFIX_PATH="C:/Qt/6.8.2/mingw_64"
+
+    - name: Build (Linux)
+      if: matrix.os == 'ubuntu-latest'
       run: cmake --build --preset=build-${{ matrix.compiler }}-debug
 
-    - name: Run tests
+    - name: Build (Windows MinGW)
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
+      shell: msys2 {0}
+      run: cmake --build --preset=build-mingw-debug
+
+    - name: Run tests (Linux)
+      if: matrix.os == 'ubuntu-latest'
       run: ctest --preset=test-${{ matrix.compiler }}-debug --output-on-failure
+
+    - name: Run tests (Windows MinGW)
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
+      shell: msys2 {0}
+      run: ctest --preset=test-mingw-debug --output-on-failure
