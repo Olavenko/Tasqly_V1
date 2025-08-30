@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        compiler: [gcc, clang, mingw, msvc]
+        compiler: [gcc, clang, mingw]
         exclude:
           - os: windows-latest
             compiler: gcc
@@ -20,8 +20,6 @@ jobs:
             compiler: clang
           - os: ubuntu-latest
             compiler: mingw
-          - os: ubuntu-latest
-            compiler: msvc
 
     runs-on: ${{ matrix.os }}
 
@@ -29,9 +27,61 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    # ---------------------------------------------------------------
+    # Linux: Install Qt
+    # ---------------------------------------------------------------
+    - name: Install Qt (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.8.*'
+        host: linux
+        target: desktop
+        modules: qtbase qtdeclarative qtquickcontrols2
+
+    # ---------------------------------------------------------------
+    # Windows: Setup MSYS2 + MinGW + Cache
+    # ---------------------------------------------------------------
+    - name: Setup MSYS2
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: >-
+          base-devel
+          git
+          mingw-w64-x86_64-gcc
+          mingw-w64-x86_64-gdb
+          mingw-w64-x86_64-cmake
+          mingw-w64-x86_64-ninja
+
+    - name: Cache Qt (Windows MinGW)
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
+      uses: actions/cache@v3
+      with:
+        path: C:\Qt
+        key: ${{ runner.os }}-qt-mingw-6.8
+
+    - name: Install Qt (Windows MinGW)
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.8.*'
+        host: windows
+        target: desktop
+        arch: win64_mingw
+        modules: qtbase qtdeclarative qtquickcontrols2
+
+    # ---------------------------------------------------------------
+    # Setup CMake
+    # ---------------------------------------------------------------
     - name: Setup CMake
       uses: lukka/get-cmake@latest
 
+    # ---------------------------------------------------------------
+    # Configure / Build / Test
+    # ---------------------------------------------------------------
     - name: Configure (CMake Presets)
       run: cmake --preset=${{ matrix.compiler }}-debug
 
