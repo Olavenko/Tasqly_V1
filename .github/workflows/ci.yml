@@ -50,7 +50,6 @@ jobs:
     # ---------------------------------------------------------------
     - name: Print tool versions (Windows MinGW)
       if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
-      shell: msys2 {0}
       run: |
         echo "=== Compiler ==="
         g++ --version || echo "g++ not found"
@@ -58,11 +57,11 @@ jobs:
         cmake --version || echo "cmake not found"
         echo "=== Ninja ==="
         ninja --version || echo "ninja not found"
-        if command -v qmake > /dev/null 2>&1; then
+        if (Get-Command qmake -ErrorAction SilentlyContinue) {
           qmake --version
-        else
+        } else {
           echo "qmake not found"
-        fi
+        }
 
     # ---------------------------------------------------------------
     # Linux: Install Qt
