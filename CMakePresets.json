@@ -111,20 +111,34 @@
       "architecture": "x64"
     }
   ],
+
   "buildPresets": [
     {
-      "name": "build-debug",
+      "name": "build-mingw-debug",
       "configurePreset": "mingw-debug"
     },
     {
-      "name": "build-release",
-      "configurePreset": "mingw-release"
+      "name": "build-gcc-debug",
+      "configurePreset": "gcc-debug"
+    },
+    {
+      "name": "build-clang-debug",
+      "configurePreset": "clang-debug"
     }
   ],
+
   "testPresets": [
     {
-      "name": "test-debug",
+      "name": "test-mingw-debug",
       "configurePreset": "mingw-debug"
+    },
+    {
+      "name": "test-gcc-debug",
+      "configurePreset": "gcc-debug"
+    },
+    {
+      "name": "test-clang-debug",
+      "configurePreset": "clang-debug"
     }
   ]
 }
