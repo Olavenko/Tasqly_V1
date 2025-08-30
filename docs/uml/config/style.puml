@@ -1,0 +1,174 @@
+' ------------------------------------------------------------
+' 🎨 File: style.puml (Dark Theme — Corporate Palette v6, CI-Friendly)
+' ------------------------------------------------------------
+' 📌 Purpose   : Dark theme style with refined palette (clear contrasts)
+' 🧱 Layer     : Docs / UML Config
+' 👤 Author    : Mohamed Ali
+' 🗓️ Updated   : 2025-08-28
+'
+' 🧠 Palette (User-defined v6):
+' - #EB1B00 → Notes / Errors
+' - #1F00EB → Containers
+' - #E0C200 → Database (soft yellow, better contrast)
+' - #00CE6A → Actors (Users)
+' - #F861FF → Infra / Packages
+' - #FF6F5C → Components / Classes
+' - #604CE0 → Arrows (Flows)
+' - #4BE3FE → Activity
+' - #246947 → Secondary Highlight / Lifelines
+' ------------------------------------------------------------
+
+' ------------------------------------------------------------
+' 📦 FontAwesome6 Sprites (Online includes from GitHub)
+' ------------------------------------------------------------
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/common.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/desktop.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/flask.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/code.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/gear.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/wrench.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/bug.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/sitemap.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/cloud.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/github.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/user.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/server.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/database.puml
+
+' ------------------------------------------------------------
+' 📦 C4-PlantUML DSL (Online includes)
+' ------------------------------------------------------------
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Dynamic.puml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+
+' ------------------------------------------------------------
+' 🎨 Corporate Dark Theme Overrides
+' ------------------------------------------------------------
+
+' 🌐 Fonts & Background
+' White
+skinparam defaultFontName "Segoe UI, Arial, Helvetica"
+skinparam defaultFontSize 14
+skinparam defaultFontColor #FFFFFF
+' Black
+skinparam backgroundColor #000000
+
+' 🔀 Arrows (Flows)
+' Purple
+skinparam ArrowColor     #604CE0
+skinparam ArrowThickness 3
+' White
+skinparam ArrowFontColor #FFFFFF
+skinparam ArrowFontSize  12
+
+' 🔲 Containers (Systems)
+skinparam rectangle {
+    ' White
+    FontColor       #FFFFFF
+    ' Black
+    BackgroundColor #000000
+    ' Blue
+    BorderColor     #A6FFF9
+}
+
+' 🧩 Components / Classes
+skinparam component {
+    ' Black
+    BackgroundColor #000000
+    ' Light Red / Coral
+    BorderColor     #FF6F5C
+    ' White
+    FontColor       #FFFFFF
+}
+skinparam class {
+    ' Black
+    BackgroundColor #000000
+    ' Light Red / Coral
+    BorderColor     #FF6F5C
+    ' White
+    FontColor       #FFFFFF
+}
+
+' 📦 Packages / Infra
+skinparam package {
+    ' Black
+    BackgroundColor #000000
+    ' Pink
+    BorderColor     #7DFFBE
+    ' White
+    FontColor       #FFFFFF
+}
+
+' 🧑 Actors
+skinparam actor {
+    Style           awesome
+    ' White
+    FontColor       #FFFFFF
+    ' Green
+    BackgroundColor #00CE6A
+    ' Green
+    BorderColor     #00CE6A
+}
+
+' 🗄️ Database
+skinparam database {
+    ' Black
+    BackgroundColor #000000
+    ' Yellow
+    BorderColor     #E0C200
+    ' White
+    FontColor       #FFFFFF
+}
+
+' 📑 Notes / Errors
+skinparam note {
+    ' Black
+    BackgroundColor #000000
+    ' Red
+    BorderColor     #EB1B00
+    ' White
+    FontColor       #FFFFFF
+}
+
+' 📦 Activity Diagram
+skinparam activity {
+    ' Black
+    BackgroundColor #000000
+    ' Cyan / Sky Blue
+    BorderColor     #4BE3FE
+    ' White
+    FontColor       #FFFFFF
+}
+
+' 📦 Sequence Diagram
+skinparam sequence {
+    ' Purple
+    ArrowColor                #604CE0
+    ' Dark Green
+    LifeLineBorderColor       #246947
+    ' Black
+    LifeLineBackgroundColor   #000000
+    ' Black
+    ParticipantBackgroundColor #000000
+    ' Light Red / Coral
+    ParticipantBorderColor    #FF6F5C
+    ' White
+    ParticipantFontColor      #FFFFFF
+}
+
+' 📦 Use Case Diagram
+skinparam usecase {
+    ' Black
+    BackgroundColor #000000
+    ' Light Red / Coral
+    BorderColor     #FF6F5C
+    ' White
+    FontColor       #FFFFFF
+}
+
+' 🚫 Shadows & Borders
+skinparam shadowing   false
+skinparam roundcorner 10

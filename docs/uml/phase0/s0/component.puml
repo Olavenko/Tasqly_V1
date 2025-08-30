@@ -1,0 +1,37 @@
+@startuml
+' 🧱 File: component.puml
+' -----------------------
+' 📌 Purpose   : Component diagram — CMake targets (App + Tests), CI workflow, external deps
+' 🧱 Layer     : Docs (UML)
+' 👤 Author    : Mohamed Ali
+' 🗓️ Created   : 2025-08-28
+
+!include ../../config/style.puml
+
+title Component — Project Initialization & Testing
+
+' 🟦 Project
+FA6_DESKTOP(app, TasqlyApp, rectangle, blue)
+FA6_FLASK(tests, TasqlyTests, rectangle, #E5C55F)
+
+' 🟧 Infrastructure
+FA6_GEAR(cmake, CMake, rectangle, #D97A2B)
+FA6_WRENCH(clang, Clang_Tools, rectangle, #D97A2B)
+FA6_BUG(cppcheck, CppCheck, rectangle, #E94C3D)
+FA6_SITEMAP(uml, PlantUML, rectangle, #4CAF50)
+
+' 🟨 External
+FA6_CLOUD(ci, GitHub_Actions, rectangle, #00BFFF)
+FA6_USER(dev, Developer, rectangle, #00EB09)
+FA6_DATABASE(db, PostgreSQL_DB, rectangle, #FF9800)
+
+' Relations
+app --> cmake
+tests --> cmake
+cmake --> ci
+clang --> ci
+cppcheck --> ci
+uml --> ci
+dev --> app
+app --> db
+@enduml

@@ -1,0 +1,94 @@
+# ------------------------------------------------------------
+# 🧱 Tasqly Project .gitignore
+# ------------------------------------------------------------
+# 📌 Purpose: Keep repo clean (ignore build artifacts, local IDE files, UML libs, etc.)
+# 🧱 Layer   : Infrastructure
+# 👤 Author  : Mohamed Ali
+# 🗓️ Updated : 2025-08-27
+# ------------------------------------------------------------
+
+# -------------------------------
+# Build Artifacts (CMake/Qt)
+# -------------------------------
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+*.ninja
+.ninja_deps
+.ninja_log
+
+# -------------------------------
+# Binaries / Libraries
+# -------------------------------
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+*.pdb
+
+# -------------------------------
+# Qt Generated Files
+# -------------------------------
+*.qrc.depends
+*.qmlc
+*.jsc
+*.moc
+*.autogen/
+*.rcc/
+*.qmake.stash
+*.qmake.cache
+*.pro.user
+*.pro.user.*
+*.qtdsproj
+
+# -------------------------------
+# IDE / Editor Configs
+# -------------------------------
+*.user
+*.user.*
+*.swp
+*.swo
+*.sln
+*.vcxproj*
+*.idea/
+*.vscode/
+*.DS_Store
+Thumbs.db
+
+# -------------------------------
+# Logs / Reports
+# -------------------------------
+*.log
+Testing/
+test-results/
+coverage/
+
+# -------------------------------
+# External / Vendored Libraries
+# -------------------------------
+external/*
+!external/CMakeLists.txt   # keep control file if needed
+
+# -------------------------------
+# UML Docs (use Online mode)
+# -------------------------------
+docs/uml/libs/
+
+# -------------------------------
+# UML Generated Diagrams (exported images)
+# -------------------------------
+docs/uml/exports/
+docs/uml/**/*.svg
+docs/uml/**/*.png
+docs/uml/**/*.rar
+
+# -------------------------------
+# UML Editor temp files
+# -------------------------------
+docs/uml/**/*.tmp
+docs/uml/**/*.bak

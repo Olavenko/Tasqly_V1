@@ -1,0 +1,96 @@
+# ------------------------------------------------------------
+# 🧱 Tasqly Project .gitattributes
+# ------------------------------------------------------------
+# 📌 Purpose: Normalize line endings, enforce UTF-8, improve GitHub linguist stats
+# 🧱 Layer   : Infrastructure
+# 👤 Author  : Mohamed Ali
+# 🗓️ Updated : 2025-08-27
+# ------------------------------------------------------------
+
+# -------------------------------
+# 🔄 Normalize line endings
+# -------------------------------
+* text=auto eol=lf
+
+# -------------------------------
+# 🌐 Default Encoding
+# -------------------------------
+* text working-tree-encoding=UTF-8
+
+# -------------------------------
+# 📂 C++ / Header files
+# -------------------------------
+*.cpp text diff=cpp linguist-language=C++
+*.hpp text diff=cpp linguist-language=C++
+*.h   text diff=cpp linguist-language=C++
+*.cc  text diff=cpp linguist-language=C++
+*.cxx text diff=cpp linguist-language=C++
+
+# -------------------------------
+# 📂 QML / Qt
+# -------------------------------
+*.qml   text linguist-language=QML
+*.qrc   text
+*.ui    text
+
+# -------------------------------
+# 📂 PlantUML
+# -------------------------------
+*.puml  text linguist-language=PlantUML
+*.iuml  text linguist-language=PlantUML
+
+# -------------------------------
+# 📂 Docs
+# -------------------------------
+*.md    text linguist-language=Markdown
+*.adoc  text
+*.txt   text
+
+# -------------------------------
+# 📂 Scripts
+# -------------------------------
+*.sh    text eol=lf
+*.ps1   text eol=crlf
+*.bat   text eol=crlf
+
+# -------------------------------
+# 🧪 Tests
+# -------------------------------
+*.json  text
+*.xml   text
+*.yml   text
+*.yaml  text
+
+# -------------------------------
+# 🚫 Binary files
+# -------------------------------
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.bmp   binary
+*.svg   text
+
+*.ttf   binary
+*.otf   binary
+*.woff  binary
+*.woff2 binary
+
+*.zip   binary
+*.tar   binary
+*.gz    binary
+*.7z    binary
+*.rar   binary
+
+# -------------------------------
+# 🚦 GitHub Linguist Overrides
+# -------------------------------
+# Ignore vendored libraries (googletest, etc.)
+external/* linguist-vendored
+
+# Ignore docs UML libs (we use online includes)
+docs/uml/libs/ linguist-vendored
+
+# Mark UML diagrams as documentation (not main code)
+docs/uml/* linguist-documentation

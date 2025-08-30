@@ -1,0 +1,3 @@
+# Suppress warnings that are false positives with Qt
+missingIncludeSystem
+unusedFunction

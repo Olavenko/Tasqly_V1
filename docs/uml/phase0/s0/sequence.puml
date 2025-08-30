@@ -1,0 +1,30 @@
+@startuml
+' 🧱 File: sequence.puml
+' ----------------------
+' 📌 Purpose   : Sequence diagram — Dev commit → CI → Build + Test → Report status
+' 🧱 Layer     : Docs (UML)
+' 👤 Author    : Mohamed Ali
+' 🗓️ Created   : 2025-08-28
+
+!include ../../config/style.puml
+
+title Sequence — Developer Commit to CI Result
+
+skinparam participant {
+  MinimumWidth 300
+}
+skinparam sequenceParticipantSpacing 300
+
+FA6_USER(dev, Developer, rectangle, #00EB09)
+FA6_GITHUB(repo, GitHub_Repo, rectangle, #2AA1D1)
+FA6_CLOUD(ci, CI_Pipeline, rectangle, #00BFFF)
+FA6_GEAR(build, Build_System, rectangle, #D97A2B)
+FA6_FLASK(tests, Test_Runner, rectangle, #E5C55F)
+
+dev -> repo : Push Commit
+repo -> ci : Trigger Pipeline
+ci -> build : Compile Sources
+build -> tests : Run Unit Tests
+tests --> ci : Report Test Results
+ci --> dev : Notify Status (✅ / ❌)
+@enduml
