@@ -55,6 +55,7 @@ jobs:
         host: windows
         target: desktop
         arch: win64_mingw
+        tools: tools_mingw1310
 
     - name: Add Qt MinGW to PATH
       if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
