@@ -45,22 +45,8 @@ jobs:
         qmake --version || true
 
     # ---------------------------------------------------------------
-    # Windows: Setup MSYS2 + MinGW + Qt
+    # Windows: Install Qt (with bundled MinGW)
     # ---------------------------------------------------------------
-    - name: Setup MSYS2
-      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
-      uses: msys2/setup-msys2@v2
-      with:
-        msystem: MINGW64
-        update: true
-        install: >-
-          base-devel
-          git
-          mingw-w64-x86_64-gcc
-          mingw-w64-x86_64-gdb
-          mingw-w64-x86_64-cmake
-          mingw-w64-x86_64-ninja
-
     - name: Install Qt (Windows MinGW)
       if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
       uses: jurplel/install-qt-action@v3
@@ -70,6 +56,10 @@ jobs:
         target: desktop
         arch: win64_mingw
 
+    - name: Add Qt MinGW to PATH
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
+      run: echo "${{ env.Qt6_DIR }}/../Tools/mingw1310_64/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
     - name: Debug Qt (Windows)
       if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
       run: |
@@ -77,14 +67,6 @@ jobs:
         echo "CMAKE_PREFIX_PATH=$env:CMAKE_PREFIX_PATH"
         where qmake || echo "qmake not found"
         qmake --version || exit 0
-
-    - name: Add MinGW to PATH
-      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
-      run: echo "C:/msys64/mingw64/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
-    - name: Set QT_PATH env
-      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
-      run: echo "QT_PATH=$env:Qt6_DIR" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
     # ---------------------------------------------------------------
     # Setup CMake
