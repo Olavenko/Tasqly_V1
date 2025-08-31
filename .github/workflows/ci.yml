@@ -18,6 +18,9 @@ jobs:
             compiler: clang
           - os: windows-latest
             compiler: mingw
+          # لو عايز تضيف MSVC كمان
+          # - os: windows-latest
+          #   compiler: msvc
 
     runs-on: ${{ matrix.os }}
 
@@ -32,7 +35,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       uses: jurplel/install-qt-action@v3
       with:
-        version: '6.8.2'
+        version: '6.9.2'
         host: linux
         target: desktop
 
@@ -48,7 +51,7 @@ jobs:
     # Windows: Setup MSYS2 + MinGW + Qt
     # ---------------------------------------------------------------
     - name: Setup MSYS2
-      if: matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
       uses: msys2/setup-msys2@v2
       with:
         msystem: MINGW64
@@ -62,16 +65,16 @@ jobs:
           mingw-w64-x86_64-ninja
 
     - name: Install Qt (Windows MinGW)
-      if: matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
       uses: jurplel/install-qt-action@v3
       with:
-        version: '6.8.2'
+        version: '6.9.2'
         host: windows
         target: desktop
         arch: win64_mingw
 
     - name: Debug Qt (Windows)
-      if: matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
       run: |
         echo "Qt6_DIR=$env:Qt6_DIR"
         echo "CMAKE_PREFIX_PATH=$env:CMAKE_PREFIX_PATH"
@@ -79,7 +82,7 @@ jobs:
         qmake --version || exit 0
 
     - name: Add MinGW to PATH
-      if: matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
       run: echo "C:/msys64/mingw64/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
     # ---------------------------------------------------------------
@@ -91,35 +94,17 @@ jobs:
     # ---------------------------------------------------------------
     # Configure
     # ---------------------------------------------------------------
-    - name: Configure (Linux)
-      if: matrix.os == 'ubuntu-latest'
+    - name: Configure
       run: cmake --preset=${{ matrix.compiler }}-debug
-
-    - name: Configure (Windows MinGW)
-      if: matrix.os == 'windows-latest'
-      shell: msys2 {0}
-      run: cmake --preset=mingw-debug
 
     # ---------------------------------------------------------------
     # Build
     # ---------------------------------------------------------------
-    - name: Build (Linux)
-      if: matrix.os == 'ubuntu-latest'
-      run: cmake --build --preset=build-${{ matrix.compiler }}-debug
-
-    - name: Build (Windows MinGW)
-      if: matrix.os == 'windows-latest'
-      shell: msys2 {0}
-      run: cmake --build --preset=build-mingw-debug
+    - name: Build
+      run: cmake --build --preset=${{ matrix.compiler }}-debug
 
     # ---------------------------------------------------------------
     # Run tests
     # ---------------------------------------------------------------
-    - name: Run tests (Linux)
-      if: matrix.os == 'ubuntu-latest'
-      run: ctest --preset=test-${{ matrix.compiler }}-debug --output-on-failure
-
-    - name: Run tests (Windows MinGW)
-      if: matrix.os == 'windows-latest'
-      shell: msys2 {0}
-      run: ctest --preset=test-mingw-debug --output-on-failure
+    - name: Run tests
+      run: ctest --preset=${{ matrix.compiler }}-debug --output-on-failure

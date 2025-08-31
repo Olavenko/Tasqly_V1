@@ -61,8 +61,8 @@ endif()
 # Locate Qt6 with required Quick module and initialize defaults
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 
-# Apply standard Qt project setup (requires Qt 6.8+)
-qt_standard_project_setup(REQUIRES 6.8)
+# Apply standard Qt project setup (requires Qt 6.9+)
+qt_standard_project_setup(REQUIRES 6.9)
 
 # ---------------------------------------------------------------
 # 🏗️ Application Target
