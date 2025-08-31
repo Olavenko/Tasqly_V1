@@ -45,7 +45,7 @@ jobs:
         qmake --version || true
 
     # ---------------------------------------------------------------
-    # Windows: Install Qt (with bundled MinGW)
+    # Windows: Install Qt (with bundled MinGW only)
     # ---------------------------------------------------------------
     - name: Install Qt (Windows MinGW)
       if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
@@ -60,12 +60,21 @@ jobs:
       if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
       run: echo "${{ env.Qt6_DIR }}/../Tools/mingw1310_64/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
+    - name: Set QT_PATH env
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
+      run: echo "QT_PATH=$env:Qt6_DIR" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+    - name: Verify MinGW compiler
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
+      run: |
+        where g++
+        g++ --version
+
     - name: Debug Qt (Windows)
       if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
       run: |
         echo "Qt6_DIR=$env:Qt6_DIR"
-        echo "CMAKE_PREFIX_PATH=$env:CMAKE_PREFIX_PATH"
-        where qmake || echo "qmake not found"
+        echo "QT_PATH=$env:QT_PATH"
         qmake --version || exit 0
 
     # ---------------------------------------------------------------
