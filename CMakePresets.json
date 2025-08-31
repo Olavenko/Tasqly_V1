@@ -31,8 +31,8 @@
       "name": "mingw-debug",
       "inherits": "default-debug",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "$env{QT_PATH}/../Tools/mingw1310_64/bin/gcc.exe",
-        "CMAKE_CXX_COMPILER": "$env{QT_PATH}/../Tools/mingw1310_64/bin/g++.exe",
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++",
         "CMAKE_PREFIX_PATH": "$env{QT_PATH}"
       }
     },
@@ -40,8 +40,8 @@
       "name": "mingw-release",
       "inherits": "default-release",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "$env{QT_PATH}/../Tools/mingw1310_64/bin/gcc.exe",
-        "CMAKE_CXX_COMPILER": "$env{QT_PATH}/../Tools/mingw1310_64/bin/g++.exe",
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++",
         "CMAKE_PREFIX_PATH": "$env{QT_PATH}"
       }
     },
