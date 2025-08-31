@@ -2,82 +2,77 @@
   "version": 3,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 21,
+    "minor": 25,
     "patch": 0
   },
 
   "configurePresets": [
     {
-      "name": "mingw-debug",
-      "displayName": "MinGW Debug",
+      "name": "default-debug",
+      "hidden": true,
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/mingw-debug",
+      "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_COMPILER": "C:/msys64/mingw64/bin/gcc.exe",
-        "CMAKE_CXX_COMPILER": "C:/msys64/mingw64/bin/g++.exe",
-        "CMAKE_PREFIX_PATH": "C:/Qt/6.9.2/mingw_64"
+        "CMAKE_CXX_STANDARD": "20",
+        "CMAKE_CXX_STANDARD_REQUIRED": "ON",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "default-release",
+      "inherits": "default-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+
+    {
+      "name": "mingw-debug",
+      "inherits": "default-debug",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/mingw.cmake",
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{QT_PATH};C:/Qt/6.9.2/mingw_64"
       }
     },
     {
       "name": "mingw-release",
-      "displayName": "MinGW Release",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/mingw-release",
+      "inherits": "default-release",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/mingw.cmake",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_COMPILER": "C:/msys64/mingw64/bin/gcc.exe",
-        "CMAKE_CXX_COMPILER": "C:/msys64/mingw64/bin/g++.exe",
-        "CMAKE_PREFIX_PATH": "C:/Qt/6.9.2/mingw_64"
+        "CMAKE_PREFIX_PATH": "$env{QT_PATH};C:/Qt/6.9.2/mingw_64"
       }
     },
+
     {
       "name": "gcc-debug",
-      "displayName": "Linux GCC Debug",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/gcc-debug",
+      "inherits": "default-debug",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++"
       }
     },
     {
       "name": "clang-debug",
-      "displayName": "Linux Clang Debug",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/clang-debug",
+      "inherits": "default-debug",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
       }
     }
   ],
 
   "buildPresets": [
-    { "name": "gcc-debug", "configurePreset": "gcc-debug" },
-    { "name": "clang-debug", "configurePreset": "clang-debug" },
-    { "name": "mingw-debug", "configurePreset": "mingw-debug" },
-    { "name": "mingw-release", "configurePreset": "mingw-release" }
+    { "name": "build-mingw-debug", "configurePreset": "mingw-debug" },
+    { "name": "build-mingw-release", "configurePreset": "mingw-release" },
+    { "name": "build-gcc-debug", "configurePreset": "gcc-debug" },
+    { "name": "build-clang-debug", "configurePreset": "clang-debug" }
   ],
 
   "testPresets": [
-    {
-      "name": "gcc-debug",
-      "configurePreset": "gcc-debug",
-      "output": { "outputOnFailure": true }
-    },
-    {
-      "name": "clang-debug",
-      "configurePreset": "clang-debug",
-      "output": { "outputOnFailure": true }
-    },
-    {
-      "name": "mingw-debug",
-      "configurePreset": "mingw-debug",
-      "output": { "outputOnFailure": true }
-    },
-    {
-      "name": "mingw-release",
-      "configurePreset": "mingw-release",
-      "output": { "outputOnFailure": true }
-    }
+    { "name": "test-mingw-debug", "configurePreset": "mingw-debug" },
+    { "name": "test-mingw-release", "configurePreset": "mingw-release" },
+    { "name": "test-gcc-debug", "configurePreset": "gcc-debug" },
+    { "name": "test-clang-debug", "configurePreset": "clang-debug" }
   ]
 }
