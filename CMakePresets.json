@@ -5,6 +5,7 @@
     "minor": 21,
     "patch": 0
   },
+
   "configurePresets": [
     {
       "name": "mingw-debug",
@@ -47,6 +48,36 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
+    }
+  ],
+
+  "buildPresets": [
+    { "name": "gcc-debug", "configurePreset": "gcc-debug" },
+    { "name": "clang-debug", "configurePreset": "clang-debug" },
+    { "name": "mingw-debug", "configurePreset": "mingw-debug" },
+    { "name": "mingw-release", "configurePreset": "mingw-release" }
+  ],
+
+  "testPresets": [
+    {
+      "name": "gcc-debug",
+      "configurePreset": "gcc-debug",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "clang-debug",
+      "configurePreset": "clang-debug",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "mingw-debug",
+      "configurePreset": "mingw-debug",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "mingw-release",
+      "configurePreset": "mingw-release",
+      "output": { "outputOnFailure": true }
     }
   ]
 }
