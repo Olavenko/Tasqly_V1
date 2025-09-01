@@ -57,7 +57,28 @@
 		 "PATH": "C:/msys64/mingw64/bin;$penv{PATH}"
 	}
 	},
-
+	{
+	   "name": "msvc-debug",
+	   "inherits": "default-debug",
+	   "generator": "Ninja",
+	   "binaryDir": "${sourceDir}/build/${presetName}",
+	   "cacheVariables": {
+	     "CMAKE_BUILD_TYPE": "Debug",
+	     "CMAKE_CXX_STANDARD": "20",
+	     "CMAKE_CXX_STANDARD_REQUIRED": "ON"
+	   }
+	},
+	{
+	   "name": "msvc-release",
+	   "inherits": "default-release",
+	   "generator": "Ninja",
+	   "binaryDir": "${sourceDir}/build/${presetName}",
+	   "cacheVariables": {
+	     "CMAKE_BUILD_TYPE": "Release",
+	     "CMAKE_CXX_STANDARD": "20",
+	     "CMAKE_CXX_STANDARD_REQUIRED": "ON"
+	   }
+	},
     {
       "name": "gcc-debug",
       "inherits": "default-debug",
@@ -79,6 +100,8 @@
   "buildPresets": [
     { "name": "build-mingw-debug", "configurePreset": "mingw-debug" },
     { "name": "build-mingw-release", "configurePreset": "mingw-release" },
+	{ "name": "build-msvc-debug",   "configurePreset": "msvc-debug" },
+    { "name": "build-msvc-release", "configurePreset": "msvc-release" },
     { "name": "build-gcc-debug", "configurePreset": "gcc-debug" },
     { "name": "build-clang-debug", "configurePreset": "clang-debug" }
   ],
@@ -86,6 +109,8 @@
   "testPresets": [
     { "name": "test-mingw-debug", "configurePreset": "mingw-debug" },
     { "name": "test-mingw-release", "configurePreset": "mingw-release" },
+	{ "name": "test-msvc-debug",   "configurePreset": "msvc-debug" },
+    { "name": "test-msvc-release", "configurePreset": "msvc-release" },
     { "name": "test-gcc-debug", "configurePreset": "gcc-debug" },
     { "name": "test-clang-debug", "configurePreset": "clang-debug" }
   ]
