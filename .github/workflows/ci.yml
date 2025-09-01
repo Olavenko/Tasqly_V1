@@ -7,18 +7,18 @@
 # 🗓️ Updated   : 2025-09-01
 #
 # 🧠 Description:
-# - Linux jobs build with GCC and Clang using Qt 6.9.2 (pinned to avoid 6.9.3 mirror hiccups).
-# - If the Qt install step fails due to mirror XML errors, we retry with a known mirror base URL.
-# - Windows job builds with MSYS2 MinGW64 toolchain and Qt6 from MSYS2 repos.
-# - CMakePresets.json presets are used to configure/build/test.
+# - Linux jobs build with GCC and Clang using Qt 6.9.2 (no extra modules needed; base archive includes required bits).
+# - Windows job builds with MSYS2 MinGW64 toolchain (gcc + ninja) and Qt6 from MSYS2 repos.
+# - Presets from CMakePresets.json are used everywhere; no hardcoded compilers in CI.
+# - The pipeline prints useful diagnostics to simplify troubleshooting.
 #
 
 name: ci
 
 on:
   push:
-    branches: ["**"]
-  pull_request:
+    branches: ["**"]            # Run on all branches
+  pull_request:                   # Also on PRs
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   # ------------------------------------------------------------
-  # 🐧 Linux (GCC + Clang) — Qt 6.9.2
+  # 🐧 Linux (GCC + Clang) — Qt 6.9.2 (no modules specified)
   # ------------------------------------------------------------
   linux:
     name: Linux • ${{ matrix.compiler }}
@@ -36,9 +36,11 @@ jobs:
       matrix:
         compiler: [gcc, clang]
     steps:
+      # 1) Checkout
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 2) Base build tools (ninja + clang for the clang matrix)
       - name: Install build deps
         run: |
           sudo apt-get update
@@ -46,16 +48,16 @@ jobs:
           cmake --version
           ninja --version
 
-      # Diagnostic: list available Qt versions/arch/modules (helps when mirrors change)
-      - name: (Diag) aqt list-qt 6.9.2
+      # 3) (Diag) List available Qt to help if mirrors change
+      - name: (Diag) Query available Qt 6.9.2
         run: |
           python3 -m pip install --upgrade aqtinstall
           python3 -m aqt list-qt linux desktop 6.9.2 || true
+          # Modules listing (informational only)
           python3 -m aqt list-qt linux desktop --modules 6.9.2 gcc_64 || true
 
-      # Install Qt 6.9.2 (normal path)
+      # 4) Install Qt 6.9.2 — base package is sufficient for Qt6 CMake packages
       - name: Setup Qt 6.9.2
-        id: qt1
         uses: jurplel/install-qt-action@v3
         with:
           version: 6.9.2
@@ -63,29 +65,16 @@ jobs:
           target: desktop
           arch: gcc_64
           cache: true
-          modules: 'qtdeclarative qtshadertools'
-        continue-on-error: true
+          # No 'modules' here — base includes the necessary CMake config for Qt6
 
-      # Retry with explicit mirror base if the default fails (XML/mirror issue)
-      - name: Setup Qt 6.9.2 (retry with mirror)
-        if: steps.qt1.outcome == 'failure'
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: 6.9.2
-          host: linux
-          target: desktop
-          arch: gcc_64
-          cache: true
-          modules: 'qtdeclarative qtshadertools'
-          aqtversion: '==3.1.*'            # stable aqt series
-          aqtargs: '--base https://download.qt.io/online/qtsdkrepository'  # force official base
-
+      # 5) Export CMAKE_PREFIX_PATH so CMake can find Qt6
       - name: Configure environment
         run: |
           echo "CMAKE_PREFIX_PATH=${Qt6_DIR}" >> $GITHUB_ENV
           echo "Qt6_DIR=${Qt6_DIR}"
           qmake --version || true
 
+      # 6) Configure with the appropriate preset (gcc/clang)
       - name: Configure
         run: |
           rm -rf build
@@ -95,6 +84,7 @@ jobs:
             cmake --preset=clang-debug
           fi
 
+      # 7) Build using the paired build preset
       - name: Build
         run: |
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
@@ -103,6 +93,7 @@ jobs:
             cmake --build --preset=build-clang-debug --parallel
           fi
 
+      # 8) Run tests
       - name: Test
         run: |
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
@@ -112,15 +103,17 @@ jobs:
           fi
 
   # ------------------------------------------------------------
-  # 🪟 Windows — MSYS2 MinGW64
+  # 🪟 Windows — MSYS2 MinGW64 (Unified baseline)
   # ------------------------------------------------------------
   windows-mingw:
     name: Windows • MSYS2 MinGW64
     runs-on: windows-latest
     steps:
+      # 1) Checkout
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 2) Provision MSYS2 toolchain + Qt6 packages
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
         with:
@@ -134,21 +127,24 @@ jobs:
             mingw-w64-x86_64-qt6-declarative
             mingw-w64-x86_64-qt6-shadertools
 
+      # 3) Configure using the MinGW preset (toolchain picks compilers from PATH)
       - name: Configure
         shell: msys2 {0}
         run: |
-          export PATH="/mingw64/bin:$PATH"
-          echo "QT_PREFIX=/mingw64" >> $GITHUB_ENV
+          export PATH="/mingw64/bin:$PATH"           # Ensure MSYS2 toolchain is first
+          echo "QT_PREFIX=/mingw64" >> $GITHUB_ENV   # Consumed by CMakePresets.json
           g++ --version | head -n1
           cmake --version | head -n1
           qmake --version || true
           rm -rf build
           cmake --preset=mingw-debug
 
+      # 4) Build
       - name: Build
         shell: msys2 {0}
         run: cmake --build --preset=build-mingw-debug --parallel
 
+      # 5) Test
       - name: Test
         shell: msys2 {0}
         run: ctest --preset=test-mingw-debug --output-on-failure
