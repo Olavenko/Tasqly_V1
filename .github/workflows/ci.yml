@@ -48,33 +48,23 @@ jobs:
           cmake --version
           ninja --version
 
-      # 3) (Diag) List available Qt to help if mirrors change
-      - name: (Diag) Query available Qt 6.9.2
-        run: |
-          python3 -m pip install --upgrade aqtinstall
-          python3 -m aqt list-qt linux desktop 6.9.2 || true
-          # Modules listing (informational only)
-          python3 -m aqt list-qt linux desktop --modules 6.9.2 gcc_64 || true
-
-      # 4) Install Qt 6.9.2 — base package is sufficient for Qt6 CMake packages
+      # 3) Install Qt 6.9.2 — base package is sufficient for Qt6 CMake packages
       - name: Setup Qt 6.9.2
         uses: jurplel/install-qt-action@v3
         with:
           version: 6.9.2
           host: linux
           target: desktop
-          arch: gcc_64
           cache: true
-          # No 'modules' here — base includes the necessary CMake config for Qt6
 
-      # 5) Export CMAKE_PREFIX_PATH so CMake can find Qt6
+      # 4) Export CMAKE_PREFIX_PATH so CMake can find Qt6
       - name: Configure environment
         run: |
           echo "CMAKE_PREFIX_PATH=${Qt6_DIR}" >> $GITHUB_ENV
           echo "Qt6_DIR=${Qt6_DIR}"
           qmake --version || true
 
-      # 6) Configure with the appropriate preset (gcc/clang)
+      # 5) Configure with the appropriate preset (gcc/clang)
       - name: Configure
         run: |
           rm -rf build
@@ -84,7 +74,7 @@ jobs:
             cmake --preset=clang-debug
           fi
 
-      # 7) Build using the paired build preset
+      # 6) Build using the paired build preset
       - name: Build
         run: |
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
@@ -93,7 +83,7 @@ jobs:
             cmake --build --preset=build-clang-debug --parallel
           fi
 
-      # 8) Run tests
+      # 7) Run tests
       - name: Test
         run: |
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
