@@ -4,13 +4,14 @@
 # 📌 Purpose   : Root CMake configuration for Tasqly application.
 # 🧱 Layer     : Build System (CMake)
 # 👤 Author    : Mohamed Ali
-# 🗓️ Updated   : 2025-08-29
+# 🗓️ Updated   : 2025-09-01
 #
 # 🧠 Description:
 # Defines the minimum required CMake version, project metadata, build
 # type policies, compiler settings, and integrates Qt Quick for building
 # the main Tasqly application with QML module support. Also integrates
-# GoogleTest for unit testing.
+# GoogleTest for unit testing. Warnings & sanitizers are applied per-target
+# and per-compiler to avoid leaking GCC/Clang flags into MSVC or third-party deps.
 #
 
 cmake_minimum_required(VERSION 3.21)
@@ -37,28 +38,39 @@ set(CMAKE_CXX_EXTENSIONS OFF) # Avoid compiler-specific extensions
 # - RelWithDebInfo : For CI/CD builds with debug symbols.
 # ---------------------------------------------------------------
 
-# Restrict to the allowed build types
+# Restrict to the allowed build types (for multi-config generators this is informational)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebInfo" CACHE STRING "" FORCE)
 
-# Default to Debug if not explicitly set
+# Default to Debug if not explicitly set (single-config generators)
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE)
 endif()
 
-# Extra compiler flags for Debug mode
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    message(STATUS "Configuring Debug build")
-
-    add_compile_options(-Wall -Wextra -Wpedantic)
-
-    # Enable sanitizers only if supported (Linux GCC/Clang)
-    if (UNIX AND (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang"))
-        message(STATUS "Enabling sanitizers (Linux GCC/Clang only)")
-        add_compile_options(-fsanitize=address,undefined)
-        add_link_options(-fsanitize=address,undefined)
+# ---------------------------------------------------------------
+# 🛡️ Target-scoped warnings & sanitizers (avoid leaking to external deps)
+# ---------------------------------------------------------------
+# Apply warnings per compiler and only to our targets.
+function(tasqly_apply_warnings tgt)
+    if (MSVC)
+        target_compile_options(${tgt} PRIVATE
+            /W4           # high warning level
+            /permissive-  # stricter standard conformance
+            /EHsc         # C++ exceptions semantics
+            /utf-8        # source encoding
+        )
+    else()
+        target_compile_options(${tgt} PRIVATE -Wall -Wextra -Wpedantic)
     endif()
-endif()
+endfunction()
 
+# Apply sanitizers only on Linux with GCC/Clang, and only for Debug
+function(tasqly_apply_debug_sanitizers tgt)
+    if (UNIX AND (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang") AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+        message(STATUS "Enabling ASan/UBSan for target: ${tgt}")
+        target_compile_options(${tgt} PRIVATE -fsanitize=address,undefined)
+        target_link_options(${tgt} PRIVATE -fsanitize=address,undefined)
+    endif()
+endfunction()
 
 # ---------------------------------------------------------------
 # 🎨 Qt Quick Integration
@@ -102,6 +114,10 @@ target_link_libraries(appTasqly_V1
     PRIVATE Qt6::Quick
 )
 
+# Apply warning/sanitizer policies to our app target only
+tasqly_apply_warnings(appTasqly_V1)
+tasqly_apply_debug_sanitizers(appTasqly_V1)
+
 # ---------------------------------------------------------------
 # 📦 Installation Rules
 # ---------------------------------------------------------------
@@ -119,7 +135,7 @@ install(TARGETS appTasqly_V1
 # 📌 Purpose : Add Google Test framework via FetchContent
 # 🧱 Layer   : Build System (Testing Infrastructure)
 # 👤 Author  : Mohamed Ali
-# 🗓️ Updated : 2025-08-29
+# 🗓️ Updated : 2025-09-01
 #
 # 🧠 Description:
 # Downloads and configures GoogleTest for unit testing.
@@ -154,37 +170,9 @@ target_link_libraries(TasqlyTests
         GTest::gtest_main
 )
 
+# Apply our warnings/sanitizers to tests too (but not to gtest itself)
+tasqly_apply_warnings(TasqlyTests)
+tasqly_apply_debug_sanitizers(TasqlyTests)
+
 include(GoogleTest)
 gtest_discover_tests(TasqlyTests)
-
-# ---------------------------------------------------------------
-# 🔍 cppcheck Integration
-# ---------------------------------------------------------------
-# 📌 Purpose : Static analysis with cppcheck
-# 🧱 Layer   : Build System (Quality Tools)
-# 👤 Author  : Mohamed Ali
-# 🗓️ Updated : 2025-08-30
-#
-# 🧠 Description:
-# Adds a custom target `cppcheck` to run static analysis on source files.
-# Uses compile_commands.json for full project context and a suppressions list
-# to filter out known false positives (e.g., Qt headers).
-# ---------------------------------------------------------------
-
-find_program(CPPCHECK_EXECUTABLE NAMES cppcheck)
-
-if(CPPCHECK_EXECUTABLE)
-  add_custom_target(cppcheck
-    COMMAND ${CPPCHECK_EXECUTABLE}
-      --enable=all
-      --inconclusive
-      --quiet
-      --project=${CMAKE_BINARY_DIR}/compile_commands.json
-      --suppressions-list=${CMAKE_SOURCE_DIR}/cppcheck-suppressions.txt
-      -I ${CMAKE_SOURCE_DIR}/src
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMENT "Running cppcheck analysis..."
-    VERBATIM
-  )
-endif()
-
