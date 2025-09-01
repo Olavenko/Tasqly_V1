@@ -11,14 +11,14 @@ This document explains how to build locally and how CI is configured.
 - GCC or Clang
 - CMake >= 3.25
 - Ninja
-- Qt 6.9.3 (auto-installed in CI, install manually if local)
+- Qt 6.9.2 (auto-installed in CI, install manually if local)
 
 ### Windows
 - [MSYS2](https://www.msys2.org/) with MinGW64 (baseline, cross-platform)
 - Visual Studio 2019/2022 (for optional MSVC-only branch)
 - CMake >= 3.25
 - Ninja (for MinGW builds)
-- Qt 6.9.3 (install matching ABI: `mingw_64` for MinGW, `msvc2019_64` or `msvc2022_64` for MSVC)
+- Qt 6.9.2 (install matching ABI: `mingw_64` for MinGW, `msvc2019_64` or `msvc2022_64` for MSVC)
 
 ---
 
@@ -52,17 +52,19 @@ export QT_PREFIX="/mingw64"   # Or point to your official Qt install root
 
 rm -rf build
 cmake --preset=mingw-debug
-cmake --build --preset=build-mingw-debug
+cmake --build --preset=build-mingw-debug --parallel
 ctest --preset=test-mingw-debug --output-on-failure
 ```
 
 ### Windows (MSVC, optional)
 ```powershell
-# Run from Visual Studio Developer Command Prompt or PowerShell
+# use x64 Native Tools Command Prompt for VS 2022 shell
+cd C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1
+set "CMAKE_PREFIX_PATH=C:\Qt\6.9.2\msvc2022_64"
 rmdir /S /Q build
 cmake --preset=msvc-debug
-cmake --build --preset=msvc-debug
-ctest --preset=msvc-debug
+cmake --build --preset=build-msvc-debug --parallel
+ctest --preset=test-msvc-debug --output-on-failure
 ```
 
 ---
@@ -74,11 +76,11 @@ ctest --preset=msvc-debug
   - Runs `cmake --preset=gcc-debug` / `clang-debug`
 - **Windows (MinGW)**:
   - Uses MSYS2 MinGW64 toolchain
-  - Installs Qt (6.9.3, win64_mingw)
+  - Installs Qt (6.9.2, win64_mingw)
   - Runs `cmake --preset=mingw-debug`
 - **Windows (MSVC)**:
-  - Uses Visual Studio Build Tools (2019/2022)
-  - Installs Qt (6.9.3, msvc2019_64 or msvc2022_64)
+  - Uses Visual Studio Build Tools (2022), x64 Native Tools Command Prompt for VS 2022
+  - Installs Qt (6.9.2, msvc2019_64 or msvc2022_64)
   - Runs `cmake --preset=msvc-debug`
 
 Both Linux & Windows CI print:
@@ -113,7 +115,60 @@ They must point to `C:/msys64/mingw64/bin`.
 
 - Use **presets** → `cmake --preset=...`
 - Windows MinGW → build inside **MSYS2 MinGW64 shell**
-- Windows MSVC → build inside **Developer Command Prompt** or PowerShell
+- Windows MSVC → build inside **x64 Native Tools Command Prompt for VS 2022**
 - Linux → GCC or Clang
 - CI covers MinGW (baseline), GCC/Clang, and optional MSVC
 
+---
+
+## 🌀 Parallel Build Environments (MinGW + MSVC)
+
+CMake presets generate **isolated build directories** per toolchain, so you can
+configure and build the same codebase for multiple environments **in parallel**
+without conflicts.
+
+Example with both MinGW (MSYS2) and MSVC (Visual Studio):
+
+```bash
+# MSYS2 MinGW64 shell
+cmake --preset=mingw-debug
+cmake --build --preset=build-mingw-debug --parallel
+ctest --preset=test-mingw-debug --output-on-failure
+```
+
+```bat
+:: Visual Studio Developer Command Prompt (x64)
+cmake --preset=msvc-debug -DCMAKE_PREFIX_PATH="C:\Qt\6.9.2\msvc2022_64"
+cmake --build --preset=build-msvc-debug --parallel
+ctest --preset=test-msvc-debug --output-on-failure
+```
+
+This produces:
+
+```
+build/
+  mingw-debug/   # MinGW artifacts
+  msvc-debug/    # MSVC artifacts
+```
+
+- Each subdirectory is fully independent.
+- No need to clean or reconfigure when switching between compilers.
+- Same source code, tested across multiple environments.
+
+---
+
+### 📝 Note: Why only MinGW has a Toolchain file?
+
+- **MinGW (MSYS2)** requires an explicit toolchain file (`cmake/toolchains/mingw.cmake`)
+  because CMake may otherwise confuse `gcc`/`g++` with other compilers (e.g. FPC).
+  This ensures we always pick the correct MinGW compilers from MSYS2.
+
+- **MSVC (Visual Studio)** does **not** need a toolchain file.  
+  When you open the **Developer Command Prompt (x64)**, CMake automatically
+  detects `cl.exe` and sets up the environment correctly.  
+  Keeping MSVC without a toolchain file avoids extra maintenance and follows
+  the default CMake workflow.
+
+In summary:
+- 🟢 MinGW → always use `mingw.cmake`  
+- 🟢 MSVC → rely on the Developer Command Prompt (no toolchain file needed)
