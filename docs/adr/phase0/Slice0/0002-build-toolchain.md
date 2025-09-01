@@ -10,7 +10,7 @@ Additionally, sanitizers are not universally available on all platforms.
 - **Windows (Baseline):**
   - Compiler: MinGW-w64 GCC (≥13, currently 15.2 via MSYS2)
   - Build system: CMake + Ninja
-  - Qt SDK: Qt 6.8.2 MinGW 64-bit
+  - Qt SDK: Qt 6.9.2 MinGW 64-bit
 
 - **Linux:**
   - Compilers: GCC (latest stable) and Clang (latest stable)
