@@ -135,59 +135,58 @@ jobs:
         run: ctest --preset=test-mingw-debug --output-on-failure
 
   # ------------------------------------------------------------
-  # 🪟 Windows — MSVC (Optional job, no MSYS2)
-  # ------------------------------------------------------------
-  windows-msvc:
-    name: Windows • MSVC 2022
-    runs-on: windows-latest   
-    steps:
-      # 1) Checkout
-      - name: Checkout
-        uses: actions/checkout@v4
+# 🪟 Windows — MSVC (Optional job, no MSYS2)
+# ------------------------------------------------------------
+windows-msvc:
+  name: Windows • MSVC 2022
+  runs-on: windows-2022
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      # 2) MSVC environment (Developer Command Prompt)
-      - name: Setup MSVC Dev Command Prompt
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          toolset: 14.3     
+    # Use the installed MSVC environment; don't pin toolset version
+    - name: Setup MSVC Dev Command Prompt
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64        # ✅ drop 'toolset' to avoid version mismatch
 
-      # 3) Ninja 
-      - name: Ensure Ninja
-        run: choco install ninja --no-progress -y
-        shell: powershell
+    # Ninja is usually preinstalled; install if missing
+    - name: Ensure Ninja
+      shell: powershell
+      run: |
+        if (-not (Get-Command ninja -ErrorAction SilentlyContinue)) {
+          choco install ninja --no-progress -y
+        }
+        ninja --version
 
-      # 4) Install Qt 6.9.2 (MSVC)
-      - name: Setup Qt 6.9.2 (MSVC)
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: 6.9.2
-          host: windows
-          target: desktop
-          cache: false        
+    # Qt 6.9.2 for MSVC 2022 (no modules)
+    - name: Setup Qt 6.9.2 (MSVC)
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: 6.9.2
+        host: windows
+        target: desktop
+        arch: win64_msvc2022_64
+        cache: false
 
-      # 5) Configure env for CMake (Qt path)
-      - name: Configure environment
-        shell: powershell
-        run: |
-          echo "CMAKE_PREFIX_PATH=$Env:Qt6_DIR" | Out-File -FilePath $Env:GITHUB_ENV -Append
-          echo "Qt6_DIR=$Env:Qt6_DIR"
-          cmake --version
-          ninja --version
-          & "$Env:Qt6_DIR\bin\qmake.exe" -v
+    - name: Configure environment
+      shell: powershell
+      run: |
+        echo "CMAKE_PREFIX_PATH=$Env:Qt6_DIR" | Out-File -FilePath $Env:GITHUB_ENV -Append
+        cmake --version
+        ninja --version
+        & "$Env:Qt6_DIR\bin\qmake.exe" -v
 
-      # 6) Configure with preset (MSVC)
-      - name: Configure
-        shell: powershell
-        run: |
-          if (Test-Path build) { Remove-Item -Recurse -Force build }
-          cmake --preset=msvc-debug
+    - name: Configure
+      shell: powershell
+      run: |
+        if (Test-Path build) { Remove-Item -Recurse -Force build }
+        cmake --preset=msvc-debug
 
-      # 7) Build
-      - name: Build
-        shell: powershell
-        run: cmake --build --preset=msvc-debug --parallel
+    - name: Build
+      shell: powershell
+      run: cmake --build --preset=msvc-debug --parallel
 
-      # 8) Test
-      - name: Test
-        shell: powershell
-        run: ctest --preset=msvc-debug --output-on-failure
+    - name: Test
+      shell: powershell
+      run: ctest --preset=msvc-debug --output-on-failure
