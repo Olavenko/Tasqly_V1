@@ -2,7 +2,7 @@ name: ci
 
 on:
   push:
-    branches: [ "**" ]
+    branches: ["**"]
   pull_request:
 
 jobs:
@@ -16,22 +16,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Install Qt 6.9.3
-      - name: Setup Qt
+      - name: Install build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential ninja-build clang
+          cmake --version
+          ninja --version
+
+      # Qt 6.9.2 (fix: avoid 6.9.3 mirror issue)
+      - name: Setup Qt 6.9.2
         uses: jurplel/install-qt-action@v3
         with:
-          version: 6.9.3
+          version: 6.9.2
           host: linux
           target: desktop
+          arch: gcc_64
           cache: true
+          modules: |
+            qtdeclarative
+            qtshadertools
 
       - name: Configure env
         run: |
           echo "CMAKE_PREFIX_PATH=${Qt6_DIR}" >> $GITHUB_ENV
-          echo "Compiler: ${{ matrix.compiler }}"
-          cmake --version
-          qmake --version || true
           echo "Qt6_DIR=${Qt6_DIR}"
+          qmake --version || true
 
       - name: Configure
         run: |
@@ -82,8 +91,8 @@ jobs:
         run: |
           export PATH="/mingw64/bin:$PATH"
           echo "QT_PREFIX=/mingw64" >> $GITHUB_ENV
-          echo "Using $(g++ --version | head -n1)"
-          echo "CMake: $(cmake --version | head -n1)"
+          g++ --version | head -n1
+          cmake --version | head -n1
           qmake --version || true
           rm -rf build
           cmake --preset=mingw-debug
