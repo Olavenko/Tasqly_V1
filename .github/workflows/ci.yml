@@ -1,3 +1,18 @@
+#
+# 🧱 File: .github/workflows/ci.yml
+# ---------------------------------
+# 📌 Purpose   : Unified CI pipeline for Tasqly (Linux + Windows)
+# 🧱 Layer     : CI/CD (GitHub Actions)
+# 👤 Author    : Tasqly AI Assistant
+# 🗓️ Updated   : 2025-09-01
+#
+# 🧠 Description:
+# - Linux jobs build with GCC and Clang using Qt 6.9.2 (pinned to avoid 6.9.3 mirror hiccups).
+# - If the Qt install step fails due to mirror XML errors, we retry with a known mirror base URL.
+# - Windows job builds with MSYS2 MinGW64 toolchain and Qt6 from MSYS2 repos.
+# - CMakePresets.json presets are used to configure/build/test.
+#
+
 name: ci
 
 on:
@@ -5,7 +20,14 @@ on:
     branches: ["**"]
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  # ------------------------------------------------------------
+  # 🐧 Linux (GCC + Clang) — Qt 6.9.2
+  # ------------------------------------------------------------
   linux:
     name: Linux • ${{ matrix.compiler }}
     runs-on: ubuntu-latest
@@ -14,17 +36,26 @@ jobs:
       matrix:
         compiler: [gcc, clang]
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Install build deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential ninja-build clang
+          sudo apt-get install -y build-essential ninja-build clang python3-pip
           cmake --version
           ninja --version
 
-      # Qt 6.9.2 (fix: avoid 6.9.3 mirror issue)
+      # Diagnostic: list available Qt versions/arch/modules (helps when mirrors change)
+      - name: (Diag) aqt list-qt 6.9.2
+        run: |
+          python3 -m pip install --upgrade aqtinstall
+          python3 -m aqt list-qt linux desktop 6.9.2 || true
+          python3 -m aqt list-qt linux desktop --modules 6.9.2 gcc_64 || true
+
+      # Install Qt 6.9.2 (normal path)
       - name: Setup Qt 6.9.2
+        id: qt1
         uses: jurplel/install-qt-action@v3
         with:
           version: 6.9.2
@@ -32,11 +63,24 @@ jobs:
           target: desktop
           arch: gcc_64
           cache: true
-          modules: |
-            qtdeclarative
-            qtshadertools
+          modules: 'qtdeclarative qtshadertools'
+        continue-on-error: true
 
-      - name: Configure env
+      # Retry with explicit mirror base if the default fails (XML/mirror issue)
+      - name: Setup Qt 6.9.2 (retry with mirror)
+        if: steps.qt1.outcome == 'failure'
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: 6.9.2
+          host: linux
+          target: desktop
+          arch: gcc_64
+          cache: true
+          modules: 'qtdeclarative qtshadertools'
+          aqtversion: '==3.1.*'            # stable aqt series
+          aqtargs: '--base https://download.qt.io/online/qtsdkrepository'  # force official base
+
+      - name: Configure environment
         run: |
           echo "CMAKE_PREFIX_PATH=${Qt6_DIR}" >> $GITHUB_ENV
           echo "Qt6_DIR=${Qt6_DIR}"
@@ -67,11 +111,15 @@ jobs:
             ctest --preset=test-clang-debug --output-on-failure
           fi
 
+  # ------------------------------------------------------------
+  # 🪟 Windows — MSYS2 MinGW64
+  # ------------------------------------------------------------
   windows-mingw:
     name: Windows • MSYS2 MinGW64
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
