@@ -137,56 +137,56 @@ jobs:
   # ------------------------------------------------------------
 # 🪟 Windows — MSVC (Optional job, no MSYS2)
 # ------------------------------------------------------------
-windows-msvc:
-  name: Windows • MSVC 2022
-  runs-on: windows-2022
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    # Use the installed MSVC environment; don't pin toolset version
-    - name: Setup MSVC Dev Command Prompt
-      uses: ilammy/msvc-dev-cmd@v1
-      with:
-        arch: x64        # ✅ drop 'toolset' to avoid version mismatch
-
-    # Ninja is usually preinstalled; install if missing
-    - name: Ensure Ninja
-      shell: powershell
-      run: |
-        if (-not (Get-Command ninja -ErrorAction SilentlyContinue)) {
-          choco install ninja --no-progress -y
-        }
-        ninja --version
-
-    # Qt 6.9.2 for MSVC 2022 (no modules)
-    - name: Setup Qt 6.9.2 (MSVC)
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: 6.9.2
-        host: windows
-        target: desktop
-        arch: win64_msvc2022_64
-        cache: false
-
-    - name: Configure environment
-      shell: powershell
-      run: |
-        echo "CMAKE_PREFIX_PATH=$Env:Qt6_DIR" | Out-File -FilePath $Env:GITHUB_ENV -Append
-        cmake --version
-        ninja --version
-        & "$Env:Qt6_DIR\bin\qmake.exe" -v
-
-    - name: Configure
-      shell: powershell
-      run: |
-        if (Test-Path build) { Remove-Item -Recurse -Force build }
-        cmake --preset=msvc-debug
-
-    - name: Build
-      shell: powershell
-      run: cmake --build --preset=msvc-debug --parallel
-
-    - name: Test
-      shell: powershell
-      run: ctest --preset=msvc-debug --output-on-failure
+  windows-msvc:
+      name: Windows • MSVC 2022
+      runs-on: windows-2022
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+    
+        # Use the installed MSVC environment; don't pin toolset version
+        - name: Setup MSVC Dev Command Prompt
+          uses: ilammy/msvc-dev-cmd@v1
+          with:
+            arch: x64        # ✅ drop 'toolset' to avoid version mismatch
+    
+        # Ninja is usually preinstalled; install if missing
+        - name: Ensure Ninja
+          shell: powershell
+          run: |
+            if (-not (Get-Command ninja -ErrorAction SilentlyContinue)) {
+              choco install ninja --no-progress -y
+            }
+            ninja --version
+    
+        # Qt 6.9.2 for MSVC 2022 (no modules)
+        - name: Setup Qt 6.9.2 (MSVC)
+          uses: jurplel/install-qt-action@v3
+          with:
+            version: 6.9.2
+            host: windows
+            target: desktop
+            arch: win64_msvc2022_64
+            cache: false
+    
+        - name: Configure environment
+          shell: powershell
+          run: |
+            echo "CMAKE_PREFIX_PATH=$Env:Qt6_DIR" | Out-File -FilePath $Env:GITHUB_ENV -Append
+            cmake --version
+            ninja --version
+            & "$Env:Qt6_DIR\bin\qmake.exe" -v
+    
+        - name: Configure
+          shell: powershell
+          run: |
+            if (Test-Path build) { Remove-Item -Recurse -Force build }
+            cmake --preset=msvc-debug
+    
+        - name: Build
+          shell: powershell
+          run: cmake --build --preset=msvc-debug --parallel
+    
+        - name: Test
+          shell: powershell
+          run: ctest --preset=msvc-debug --output-on-failure
