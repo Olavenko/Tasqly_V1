@@ -42,10 +42,15 @@ jobs:
       - name: Install build deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build ccache ${{ matrix.compiler }} ${{ matrix.compiler }}++
+          sudo apt-get install -y build-essential ninja-build clang python3-pip
           cmake --version
           ninja --version
-          ccache --version
+
+      - name: (Diag) Query available Qt 6.9.2
+        run: |
+          python3 -m pip install --upgrade aqtinstall
+          python3 -m aqt list-qt linux desktop 6.9.2 || true
+          python3 -m aqt list-qt linux desktop --modules 6.9.2 gcc_64 || true
 
       - name: Setup Qt 6.9.2
         uses: jurplel/install-qt-action@v3
@@ -53,6 +58,8 @@ jobs:
           version: 6.9.2
           host: linux
           target: desktop
+          # cache intentionally disabled to avoid cache warnings
+          cache: false
 
       - name: Configure environment
         run: |

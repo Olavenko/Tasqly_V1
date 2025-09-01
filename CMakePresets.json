@@ -1,6 +1,10 @@
 {
   "version": 3,
-  "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25,
+    "patch": 0
+  },
 
   "configurePresets": [
     {
@@ -9,61 +13,105 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_STANDARD": "20",
         "CMAKE_CXX_STANDARD_REQUIRED": "ON",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
     },
     {
       "name": "default-release",
       "inherits": "default-debug",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
     },
+
+	{
+	   "name": "mingw-debug",
+	   "inherits": "default-debug",
+	   "generator": "Ninja",
+	   "binaryDir": "${sourceDir}/build/${presetName}",
+	   "toolchainFile": "${sourceDir}/cmake/toolchains/mingw.cmake",
+	   "cacheVariables": {
+		 "CMAKE_BUILD_TYPE": "Debug",
+		 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+		 "CMAKE_PREFIX_PATH": "$env{QT_PREFIX}"
+		},
+	   "environment": {
+		 "PATH": "C:/msys64/mingw64/bin;$penv{PATH}"
+		}
+	},
+	{
+	   "name": "mingw-release",
+	   "inherits": "default-release",
+	   "generator": "Ninja",
+	   "binaryDir": "${sourceDir}/build/${presetName}",
+	   "toolchainFile": "${sourceDir}/cmake/toolchains/mingw.cmake",
+	   "cacheVariables": {
+		 "CMAKE_BUILD_TYPE": "Release",
+		 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+		 "CMAKE_PREFIX_PATH": "$env{QT_PREFIX}"
+	   },
+	   "environment": {
+		 "PATH": "C:/msys64/mingw64/bin;$penv{PATH}"
+	}
+	},
+	{
+	   "name": "msvc-debug",
+	   "inherits": "default-debug",
+	   "generator": "Ninja",
+	   "binaryDir": "${sourceDir}/build/${presetName}",
+	   "cacheVariables": {
+	     "CMAKE_BUILD_TYPE": "Debug",
+	     "CMAKE_CXX_STANDARD": "20",
+	     "CMAKE_CXX_STANDARD_REQUIRED": "ON"
+	   }
+	},
+	{
+	   "name": "msvc-release",
+	   "inherits": "default-release",
+	   "generator": "Ninja",
+	   "binaryDir": "${sourceDir}/build/${presetName}",
+	   "cacheVariables": {
+	     "CMAKE_BUILD_TYPE": "Release",
+	     "CMAKE_CXX_STANDARD": "20",
+	     "CMAKE_CXX_STANDARD_REQUIRED": "ON"
+	   }
+	},
     {
-      "name": "default-relwithdebinfo",
+      "name": "gcc-debug",
       "inherits": "default-debug",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "RelWithDebInfo" }
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++"
+      }
     },
-
     {
-      "name": "mingw-base",
-      "hidden": true,
-      "toolchainFile": "${sourceDir}/cmake/toolchains/mingw.cmake",
-      "environment": { "PATH": "C:/msys64/mingw64/bin;$penv{PATH}" },
-      "cacheVariables": { "CMAKE_PREFIX_PATH": "$env{QT_PREFIX}" }
-    },
-    { "name": "mingw-debug", "inherits": [ "default-debug", "mingw-base" ] },
-    { "name": "mingw-release", "inherits": [ "default-release", "mingw-base" ] },
-    { "name": "mingw-relwithdebinfo", "inherits": [ "default-relwithdebinfo", "mingw-base" ] },
-
-    { "name": "msvc-debug", "inherits": "default-debug" },
-    { "name": "msvc-release", "inherits": "default-release" },
-    { "name": "msvc-relwithdebinfo", "inherits": "default-relwithdebinfo" },
-
-    { "name": "gcc-debug", "inherits": "default-debug", "cacheVariables": { "CMAKE_C_COMPILER": "gcc", "CMAKE_CXX_COMPILER": "g++" } },
-    { "name": "clang-debug", "inherits": "default-debug", "cacheVariables": { "CMAKE_C_COMPILER": "clang", "CMAKE_CXX_COMPILER": "clang++" } }
+      "name": "clang-debug",
+      "inherits": "default-debug",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    }
   ],
 
   "buildPresets": [
-    { "name": "mingw-debug-build", "configurePreset": "mingw-debug" },
-    { "name": "mingw-release-build", "configurePreset": "mingw-release" },
-    { "name": "mingw-relwithdebinfo-build", "configurePreset": "mingw-relwithdebinfo" },
-    { "name": "msvc-debug-build", "configurePreset": "msvc-debug" },
-    { "name": "msvc-release-build", "configurePreset": "msvc-release" },
-    { "name": "msvc-relwithdebinfo-build", "configurePreset": "msvc-relwithdebinfo" },
-    { "name": "gcc-debug-build", "configurePreset": "gcc-debug" },
-    { "name": "clang-debug-build", "configurePreset": "clang-debug" }
+    { "name": "build-mingw-debug", "configurePreset": "mingw-debug" },
+    { "name": "build-mingw-release", "configurePreset": "mingw-release" },
+	{ "name": "build-msvc-debug",   "configurePreset": "msvc-debug" },
+    { "name": "build-msvc-release", "configurePreset": "msvc-release" },
+    { "name": "build-gcc-debug", "configurePreset": "gcc-debug" },
+    { "name": "build-clang-debug", "configurePreset": "clang-debug" }
   ],
 
   "testPresets": [
-    { "name": "mingw-debug-test", "configurePreset": "mingw-debug", "outputOnFailure": true },
-    { "name": "mingw-release-test", "configurePreset": "mingw-release", "outputOnFailure": true },
-    { "name": "mingw-relwithdebinfo-test", "configurePreset": "mingw-relwithdebinfo", "outputOnFailure": true },
-    { "name": "msvc-debug-test", "configurePreset": "msvc-debug", "outputOnFailure": true },
-    { "name": "msvc-release-test", "configurePreset": "msvc-release", "outputOnFailure": true },
-    { "name": "msvc-relwithdebinfo-test", "configurePreset": "msvc-relwithdebinfo", "outputOnFailure": true },
-    { "name": "gcc-debug-test", "configurePreset": "gcc-debug", "outputOnFailure": true },
-    { "name": "clang-debug-test", "configurePreset": "clang-debug", "outputOnFailure": true }
+    { "name": "test-mingw-debug", "configurePreset": "mingw-debug" },
+    { "name": "test-mingw-release", "configurePreset": "mingw-release" },
+	{ "name": "test-msvc-debug",   "configurePreset": "msvc-debug" },
+    { "name": "test-msvc-release", "configurePreset": "msvc-release" },
+    { "name": "test-gcc-debug", "configurePreset": "gcc-debug" },
+    { "name": "test-clang-debug", "configurePreset": "clang-debug" }
   ]
 }
