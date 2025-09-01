@@ -14,7 +14,7 @@ This document explains how to build locally and how CI is configured.
 - Qt 6.9.3 (auto-installed in CI, install manually if local)
 
 ### Windows
-- [MSYS2](https://www.msys2.org/) with MinGW64 (for cross-platform baseline)
+- [MSYS2](https://www.msys2.org/) with MinGW64 (baseline, cross-platform)
 - Visual Studio 2019/2022 (for optional MSVC-only branch)
 - CMake >= 3.25
 - Ninja (for MinGW builds)
@@ -38,127 +38,82 @@ Tasqly_V1/
 
 ### Linux (GCC / Clang)
 ```bash
-# From project root
 rm -rf build
 cmake --preset=gcc-debug    # or clang-debug
 cmake --build --preset=build-gcc-debug
 ctest --preset=test-gcc-debug --output-on-failure
 ```
 
-### Windows (MSYS2 MinGW64 shell, Cross-Platform Baseline)
+### Windows (MSYS2 MinGW64 shell)
 ```bash
-# From project root
-rmdir /S /Q build
+# Use MSYS2 MinGW64 shell ONLY (not PowerShell/cmd)
+export PATH="/mingw64/bin:$PATH"
+export QT_PREFIX="/mingw64"   # Or point to your official Qt install root
+
+rm -rf build
 cmake --preset=mingw-debug
 cmake --build --preset=build-mingw-debug
 ctest --preset=test-mingw-debug --output-on-failure
 ```
-> **Note:** Ensure you are inside the **MSYS2 MinGW64 shell**, not PowerShell.
 
-### Windows (Optional: MSVC + Qt-MSVC, Windows-only Branch)
+### Windows (MSVC, optional)
 ```powershell
-# From project root (Visual Studio Developer Command Prompt or PowerShell)
+# Run from Visual Studio Developer Command Prompt or PowerShell
 rmdir /S /Q build
 cmake --preset=msvc-debug
 cmake --build --preset=msvc-debug
 ctest --preset=msvc-debug
 ```
-> **Note:** MSVC builds must be run from Visual Studio Developer Command Prompt or PowerShell, not MSYS2.
-
----
-
-## 🧰 Toolchain (MinGW)
-
-File: `cmake/toolchains/mingw.cmake`
-
-```cmake
-# Compilers (use from PATH)
-set(CMAKE_C_COMPILER gcc CACHE STRING "C compiler" FORCE)
-set(CMAKE_CXX_COMPILER g++ CACHE STRING "C++ compiler" FORCE)
-
-# System Root
-set(CMAKE_SYSTEM_NAME Windows)
-set(CMAKE_SYSTEM_PROCESSOR x86_64)
-
-# Build Options
-set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "Disable compiler-specific extensions" FORCE)
-```
-
-This ensures:
-- CMake uses `gcc` and `g++` from PATH (avoids conflicts with FPC or MSVC).
-- Consistent build setup for CI and local environments.
 
 ---
 
 ## 🤖 Continuous Integration (CI)
 
-File: `.github/workflows/ci.yml`
-
 - **Linux (GCC + Clang)**:
-  - Installs Qt using `jurplel/install-qt-action@v3`
+  - Installs Qt via `jurplel/install-qt-action@v3`
   - Runs `cmake --preset=gcc-debug` / `clang-debug`
 - **Windows (MinGW)**:
-  - Sets up MSYS2 + MinGW64
+  - Uses MSYS2 MinGW64 toolchain
   - Installs Qt (6.9.3, win64_mingw)
-  - Runs `cmake --preset=mingw-debug` from **MSYS2 shell**
+  - Runs `cmake --preset=mingw-debug`
 - **Windows (MSVC)**:
-  - Installs Visual Studio Build Tools (2019/2022)
+  - Uses Visual Studio Build Tools (2019/2022)
   - Installs Qt (6.9.3, msvc2019_64 or msvc2022_64)
-  - Runs `cmake --preset=msvc-debug` from **Developer Command Prompt**
+  - Runs `cmake --preset=msvc-debug`
 
-### Debug Info in CI
 Both Linux & Windows CI print:
 - `Qt6_DIR`
 - `CMAKE_PREFIX_PATH`
 - `qmake --version`
-
-This helps troubleshoot if Qt is not found.
 
 ---
 
 ## 🛠️ Troubleshooting
 
 ### 1. Wrong compiler detected (e.g., FPC `gcc.exe`)
-**Symptom:**
-```
-C:/FPC/.../bin/i386-win32/gcc.exe: cannot exec `cc1`: No such file or directory
-```
-**Fix:**  
-Make sure `C:/msys64/mingw64/bin` comes **first** in your PATH.  
-Run:
+Ensure MSYS2 MinGW64 comes first in your PATH:
 ```bash
 where gcc
 where g++
 ```
-and confirm they point to MSYS2 MinGW.
-
----
+They must point to `C:/msys64/mingw64/bin`.
 
 ### 2. CMake cannot find Qt6
-**Symptom:**
-```
-Could not find a package configuration file provided by "Qt6"
-```
-**Fix:**  
-- On Linux: install Qt with `install-qt-action` or set `CMAKE_PREFIX_PATH` to your Qt install.  
-- On Windows MinGW: ensure `C:/Qt/6.9.3/mingw_64/bin` is in PATH.  
-- On Windows MSVC: ensure `C:/Qt/6.9.3/msvc2019_64/bin` (or `msvc2022_64/bin`) is in PATH.
+- Linux: set `CMAKE_PREFIX_PATH` or install Qt.
+- Windows MinGW: ensure `C:/Qt/6.9.3/mingw_64/bin` (or `/mingw64/bin`) is in PATH.
+- Windows MSVC: ensure `msvc2019_64/bin` or `msvc2022_64/bin` is in PATH.
 
----
-
-### 3. Using the wrong shell on Windows
-**Symptom:** Build fails with "compiler not found".  
-**Fix:**  
-- For MinGW builds: Always use **MSYS2 MinGW64 shell**, not PowerShell or cmd.exe.  
-- For MSVC builds: Always use **Visual Studio Developer Command Prompt** or PowerShell, not MSYS2.
+### 3. Wrong shell on Windows
+- MinGW builds → **MSYS2 MinGW64 shell**
+- MSVC builds → **Developer Command Prompt** or PowerShell
 
 ---
 
 ## ✅ Summary
 
 - Use **presets** → `cmake --preset=...`
-- **Windows (MinGW)** builds must run inside **MSYS2 MinGW64 shell**
-- **Windows (MSVC)** builds must run inside **Visual Studio Developer Command Prompt** or PowerShell
-- **Linux** builds work with GCC or Clang
-- CI covers both cross-platform baseline (MinGW + GCC/Clang) and optional Windows-only MSVC
+- Windows MinGW → build inside **MSYS2 MinGW64 shell**
+- Windows MSVC → build inside **Developer Command Prompt** or PowerShell
+- Linux → GCC or Clang
+- CI covers MinGW (baseline), GCC/Clang, and optional MSVC
 

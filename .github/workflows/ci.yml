@@ -1,103 +1,97 @@
-name: CI
+name: ci
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "**" ]
   pull_request:
-    branches: [ "main" ]
 
 jobs:
-  build-test:
+  linux:
+    name: Linux • ${{ matrix.compiler }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: ubuntu-latest
-            compiler: gcc
-          - os: ubuntu-latest
-            compiler: clang
-          - os: windows-latest
-            compiler: mingw
-
-    runs-on: ${{ matrix.os }}
-
+        compiler: [gcc, clang]
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    # ---------------------------------------------------------------
-    # Linux: Install Qt
-    # ---------------------------------------------------------------
-    - name: Install Qt (Linux)
-      if: matrix.os == 'ubuntu-latest'
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: '6.9.2'
-        host: linux
-        target: desktop
+      # Install Qt 6.9.3
+      - name: Setup Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: 6.9.3
+          host: linux
+          target: desktop
+          cache: true
 
-    - name: Debug Qt (Linux)
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        echo "Qt6_DIR=$Qt6_DIR"
-        echo "CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH"
-        which qmake || echo "qmake not found"
-        qmake --version || true
+      - name: Configure env
+        run: |
+          echo "CMAKE_PREFIX_PATH=${Qt6_DIR}" >> $GITHUB_ENV
+          echo "Compiler: ${{ matrix.compiler }}"
+          cmake --version
+          qmake --version || true
+          echo "Qt6_DIR=${Qt6_DIR}"
 
-    # ---------------------------------------------------------------
-    # Windows: Install Qt (with bundled MinGW only)
-    # ---------------------------------------------------------------
-    - name: Install Qt (Windows MinGW)
-      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: '6.9.2'
-        host: windows
-        target: desktop
-        arch: win64_mingw
-        tools: tools_mingw1310
+      - name: Configure
+        run: |
+          rm -rf build
+          if [ "${{ matrix.compiler }}" = "gcc" ]; then
+            cmake --preset=gcc-debug
+          else
+            cmake --preset=clang-debug
+          fi
 
-    - name: Add Qt MinGW to PATH
-      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
-      run: echo "${{ env.Qt6_DIR }}/../Tools/mingw1310_64/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Build
+        run: |
+          if [ "${{ matrix.compiler }}" = "gcc" ]; then
+            cmake --build --preset=build-gcc-debug --parallel
+          else
+            cmake --build --preset=build-clang-debug --parallel
+          fi
 
-    - name: Set QT_PATH env
-      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
-      run: echo "QT_PATH=$env:Qt6_DIR" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Test
+        run: |
+          if [ "${{ matrix.compiler }}" = "gcc" ]; then
+            ctest --preset=test-gcc-debug --output-on-failure
+          else
+            ctest --preset=test-clang-debug --output-on-failure
+          fi
 
-    - name: Verify MinGW compiler
-      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
-      run: |
-        where g++
-        g++ --version
+  windows-mingw:
+    name: Windows • MSYS2 MinGW64
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
 
-    - name: Debug Qt (Windows)
-      if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
-      run: |
-        echo "Qt6_DIR=$env:Qt6_DIR"
-        echo "QT_PATH=$env:QT_PATH"
-        qmake --version || exit 0
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            base-devel
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-qt6-base
+            mingw-w64-x86_64-qt6-declarative
+            mingw-w64-x86_64-qt6-shadertools
 
-    # ---------------------------------------------------------------
-    # Setup CMake
-    # ---------------------------------------------------------------
-    - name: Setup CMake
-      uses: lukka/get-cmake@latest
+      - name: Configure
+        shell: msys2 {0}
+        run: |
+          export PATH="/mingw64/bin:$PATH"
+          echo "QT_PREFIX=/mingw64" >> $GITHUB_ENV
+          echo "Using $(g++ --version | head -n1)"
+          echo "CMake: $(cmake --version | head -n1)"
+          qmake --version || true
+          rm -rf build
+          cmake --preset=mingw-debug
 
-    # ---------------------------------------------------------------
-    # Configure
-    # ---------------------------------------------------------------
-    - name: Configure
-      run: cmake --preset=${{ matrix.compiler }}-debug
+      - name: Build
+        shell: msys2 {0}
+        run: cmake --build --preset=build-mingw-debug --parallel
 
-    # ---------------------------------------------------------------
-    # Build
-    # ---------------------------------------------------------------
-    - name: Build
-      run: cmake --build --preset=build-${{ matrix.compiler }}-debug
-
-    # ---------------------------------------------------------------
-    # Run tests
-    # ---------------------------------------------------------------
-    - name: Run tests
-      run: ctest --preset=test-${{ matrix.compiler }}-debug --output-on-failure
+      - name: Test
+        shell: msys2 {0}
+        run: ctest --preset=test-mingw-debug --output-on-failure

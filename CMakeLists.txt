@@ -18,6 +18,11 @@ cmake_minimum_required(VERSION 3.21)
 # 🏷️ Project metadata
 project(Tasqly_V1 VERSION 0.1 LANGUAGES CXX)
 
+# 🧪 Diagnostics (build environment)
+message(STATUS "CMAKE_C_COMPILER   = ${CMAKE_C_COMPILER}")
+message(STATUS "CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}")
+message(STATUS "CMAKE_PREFIX_PATH  = ${CMAKE_PREFIX_PATH}")
+
 # ➕ Enforce C++20 as the project standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

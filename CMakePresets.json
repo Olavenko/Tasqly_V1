@@ -27,24 +27,36 @@
       }
     },
 
-    {
-      "name": "mingw-debug",
-      "inherits": "default-debug",
-      "cacheVariables": {
-        "CMAKE_C_COMPILER": "$env{QT_PATH}/../Tools/mingw1310_64/bin/gcc.exe",
-        "CMAKE_CXX_COMPILER": "$env{QT_PATH}/../Tools/mingw1310_64/bin/g++.exe",
-        "CMAKE_PREFIX_PATH": "$env{QT_PATH}"
-      }
-    },
-    {
-      "name": "mingw-release",
-      "inherits": "default-release",
-      "cacheVariables": {
-        "CMAKE_C_COMPILER": "$env{QT_PATH}/../Tools/mingw1310_64/bin/gcc.exe",
-        "CMAKE_CXX_COMPILER": "$env{QT_PATH}/../Tools/mingw1310_64/bin/g++.exe",
-        "CMAKE_PREFIX_PATH": "$env{QT_PATH}"
-      }
-    },
+	{
+	   "name": "mingw-debug",
+	   "inherits": "default-debug",
+	   "generator": "Ninja",
+	   "binaryDir": "${sourceDir}/build/${presetName}",
+	   "toolchainFile": "${sourceDir}/cmake/toolchains/mingw.cmake",
+	   "cacheVariables": {
+		 "CMAKE_BUILD_TYPE": "Debug",
+		 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+		 "CMAKE_PREFIX_PATH": "$env{QT_PREFIX}"
+		},
+	   "environment": {
+		 "PATH": "C:/msys64/mingw64/bin;$penv{PATH}"
+		}
+	},
+	{
+	   "name": "mingw-release",
+	   "inherits": "default-release",
+	   "generator": "Ninja",
+	   "binaryDir": "${sourceDir}/build/${presetName}",
+	   "toolchainFile": "${sourceDir}/cmake/toolchains/mingw.cmake",
+	   "cacheVariables": {
+		 "CMAKE_BUILD_TYPE": "Release",
+		 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+		 "CMAKE_PREFIX_PATH": "$env{QT_PREFIX}"
+	   },
+	   "environment": {
+		 "PATH": "C:/msys64/mingw64/bin;$penv{PATH}"
+	}
+	},
 
     {
       "name": "gcc-debug",
