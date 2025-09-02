@@ -1,0 +1,57 @@
+@startuml
+' 🧱 File: component.puml
+' ------------------------
+' 📌 Purpose : Component — QML facades → app interfaces → infra impls
+' 🧱 Layer : Docs (UML)
+' 👤 Author : Mohamed Ali
+' 🗓️ Created : 2025-09-02
+
+
+!include ../../config/style.puml
+
+
+title Component — QML facades → app interfaces → infra impls
+
+
+FA6_USER(user, User, rectangle, #00CE6A)
+
+
+package "UI (QML)" {
+FA6_DESKTOP(qmlView, "View Components\\n(QML)", rectangle, #FF6F5C)
+FA6_BELL(toastCmp, "Toast\\n(QML)", rectangle, #FF6F5C)
+FA6_TRIANGLE_EXCLAMATION(fallbackCmp, "SmartFallback\\n(QML)", rectangle, #FF6F5C)
+}
+
+
+package "App Layer (C++)" {
+FA6_GEAR(errUC, "ErrorReporterUC\\n(C++)", rectangle, #FF6F5C)
+FA6_CODE(ilog, "ILogManager\\n(interface)", rectangle, #FF6F5C)
+FA6_BUG(appErrors, "AppErrors\\n(QML Singleton)", rectangle, #FF6F5C)
+}
+
+
+package "Infra Layer (C++)" {
+FA6_CODE(logMgr, "LogManager\\n(C++)", rectangle, #FF6F5C)
+}
+
+
+' Relations (fixed)
+user --> qmlView : uses
+qmlView --> errUC : reportError(Error)
+errUC --> ilog : log(level,msg,context)
+
+
+' implementation relation (LogManager implements ILogManager)
+logMgr ..|> ilog : implements
+
+
+' notifications & fallback
+errUC --> toastCmp : show(severity,msg)
+errUC --> fallbackCmp : show() on critical
+
+
+' QML reads standardized errors
+qmlView ..> appErrors : read registry
+
+
+@enduml
