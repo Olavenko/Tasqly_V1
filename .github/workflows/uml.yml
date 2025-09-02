@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          lfs: true  # احتياطيًا لو هتستخدم LFS لملفات كبيرة مستقبلاً
 
       # Setup Java for PlantUML
       - name: Setup Java
@@ -26,20 +28,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # Install PlantUML & Graphviz
-      - name: Install PlantUML & Graphviz
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y graphviz
-          curl -L -o plantuml.jar https://github.com/plantuml/plantuml/releases/download/v1.2025.1/plantuml-1.2025.1.jar
-
-      # Run UML export script (standardized)
+      # Run UML export script (script will ensure/download plantuml.jar)
       - name: Run UML export script
+        shell: bash
         run: bash docs/uml/uml-export.sh
 
-      # Upload UML diagrams as CI artifact
+      # Upload UML diagrams as CI artifact (SVGs + index.html)
       - name: Upload UML diagrams
         uses: actions/upload-artifact@v4
         with:
           name: UML-Diagrams
-          path: docs/uml/exports/
+          path: |
+            docs/uml/exports/index.html
+            docs/uml/**/exports/*.svg
