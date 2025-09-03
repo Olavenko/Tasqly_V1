@@ -163,26 +163,13 @@ void LogManager::log(Level level,
     }
   }
 
-  // File logging 
-  bool fileEnabled = false;
-  QString path;
+  // File logging (use shared m_file with mutex for consistency)
   {
     QMutexLocker lock(&m_mutex);
-    fileEnabled = m_fileEnabled;
-    path = m_logFilePath;
-  }
-
-  if (fileEnabled) {
-    QFile file(path);
-    if (file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
-      QByteArray data = line.toUtf8();
-      data.append('\n');
-      file.write(data);
-      file.flush();
-      file.close();
-    } else {
-      QMutexLocker lock(&m_mutex);
-      m_fileEnabled = false;
+    if (m_fileEnabled && m_file.isOpen()) {
+      if (!writeFile_locked(line)) {
+        m_fileEnabled = false;
+      }
     }
   }
 }
