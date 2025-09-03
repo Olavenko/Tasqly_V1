@@ -76,7 +76,7 @@ endfunction()
 # 🎨 Qt Quick Integration
 # ---------------------------------------------------------------
 # Locate Qt6 with required Quick module and initialize defaults
-find_package(Qt6 REQUIRED COMPONENTS Quick)
+find_package(Qt6 COMPONENTS Core Gui Qml Quick Concurrent Test REQUIRED)
 
 # Apply standard Qt project setup (requires Qt 6.9+)
 qt_standard_project_setup(REQUIRES 6.9)
@@ -95,6 +95,13 @@ qt_add_qml_module(appTasqly_V1
     VERSION 1.0
     QML_FILES
         Main.qml
+        SOURCES src/domain/core/Error.h
+        SOURCES src/domain/core/Result.h
+        SOURCES src/app/logging/ILogManager.h
+        SOURCES src/infra/logging/LogManager.cpp src/infra/logging/LogManager.h
+        SOURCES src/app/logging/ErrorReporter.cpp src/app/logging/ErrorReporter.h
+        SOURCES src/app/errors/AppErrors.cpp src/app/errors/AppErrors.h
+        QML_FILES src/ui/qml/components/SmartFallback.qml src/ui/qml/components/Toast.qml
 )
 
 # ---------------------------------------------------------------
@@ -132,14 +139,14 @@ install(TARGETS appTasqly_V1
 # ---------------------------------------------------------------
 # 🧪 GoogleTest Integration (TasqlyTests)
 # ---------------------------------------------------------------
-# 📌 Purpose : Add Google Test framework via FetchContent
+# 📌 Purpose : Integrate GoogleTest and define the Tasqly test target
 # 🧱 Layer   : Build System (Testing Infrastructure)
 # 👤 Author  : Mohamed Ali
-# 🗓️ Updated : 2025-09-01
+# 🗓️ Updated : 2025-09-03
 #
 # 🧠 Description:
-# Downloads and configures GoogleTest for unit testing.
-# Adds a dedicated target `TasqlyTests` for unit tests.
+# Downloads and configures GoogleTest for unit/integration tests.
+# Defines a dedicated target `TasqlyTests` and wires Qt + project sources.
 # ---------------------------------------------------------------
 
 include(CTest)
@@ -160,19 +167,69 @@ set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 # Make GoogleTest available
 FetchContent_MakeAvailable(googletest)
 
-# Define test target
+# Ensure required Qt components are available for the tests
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick)
+
+# Define test target and list test sources
 add_executable(TasqlyTests
     tests/test_result.cpp
+    tests/integration/logging/test_qml_error_to_toast_and_log.cpp
+    tests/unit/logging/test_log_level_parsing.cpp
+    tests/unit/logging/test_masking.cpp
+    tests/unit/logging/test_rotation_policy.cpp
+    tests/unit/logging/test_concurrency.cpp
 )
 
+# Bring in implementation files needed by tests (to resolve symbols)
+target_sources(TasqlyTests PRIVATE
+    src/infra/logging/LogManager.cpp
+    src/app/logging/ErrorReporter.cpp
+    # Header-only with Q_GADGET (needs AUTOMOC)
+    src/domain/core/Error.h
+)
+
+# Make sure AUTOMOC processes Error.h (Q_GADGET → staticMetaObject)
+set_source_files_properties(src/domain/core/Error.h PROPERTIES SKIP_AUTOMOC OFF)
+
+# Allow tests to include from the project source tree
+target_include_directories(TasqlyTests PRIVATE
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/src
+)
+
+# Enable AUTOMOC for signals/slots and Q_GADGET meta-objects
+set_target_properties(TasqlyTests PROPERTIES AUTOMOC ON)
+
+# Provide project root path to tests (used for QML imports, etc.)
+target_compile_definitions(TasqlyTests PRIVATE PROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+
+# Link GoogleTest and Qt libraries required by the tests
 target_link_libraries(TasqlyTests
     PRIVATE
         GTest::gtest_main
+        Qt6::Core
+        Qt6::Gui
+        Qt6::Qml
+        Qt6::Quick
+        Qt6::Concurrent
+		Qt6::Test
 )
 
-# Apply our warnings/sanitizers to tests too (but not to gtest itself)
-tasqly_apply_warnings(TasqlyTests)
-tasqly_apply_debug_sanitizers(TasqlyTests)
+# Apply our compiler warnings/sanitizers to tests as well (if helpers exist)
+if (COMMAND tasqly_apply_warnings)
+    tasqly_apply_warnings(TasqlyTests)
+endif()
+if (COMMAND tasqly_apply_debug_sanitizers)
+    tasqly_apply_debug_sanitizers(TasqlyTests)
+endif()
 
+# ---- GoogleTest discovery (no timeouts at all)
 include(GoogleTest)
-gtest_discover_tests(TasqlyTests)
+gtest_discover_tests(TasqlyTests
+    TEST_PREFIX TasqlyTests.
+    WORKING_DIRECTORY $<TARGET_FILE_DIR:TasqlyTests>
+    DISCOVERY_MODE PRE_TEST
+    # No DISCOVERY_TIMEOUT and no PROPERTIES TIMEOUT → unlimited
+    PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QSG_RHI_BACKEND=software"
+)
