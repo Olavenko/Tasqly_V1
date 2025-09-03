@@ -1,4 +1,4 @@
-# ADR 0007 — Docker Dev Container — Development Environment Baseline (Phase 1)
+# ADR 0007: Docker Dev Container — Development Environment Baseline (Phase 1)
 
 - **Status**: Planned
 - **Date**: 2025-09-01

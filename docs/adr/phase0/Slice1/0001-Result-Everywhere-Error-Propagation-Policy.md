@@ -1,4 +1,4 @@
-# 0001-Result-Everywhere-Error-Propagation-Policy
+# ADR 0001: Result-Everywhere-Error-Propagation-Policy
 
 ## Status
 

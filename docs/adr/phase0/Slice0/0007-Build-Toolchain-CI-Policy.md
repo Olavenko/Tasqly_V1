@@ -1,4 +1,4 @@
-# 0007 — Build Toolchain CI Policy
+# ADR 0007: Build Toolchain CI Policy
 
 ## Context
 Tasqly requires a consistent cross-platform build system to ensure reproducibility between developer machines and CI runners.  
