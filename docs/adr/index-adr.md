@@ -21,9 +21,11 @@ Each ADR documents a significant architectural or tooling decision.
 
 ### phase0/Slice1
 
-| ID   | Title                                                | Status | Last Modified | File                                                                                                                   |
-|------|------------------------------------------------------|--------|---------------|------------------------------------------------------------------------------------------------------------------------|
-| 0001 | ADR 0001: Result-Everywhere-Error-Propagation-Policy | Draft  | 2025-09-03    | [0001-Result-Everywhere-Error-Propagation-Policy.md](phase0/Slice1/0001-Result-Everywhere-Error-Propagation-Policy.md) |
+| ID   | Title                                                    | Status   | Last Modified | File                                                                                                                   |
+|------|----------------------------------------------------------|----------|---------------|------------------------------------------------------------------------------------------------------------------------|
+| 0001 | ADR 0001: Result-Everywhere-Error-Propagation-Policy     | Draft    | 2025-09-03    | [0001-Result-Everywhere-Error-Propagation-Policy.md](phase0/Slice1/0001-Result-Everywhere-Error-Propagation-Policy.md) |
+| 0002 | ADR 0002 — Feature Flags Manager                         | Accepted | 2025-09-04    | [0002-Feature-Flags-Manager.md](phase0/Slice1/0002-Feature-Flags-Manager.md)                                           |
+| 0003 | ADR 0002 — FeatureFlagsManager (Runtime vs. CMake flags) | Accepted | 2025-09-04    | [0003-FeatureFlagsManager.md](phase0/Slice1/0003-FeatureFlagsManager.md)                                               |
 
 ---
 

@@ -15,6 +15,7 @@ Generates grouped Markdown tables per Slice with ID, Title, Status, Last Modifie
 
 from pathlib import Path
 from datetime import datetime
+import re
 
 ROOT = Path(__file__).resolve().parent.parent
 ADR_DIR = ROOT / "docs" / "adr"
@@ -31,7 +32,9 @@ def extract_title_and_status(file: Path):
                 if line.strip().startswith("# "):  # first heading = title
                     title = line.strip("# ").strip()
                 if "Status:" in line:
-                    status = line.split(":", 1)[1].strip()
+                    raw_status = line.split(":", 1)[1].strip()
+                    # 🧹 Remove markdown bold/italic markers like **Accepted**, *Planned*
+                    status = re.sub(r"[*_]+", "", raw_status).strip()
     except Exception:
         pass
     return title, status

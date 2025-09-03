@@ -12,6 +12,7 @@
  */
 
 #include "ErrorReporter.h"
+#include "src/app/settings/FeatureFlagsManager.h"
 
 using tasqly::domain::core::Error;
 
@@ -31,6 +32,13 @@ void ErrorReporter::report(const Error& err,
                            const QString& category,
                            const QVariantMap& extraCtx)
 {
+  // 🚫 Respect feature flag: skip logging if disabled
+  if (!FeatureFlagsManager::instance().isEnabled("features.logging")) {
+    // 🔔 Still notify UI (toast) even if logging is off
+    emit toastRequested(static_cast<int>(severity), err.message(), extraCtx);
+    return;
+  }
+
   // 🧳 Merge contexts (extra overrides existing keys)
   const QVariantMap ctx = merge(err.context(), extraCtx);
 

@@ -12,6 +12,7 @@
 // Rotation is now triggered manually via rotateNow() instead of auto inside log().
 
 #include "LogManager.h"
+#include "src/app/settings/FeatureFlagsManager.h"
 
 // Qt
 #include <QDateTime>
@@ -150,6 +151,11 @@ void LogManager::log(Level level,
                      const QString& message,
                      const QVariantMap& context)
 {
+  // 🚫 Respect feature flag: skip logging if disabled
+  if (!FeatureFlagsManager::instance().isEnabled("features.logging")) {
+    return;
+  }
+  
   if (!isEnabled(level))
     return;
 

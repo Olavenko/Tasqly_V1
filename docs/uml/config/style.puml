@@ -21,6 +21,7 @@
 ' ------------------------------------------------------------
 ' 📦 FontAwesome6 Sprites (Online includes from GitHub)
 ' ------------------------------------------------------------
+' ==== Base Icons ====
 !includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/common.puml
 !includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/desktop.puml
 !includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/flask.puml
@@ -34,8 +35,18 @@
 !includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/user.puml
 !includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/server.puml
 !includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/database.puml
+
+' ==== UI Layer Icons ====
 !includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/bell.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/circle_exclamation.puml
+
+' ==== Application Layer Icons ====
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/cubes.puml
 !includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/triangle_exclamation.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/sliders.puml
+
+' ==== Infrastructure Layer Icons ====
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/file.puml
 
 ' ------------------------------------------------------------
 ' 📦 C4-PlantUML DSL (Online includes)

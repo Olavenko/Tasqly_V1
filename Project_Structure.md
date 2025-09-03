@@ -1,6 +1,6 @@
 # 📂 Project Structure — Tasqly_V1 (Auto-generated Snapshot)
 
-Generated on **2025-09-03 23:49:57** using `scripts/gen_structure.py`.
+Generated on **2025-09-04 01:41:53** using `scripts/gen_structure.py`.
 
 ## 📑 Table of Contents
 1. [Root Layout](#root-layout)
@@ -33,7 +33,9 @@ Tasqly_V1/
 │   │   │   │   ├── 0007-Build-Toolchain-CI-Policy.md [Markdown Doc]
 │   │   │   │   └── 0008-docker-dev-container.md [Markdown Doc]
 │   │   │   └── Slice1/
-│   │   │       └── 0001-Result-Everywhere-Error-Propagation-Policy.md [Markdown Doc]
+│   │   │       ├── 0001-Result-Everywhere-Error-Propagation-Policy.md [Markdown Doc]
+│   │   │       ├── 0002-Feature-Flags-Manager.md [Markdown Doc]
+│   │   │       └── 0003-FeatureFlagsManager.md [Markdown Doc]
 │   │   └── index-adr.md [Markdown Doc]
 │   ├── uml/
 │   │   ├── config/
@@ -48,8 +50,11 @@ Tasqly_V1/
 │   │   │   └── s1/
 │   │   │       ├── exports/
 │   │   │       ├── component.puml [UML Diagram]
+│   │   │       ├── component_with_flags.puml [UML Diagram]
 │   │   │       ├── sequence.puml [UML Diagram]
-│   │   │       └── usecase.puml [UML Diagram]
+│   │   │       ├── sequence_with_flags.puml [UML Diagram]
+│   │   │       ├── usecase.puml [UML Diagram]
+│   │   │       └── usecase_with_flags.puml [UML Diagram]
 │   │   ├── tools/
 │   │   │   └── plantuml.jar
 │   │   ├── Diagrams-README.md [Markdown Doc]
@@ -63,10 +68,13 @@ Tasqly_V1/
 │   │   ├── errors/
 │   │   │   ├── AppErrors.cpp [C++ Source]
 │   │   │   └── AppErrors.h [C++ Header]
-│   │   └── logging/
-│   │       ├── ErrorReporter.cpp [C++ Source]
-│   │       ├── ErrorReporter.h [C++ Header]
-│   │       └── ILogManager.h [C++ Header]
+│   │   ├── logging/
+│   │   │   ├── ErrorReporter.cpp [C++ Source]
+│   │   │   ├── ErrorReporter.h [C++ Header]
+│   │   │   └── ILogManager.h [C++ Header]
+│   │   └── settings/
+│   │       ├── FeatureFlagsManager.cpp [C++ Source]
+│   │       └── FeatureFlagsManager.h [C++ Header]
 │   ├── domain/
 │   │   └── core/
 │   │       ├── Error.h [C++ Header]
@@ -83,6 +91,8 @@ Tasqly_V1/
 ├── tests/
 │   ├── integration/
 │   │   └── logging/
+│   │       ├── test_error_reporter_feature_flag.cpp [C++ Source]
+│   │       ├── test_feature_flag_logging.cpp [C++ Source]
 │   │       └── test_qml_error_to_toast_and_log.cpp [C++ Source]
 │   ├── unit/
 │   │   └── logging/
@@ -101,13 +111,14 @@ Tasqly_V1/
 ├── main.cpp [C++ Source]
 ├── Main.qml [Root QML UI]
 ├── MyAllmanClassic.xml
+├── Project_Structure.md [Markdown Doc]
 ├── Subsystems.md [Markdown Doc]
 └── Subsystems_EN_Enhanced_ASCII.md [Markdown Doc]
 
-📊 Summary: 35 directories, 57 files
-- C++ Files: 16
+📊 Summary: 36 directories, 67 files
+- C++ Files: 20
 - QML Files: 3
-- Docs: 22
+- Docs: 28
 - Build/Config: 5
 - Other: 11
 

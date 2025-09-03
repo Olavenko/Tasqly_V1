@@ -102,6 +102,8 @@ qt_add_qml_module(appTasqly_V1
         SOURCES src/app/logging/ErrorReporter.cpp src/app/logging/ErrorReporter.h
         SOURCES src/app/errors/AppErrors.cpp src/app/errors/AppErrors.h
         QML_FILES src/ui/qml/components/SmartFallback.qml src/ui/qml/components/Toast.qml
+        SOURCES src/app/settings/FeatureFlagsManager.cpp src/app/settings/FeatureFlagsManager.h
+        SOURCES src/app/settings/FeatureFlagsManager.cpp src/app/settings/FeatureFlagsManager.h
 )
 
 # ---------------------------------------------------------------
@@ -178,12 +180,15 @@ add_executable(TasqlyTests
     tests/unit/logging/test_masking.cpp
     tests/unit/logging/test_rotation_policy.cpp
     tests/unit/logging/test_concurrency.cpp
+    tests/integration/logging/test_feature_flag_logging.cpp
+    tests/integration/logging/test_error_reporter_feature_flag.cpp
 )
 
 # Bring in implementation files needed by tests (to resolve symbols)
 target_sources(TasqlyTests PRIVATE
     src/infra/logging/LogManager.cpp
     src/app/logging/ErrorReporter.cpp
+	src/app/settings/FeatureFlagsManager.cpp
     # Header-only with Q_GADGET (needs AUTOMOC)
     src/domain/core/Error.h
 )

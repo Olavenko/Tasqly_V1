@@ -1,0 +1,48 @@
+'
+' 🧱 File: sequence_with_flags.puml
+' ------------------------------
+' 📌 Purpose   : Sequence Diagram — Slice 1 Logging & Error Backbone (with FeatureFlagsManager)
+' 🧱 Layer     : Documentation (PlantUML)
+' 👤 Author    : Mohamed Ali
+' 🗓️ Created   : 2025-09-04
+'
+' 🧠 Description:
+' Error reporting flow including FeatureFlagsManager check.
+' Use standard participants to force sequence parsing reliably.
+'
+
+@startuml
+!include ../../config/style.puml
+title Sequence — Slice 1 Report Error & Notify User (with FeatureFlagsManager)
+
+participant user      as "User"
+participant qml       as "QML View"
+participant reporter  as "ErrorReporter"
+participant flags     as "FeatureFlagsManager"
+participant logmgr    as "LogManager"
+participant toast     as "Toast"
+participant fallback  as "SmartFallback"
+
+user -> qml : Trigger error
+qml -> reporter : report(error, severity)
+
+reporter -> flags : isEnabled("features.logging")
+flags --> reporter : enabled?
+
+' Logging enabled path
+group Logging enabled
+  reporter -> logmgr : log(level, msg, ctx)
+  logmgr --> reporter : ack
+end
+
+' Logging disabled path
+group Logging disabled
+  note right of reporter
+    skip logging
+  end note
+end
+
+reporter -> toast : toastRequested
+reporter -> fallback : show placeholder (on failure)
+
+@enduml
