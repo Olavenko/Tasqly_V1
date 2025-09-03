@@ -1,6 +1,6 @@
 # 📂 Project Structure — Tasqly_V1 (Auto-generated Snapshot)
 
-Generated on **2025-09-04 01:41:53** using `scripts/gen_structure.py`.
+Generated on **2025-09-04 02:00:14** using `scripts/gen_structure.py`.
 
 ## 📑 Table of Contents
 1. [Root Layout](#root-layout)
