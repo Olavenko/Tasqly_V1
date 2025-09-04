@@ -180,6 +180,7 @@ add_executable(TasqlyTests
     tests/unit/logging/test_masking.cpp
     tests/unit/logging/test_rotation_policy.cpp
     tests/unit/logging/test_concurrency.cpp
+    tests/unit/logging/test_masking_concurrency.cpp
     tests/integration/logging/test_feature_flag_logging.cpp
     tests/integration/logging/test_error_reporter_feature_flag.cpp
 )

@@ -155,27 +155,21 @@ void LogManager::log(Level level,
   if (!FeatureFlagsManager::instance().isEnabled("features.logging")) {
     return;
   }
-  
-  if (!isEnabled(level))
+
+  QMutexLocker lock(&m_mutex);
+
+  if (static_cast<int>(level) < static_cast<int>(m_level) || m_level == Level::Off)
     return;
 
   const QString line = formatLine_locked(level, category, message, context);
 
-  // Console logging 
-  {
-    QMutexLocker lock(&m_mutex);
-    if (m_consoleEnabled) {
-      writeConsole_locked(level, line);
-    }
+  if (m_consoleEnabled) {
+    writeConsole_locked(level, line);
   }
 
-  // File logging (use shared m_file with mutex for consistency)
-  {
-    QMutexLocker lock(&m_mutex);
-    if (m_fileEnabled && m_file.isOpen()) {
-      if (!writeFile_locked(line)) {
-        m_fileEnabled = false;
-      }
+  if (m_fileEnabled && m_file.isOpen()) {
+    if (!writeFile_locked(line)) {
+      m_fileEnabled = false;
     }
   }
 }
