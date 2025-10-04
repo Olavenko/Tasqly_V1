@@ -1,0 +1,39 @@
+@startuml
+' 🧱 File: sequence_tasklist.puml
+' -------------------------------
+' 📌 Purpose : Sequence — "TaskListView → SmartPageLoader → ListTasksUC → ITaskRepository → Result"
+' 🧱 Layer   : Docs (UML)
+' 👤 Author  : Mohamed Ali
+' 🗓️ Created : 2025-09-07
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+' 🧑 Participants
+FA6_DESKTOP(VIEW, "TaskListView.qml", participant, #58A6FF)
+FA6_CUBES(LOADER, "SmartPageLoader", participant, #FFD700)
+FA6_LAYER_GROUP(UC, "ListTasksUC", participant, #39C5CF)
+FA6_CUBES(REPO, "InMemoryTaskRepository", participant, #A371F7)
+FA6_DATABASE(DB, "InMemory Store", participant, #E5C55F)
+FA6_BELL(FALLBACK, "SmartFallback", participant, #FFA500)
+FA6_COMMENT(NOTIFIER, "Notifier/Toast", participant, #FF5733)
+
+' 🔗 Flow
+VIEW -> LOADER : request pageState=Loading
+LOADER -> UC : ListTasks(limit, offset)
+UC -> REPO : list(limit, offset) [future]
+REPO -> DB : query + mutex-protected access
+DB --> REPO : Result<[Task]>
+REPO --> UC : Result<[Task]>
+UC --> LOADER : return Result
+
+alt success (tasks found)
+    LOADER -> VIEW : display ListView with Tasks
+else empty
+    LOADER -> VIEW : display "No tasks available"
+else error
+    LOADER -> FALLBACK : show(errorMessage)
+    FALLBACK -> NOTIFIER : notify("❌ error")
+end
+
+@enduml

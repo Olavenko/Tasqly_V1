@@ -1,0 +1,57 @@
+'
+' 🧱 File: usecase_with_flags.puml
+' ------------------------------
+' 📌 Purpose   : Use Case — Slice 1 Report Error & Notify User (with FeatureFlagsManager)
+' 🧱 Layer     : Documentation (PlantUML)
+' 👤 Author    : Mohamed Ali
+' 🗓️ Created   : 2025-09-04
+'
+' 🧠 Description:
+' Use case diagram showing how QML user flow reports an error, checks the feature flag,
+' writes a log when enabled, always notifies via Toast, and may show a fallback on failure.
+'
+
+@startuml
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+title Use Case — Slice 1 Report Error & Notify User (with Feature Flags)
+
+' ==== Actors / Systems (FA6 Macros) ====
+FA6_USER(user, "User", rectangle, #00EB09)
+FA6_DESKTOP(qml, "QML View", rectangle, #2AA1D1)
+FA6_TRIANGLE_EXCLAMATION(reporter, "ErrorReporter", rectangle, #03A9F4)
+FA6_SLIDERS(flags, "FeatureFlagsManager", rectangle, #607D8B)
+FA6_FILE(logmgr, "LogManager", rectangle, #FF9800)
+FA6_BELL(toast, "Toast.qml", rectangle, #E5C55F)
+FA6_CIRCLE_EXCLAMATION(fallback, "SmartFallback.qml", rectangle, #E5C55F)
+
+' ==== Use Cases ====
+rectangle "Report Error & Notify User" {
+  usecase UC_Report as "Report Error"
+  usecase UC_Check  as "Check features.logging"
+  usecase UC_Log    as "Write Log"
+  usecase UC_Toast  as "Notify via Toast"
+  usecase UC_Fb     as "Show Fallback"
+}
+
+' ==== Relationships ====
+user --> UC_Report
+qml  --> UC_Report
+
+' Reporter orchestrates
+reporter --> UC_Report
+
+' Includes (always executed)
+UC_Report --> UC_Check : <<include>>
+UC_Report --> UC_Toast : <<include>>
+
+' Conditional / exceptional flows
+UC_Report ..> UC_Log : <<extend>> [flag enabled]
+UC_Report ..> UC_Fb  : <<extend>> [on failure]
+
+' System responsibilities
+flags  --> UC_Check
+logmgr --> UC_Log
+toast  --> UC_Toast
+fallback --> UC_Fb
+@enduml

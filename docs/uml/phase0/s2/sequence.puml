@@ -1,0 +1,56 @@
+@startuml
+' 🧱 File: sequence.puml
+' ----------------------
+' 📌 Purpose : Sequence — "Switch Theme & Persist"
+' 🧱 Layer   : Docs (UML)
+' 👤 Author  : Mohamed Ali
+' 🗓️ Created : 2025-09-04
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+title Sequence — QML Toggle → SwitchThemeUC → ThemeManager → SettingsManager → INI File
+
+' 🧑 Participants
+FA6_USER(USER, "User", participant, #3FB950)
+FA6_DESKTOP(QML, "QML View", participant, #58A6FF)
+FA6_TOGGLE_ON(TOGGLE, "Theme Switch (UI)", participant, #A371F7)
+FA6_CUBES(UC, "SwitchThemeUC", participant, #A371F7)
+FA6_GEAR(THEME, "ThemeManager", participant, #A371F7)
+FA6_PALETTE(PALETTE, "Palette Tokens", participant, #FFD700)
+FA6_SLIDERS(SETTINGS, "SettingsManager", participant, #39C5CF)
+FA6_FILE_CIRCLE_CHECK(INI, "INI File", participant, #39C5CF)
+FA6_BELL(NOTIFY, "Notifier (Toast)", participant, #FFA500)
+
+' 🔗 Flow
+USER -> QML : click toggle
+QML -> TOGGLE : trigger()
+TOGGLE -> UC : invoke SwitchThemeUC()
+
+activate UC
+UC -> THEME : switch(mode)
+activate THEME
+THEME -> PALETTE : apply tokens
+PALETTE --> THEME : applied
+THEME --> UC : success
+deactivate THEME
+
+UC -> SETTINGS : savePreference(mode)
+activate SETTINGS
+SETTINGS -> INI : write file
+INI --> SETTINGS : ok
+deactivate SETTINGS
+
+UC --> QML : update UI (runtime theme)
+deactivate UC
+
+
+' 🛑 Error branch
+... Persistence Failure ...
+UC -> SETTINGS : savePreference(mode)
+SETTINGS -> INI : write file
+INI --> SETTINGS : error(IO)
+SETTINGS -> NOTIFY : show("❌ Failed to save")
+NOTIFY --> SETTINGS : displayed
+
+@enduml

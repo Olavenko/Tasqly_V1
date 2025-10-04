@@ -1,0 +1,29 @@
+@startuml
+' 🧱 File: usecase.puml
+' ---------------------
+' 📌 Purpose   : Use Case diagram — "Run first test & CI build"
+' 🧱 Layer     : Docs (UML)
+' 👤 Author    : Mohamed Ali
+' 🗓️ Created   : 2025-08-28
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+' 🧑 Actors
+FA6_USER(dev, Developer, rectangle, #00EB09)
+FA6_CLOUD(ci, CI_System, rectangle, #00BFFF)
+
+rectangle "Tasqly Project Initialization" {
+  usecase UC1 as "Commit Code"
+  usecase UC2 as "Trigger CI Pipeline"
+  usecase UC3 as "Build & Run Tests"
+  usecase UC4 as "Report Status"
+}
+
+' Relations
+dev --> UC1
+UC1 --> UC2
+ci --> UC3
+UC3 --> UC4
+UC4 --> dev
+@enduml

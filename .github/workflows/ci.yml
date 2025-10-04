@@ -1,0 +1,295 @@
+#
+# 🧱 File: .github/workflows/ci.yml
+# ---------------------------------
+# 📌 Purpose   : Unified CI pipeline for Tasqly (Windows MSVC + MinGW + Linux)
+# 🧱 Layer     : CI/CD (GitHub Actions)
+# 👤 Author    : Tasqly AI Assistant
+# 🗓️ Updated   : 2025-09-30
+#
+# 🧠 Description:
+# - Order of execution: format-check → MSVC → MinGW → Linux.
+# - MSVC: Debug build for tests + coverage, Release build for benchmarks.
+# - MinGW: Debug build + run tests.
+# - Linux (GCC + Clang): Debug build + run tests.
+# - Reports (coverage + benchmarks) are generated on MSVC and uploaded as artifacts.
+#
+
+name: ci
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ------------------------------------------------------------
+  # 📝 Lint — clang-format
+  # ------------------------------------------------------------
+  format-check:
+    name: Lint • Clang-Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install clang-format-20
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget lsb-release gnupg
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 20
+          sudo apt-get install -y clang-format-20
+      - name: Check formatting
+        shell: bash
+        run: ./scripts/check-format.sh
+
+  # ------------------------------------------------------------
+  # 🔒 Security — git-secrets
+  # ------------------------------------------------------------
+  secrets-scan:
+    name: Security • Git-Secrets Scan
+    runs-on: ubuntu-latest
+    needs: format-check
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install git-secrets
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git
+          git clone https://github.com/awslabs/git-secrets.git
+          cd git-secrets && sudo make install
+      - name: Run secrets scan
+        run: git secrets --scan
+
+  # ------------------------------------------------------------
+  # 🪟 Windows — MSVC 2022 (coverage + benchmarks)
+  # ------------------------------------------------------------
+  windows-msvc:
+    name: Windows • MSVC 2022 • Build + Test + Reports
+    runs-on: windows-2022
+    needs: secrets-scan
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSVC Dev Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Ensure Ninja
+        shell: powershell
+        run: |
+          if (-not (Get-Command ninja -ErrorAction SilentlyContinue)) {
+            choco install ninja --no-progress -y
+          }
+          ninja --version
+
+      - name: Setup Qt 6.9.2 (MSVC)
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: 6.9.2
+          host: windows
+          target: desktop
+          arch: win64_msvc2022_64
+          cache: false
+
+      - name: Setup Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install OpenCppCoverage
+        #if: false # 🚫 disabled temporarily
+        shell: powershell
+        run: |
+          choco install opencppcoverage --no-progress -y
+          $exePath = (Get-Command OpenCppCoverage.exe -ErrorAction SilentlyContinue).Source
+          if (-not $exePath) {
+            $searchDirs = @(
+              "C:\\ProgramData\\chocolatey\\bin",
+              "C:\\Program Files\\OpenCppCoverage"
+            )
+            $exePath = $searchDirs |
+              ForEach-Object { Get-ChildItem -Path $_ -Filter "OpenCppCoverage*.exe" -Recurse -ErrorAction SilentlyContinue } |
+              Select-Object -First 1 -ExpandProperty FullName
+          }
+          if (-not $exePath) {
+            throw "OpenCppCoverage executable not found after installation."
+          }
+          Write-Output "✅ OpenCppCoverage installed at: $exePath"
+          echo (Split-Path $exePath) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      # --- Coverage (Debug) ---
+      - name: Configure Debug (MSVC Coverage)
+        #if: false   # 🚫 disabled temporarily
+        shell: powershell
+        run: |
+          if (Test-Path build/msvc-tests-reports-debug) { Remove-Item -Recurse -Force build/msvc-tests-reports-debug }
+          cmake --preset=msvc-tests-reports-debug -DENABLE_COVERAGE=ON
+
+      - name: Build Debug (MSVC Coverage)
+        #if: false   # 🚫 disabled temporarily
+        shell: powershell
+        run: cmake --build --preset=build-msvc-tests-reports-debug --target coverage_tests --parallel
+
+      - name: Run Tests (MSVC Debug + Coverage)
+        #if: false   # 🚫 disabled temporarily
+        shell: powershell
+        run: ctest --test-dir build/msvc-tests-reports-debug --output-on-failure
+
+      - name: Install Python dependencies for coverage report
+        #if: false   # 🚫 disabled temporarily
+        shell: powershell
+        run: |
+          pip install --upgrade pip
+          pip install plotly pandas
+
+      - name: Generate Coverage Reports
+        #if: false   # 🚫 disabled temporarily
+        shell: powershell
+        run: |
+          python scripts/coverage_report_updated.py reports/coverage/tests/coverage.xml all --archive Phase0
+
+      # --- Benchmarks (Release) ---
+      - name: Configure Release (MSVC Benchmarks)
+        #if: false   # 🚫 disabled temporarily
+        shell: powershell
+        run: |
+          if (Test-Path build/msvc-benchmarks-release) { Remove-Item -Recurse -Force build/msvc-benchmarks-release }
+          cmake --preset=msvc-benchmarks-release
+
+      - name: Build Release (MSVC Benchmarks)
+        #if: false   # 🚫 disabled temporarily
+        shell: powershell
+        run: cmake --build --preset=build-msvc-benchmarks-release --parallel
+
+      - name: Run Benchmarks
+        #if: false   # 🚫 disabled temporarily
+        shell: powershell
+        env:
+          QT_QPA_PLATFORM: offscreen
+          QSG_RHI_BACKEND: software
+        run: |
+          python scripts/run_benchmarks.py --phase Phase0 --compiler msvc --timeout 1800
+
+      # --- Upload Coverage Reports ---
+      - name: Upload Test Coverage Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tests-Coverage-Report-MSVC
+          path: |
+            reports/tests/**/*.md
+            reports/tests/**/*.html
+            reports/tests/**/*.json
+
+      # --- Upload Benchmark Reports ---
+      - name: Upload Benchmark Performance Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmarks-Reports-MSVC
+          path: |
+            reports/benchmarks/**/*.md
+            reports/benchmarks/**/*.html
+            reports/benchmarks/**/*.json
+
+  # ------------------------------------------------------------
+  # 🪟 Windows — MinGW (Debug only)
+  # ------------------------------------------------------------
+  windows-mingw:
+    name: Windows • MinGW • Build + Test
+    runs-on: windows-latest
+    needs: windows-msvc
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            base-devel
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-qt6-base
+            mingw-w64-x86_64-qt6-declarative
+            mingw-w64-x86_64-qt6-shadertools
+            
+      - name: Configure Debug (MinGW)
+        shell: msys2 {0}
+        run: |
+          export PATH="/mingw64/bin:$PATH"
+          echo "QT_PREFIX=/mingw64" >> $GITHUB_ENV
+          rm -rf build/mingw-debug
+          cmake --preset=mingw-debug
+          
+      - name: Build Debug (MinGW)
+        shell: msys2 {0}
+        run: cmake --build --preset=build-mingw-debug --parallel
+        
+      - name: Run Tests (MinGW Debug)
+        shell: msys2 {0}
+        run: ctest --preset=test-mingw-debug --output-on-failure
+
+  # ------------------------------------------------------------
+  # 🐧 Linux (GCC + Clang, Debug only)
+  # ------------------------------------------------------------
+  linux:
+    name: Linux • ${{ matrix.compiler }} • Build + Test
+    runs-on: ubuntu-latest
+    needs: windows-mingw
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Install build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential ninja-build clang python3-pip
+          cmake --version
+          ninja --version
+          
+      - name: Setup Qt 6.9.2
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: 6.9.2
+          host: linux
+          target: desktop
+          cache: true
+          
+      - name: Configure Debug (${{ matrix.compiler }})
+        run: |
+          rm -rf build/${{ matrix.compiler }}-debug
+          if [ "${{ matrix.compiler }}" = "gcc" ]; then
+            cmake --preset=gcc-debug
+          else
+            cmake --preset=clang-debug
+          fi
+          
+      - name: Build Debug (${{ matrix.compiler }})
+        run: |
+          if [ "${{ matrix.compiler }}" = "gcc" ]; then
+            cmake --build --preset=build-gcc-debug --parallel
+          else
+            cmake --build --preset=build-clang-debug --parallel
+          fi
+          
+      - name: Run Tests (${{ matrix.compiler }} Debug)
+        run: |
+          if [ "${{ matrix.compiler }}" = "gcc" ]; then
+            ctest --preset=test-gcc-debug --output-on-failure
+          else
+            ctest --preset=test-clang-debug --output-on-failure
+          fi

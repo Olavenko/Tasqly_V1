@@ -1,0 +1,57 @@
+@startuml
+' 🧱 File: sequence.puml
+' ----------------------
+' 📌 Purpose : Sequence — QML(View) → ErrorReporterUC → LogManager → Notifier(Toast) → Fallback
+' 🧱 Layer : Docs (UML)
+' 👤 Author : Mohamed Ali
+' 🗓️ Created : 2025-09-02
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+
+title Sequence — QML(View) → ErrorReporterUC → LogManager → Notifier(Toast) → Fallback
+
+
+FA6_DESKTOP(QML, "QML View", participant, #FF6F5C)
+FA6_GEAR(UC, "ErrorReporterUC", participant, #FF6F5C)
+FA6_CODE(LOG, "LogManager", participant, #FF6F5C)
+FA6_BELL(TOAST, "Notifier (Toast)", participant, #FF6F5C)
+FA6_TRIANGLE_EXCLAMATION(FB, "SmartFallback", participant, #FF6F5C)
+
+
+QML -> UC : reportError(error: Error)
+activate UC
+UC -> UC : mapSeverity(error)
+UC -> LOG : log(level, message, context{masked})
+activate LOG
+LOG --> UC : ok
+deactivate LOG
+UC -> TOAST : show(severity, message)
+activate TOAST
+TOAST --> UC : displayed
+deactivate TOAST
+
+
+alt critical OR unknown
+UC -> FB : show()
+activate FB
+FB --> UC : visible
+deactivate FB
+else non-critical
+UC --> QML : handled
+end
+
+
+deactivate UC
+
+
+' Edge case: I/O failure while logging
+... I/O failure ...
+QML -> UC : reportError(error)
+UC -> LOG : log(...)
+LOG --> UC : err(FileIO)
+UC -> QML : fallback to console + toast
+
+
+@enduml

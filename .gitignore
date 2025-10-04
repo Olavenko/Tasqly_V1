@@ -1,0 +1,136 @@
+# ======================================================================
+# 🧱 Tasqly Project – .gitignore
+# ======================================================================
+# 📌 Purpose : Keep repository clean & professional
+# 📂 Scope   : Exclude build artifacts, IDE clutter, auto-generated files,
+#              UML exports, logs, coverage data, and other non-source files.
+# 🧱 Layer   : Infrastructure (Repo Hygiene)
+# 👤 Author  : Mohamed Ali
+# 🗓️ Created : 2025-08-27
+# 🗓️ Updated : 2025-09-13 (improved version)
+# ======================================================================
+
+# ----------------------------------------------------------------------
+# 🔨 CMake / Build System
+# ----------------------------------------------------------------------
+build*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+*.ninja
+.ninja_*
+CMakeLists.txt.user
+CMakePresets.json.user
+DartConfiguration.tcl
+
+# ----------------------------------------------------------------------
+# ⚙️ Binaries / Libraries
+# ----------------------------------------------------------------------
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+*.pdb
+
+# ----------------------------------------------------------------------
+# 🎨 Qt / QML Generated
+# ----------------------------------------------------------------------
+*.qrc.depends
+*.qmlc
+*.jsc
+*.moc
+*.autogen/
+*.rcc/
+*.qmake.*
+*.pro.user*
+*.qmlproject.user
+*.qmlproject.qtds
+
+# ----------------------------------------------------------------------
+# 🖥️ IDE / Editor Configurations
+# ----------------------------------------------------------------------
+*.user
+*.user.*
+*.swp
+*.swo
+*.sln
+*.vcxproj*
+.idea/
+.vscode/
+*.DS_Store
+Thumbs.db
+desktop.ini
+.clangd/
+
+# ----------------------------------------------------------------------
+# 🧪 Testing / Logs / Coverage
+# ----------------------------------------------------------------------
+*.log
+Testing/Temporary/
+test-results/
+coverage/
+*.gcda
+*.gcno
+*.gcov
+*.lcov
+*.profraw
+*.profdata
+
+# ----------------------------------------------------------------------
+# 🐍 Python (scripts/)
+# ----------------------------------------------------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# ----------------------------------------------------------------------
+# 📦 External / Vendored Libraries
+# ----------------------------------------------------------------------
+external/*
+!external/CMakeLists.txt   # keep control file
+
+# ----------------------------------------------------------------------
+# 📐 UML Tools & Exports
+# ----------------------------------------------------------------------
+docs/uml/libs/
+docs/uml/exports/
+docs/uml/**/*.svg
+docs/uml/**/*.png
+docs/uml/**/*.rar
+docs/uml/**/*.tmp
+docs/uml/**/*.bak
+
+# ----------------------------------------------------------------------
+# 📊 Reports (auto-generated snapshots / summaries)
+# ----------------------------------------------------------------------
+reports/**/*.json
+reports/**/*.md
+
+# ✅ Keep full benchmarks and tests reports
+!reports/benchmarks/**
+!reports/tests/**
+
+!reports/Template.md          # keep reusable template
+!reports/**/Phase*/**/*.md    # keep phase reports
+!reports/**/Release*.md       # keep release reports
+
+# ----------------------------------------------------------------------
+# 📊 Performance / Temp Logs
+# ----------------------------------------------------------------------
+performance/
+tests_tmp/
+
+# ----------------------------------------------------------------------
+# 📊 Reports (auto-generated performance dashboards)
+# ----------------------------------------------------------------------
+# ❌ don't ignore benchmarks folders anymore
+# reports/benchmarks/phase0_perf_benchmarks_reports/
+# reports/benchmarks/phase0_perf_reports/
+# reports/performance/
+

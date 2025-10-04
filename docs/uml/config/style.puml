@@ -1,0 +1,220 @@
+' ------------------------------------------------------------
+' 🎨 File: style.puml (Dark Theme — Corporate Palette v7, CI-Friendly)
+' ------------------------------------------------------------
+' 📌 Purpose   : Unified dark theme with accessible contrasts for large projects
+' 🧱 Layer     : Docs / UML Config
+' 👤 Author    : Mohamed Ali
+' 🗓️ Created   : 2025-09-01
+' 🗓️ Updated   : 2025-09-02
+'
+' 🧠 Palette (Corporate v7 — WCAG-friendly on dark):
+' - Background .............. #0D1117  (Base Dark — GitHub Dark-like)
+' - Foreground .............. #E6EDF3  (Near-White Text)
+' - Neutral Border .......... #30363D
+' - Primary (Flow/Links) .... #58A6FF  (Blue)
+' - Accent (Components) ..... #A371F7  (Purple)
+' - Accent (Infra/Packages) . #39C5CF  (Cyan)
+' - Success (Actors) ........ #3FB950  (Green)
+' - Warning (DB/Highlights) . #D29922  (Amber)
+' - Danger (Errors/Notes) ... #F85149  (Red)
+' ------------------------------------------------------------
+
+' ------------------------------------------------------------
+' 📦 FontAwesome6 Sprites (Online includes from GitHub)
+' ------------------------------------------------------------
+' ==================================================
+' ==== Base / General Icons ====
+' ==================================================
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/common.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/user.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/desktop.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/cloud.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/github.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/server.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/database.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/comment.puml
+
+' ==================================================
+' ==== Developer & Tooling (CI/CD, Debugging) ====
+' ==================================================
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/code.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/gear.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/wrench.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/bug.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/sitemap.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/flask.puml
+
+' ==================================================
+' ==== UI / Presentation Layer ====
+' ==================================================
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/bell.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/circle_exclamation.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/layer_group.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/key.puml
+
+' ==================================================
+' ==== Application Layer (Use Cases / Services) ====
+' ==================================================
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/cubes.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/triangle_exclamation.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/sliders.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/clock.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/rectangle_list.puml
+
+' ==================================================
+' ==== Infrastructure Layer (Persistence / Files) ====
+' ==================================================
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/file.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/file_circle_check.puml
+
+' ==================================================
+' ==== Theme & Palette (Slice 2 Specific) ====
+' ==================================================
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/brush.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/palette.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/toggle_on.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/toggle_off.puml
+
+' ------------------------------------------------------------
+' 📦 C4-PlantUML DSL (Online includes)
+' ------------------------------------------------------------
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Dynamic.puml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+
+
+' ------------------------------------------------------------
+' ⚙️ Theme Toggle (Dark Palette vs Fallback Defaults)
+' ------------------------------------------------------------
+!ifdef USE_CUSTOM_THEME
+
+' ===== Custom Dark Theme =====
+skinparam defaultFontName "Segoe UI, Arial, Helvetica"
+skinparam defaultFontSize 14
+skinparam defaultFontColor #E6EDF3
+skinparam backgroundColor  #0D1117
+
+skinparam ArrowColor       #58A6FF
+skinparam ArrowThickness   2
+skinparam ArrowFontColor   #E6EDF3
+skinparam ArrowFontSize    12
+
+skinparam rectangle {
+    BackgroundColor #0D1117
+    BorderColor     #58A6FF
+    FontColor       #E6EDF3
+    RoundCorner     8
+}
+
+skinparam component {
+    BackgroundColor #0D1117
+    BorderColor     #A371F7
+    FontColor       #E6EDF3
+}
+skinparam class {
+    BackgroundColor #0D1117
+    BorderColor     #A371F7
+    FontColor       #E6EDF3
+}
+skinparam package {
+    BackgroundColor #0D1117
+    BorderColor     #39C5CF
+    FontColor       #E6EDF3
+}
+skinparam actor {
+    Style           awesome
+    BackgroundColor #3FB950
+    BorderColor     #3FB950
+    FontColor       #0D1117
+}
+skinparam database {
+    BackgroundColor #0D1117
+    BorderColor     #D29922
+    FontColor       #E6EDF3
+}
+skinparam note {
+    BackgroundColor #161B22
+    BorderColor     #F85149
+    FontColor       #E6EDF3
+}
+skinparam activity {
+    BackgroundColor #0D1117
+    BorderColor     #39C5CF
+    FontColor       #E6EDF3
+}
+skinparam sequence {
+    ArrowColor                  #58A6FF
+    LifeLineBorderColor         #8B949E
+    LifeLineBackgroundColor     #0D1117
+    ParticipantBackgroundColor  #0D1117
+    ParticipantBorderColor      #58A6FF
+    ParticipantFontColor        #E6EDF3
+    GroupBorderColor            #30363D
+    GroupBackgroundColor        #0D1117
+}
+skinparam usecase {
+    BackgroundColor #0D1117
+    BorderColor     #A371F7
+    FontColor       #E6EDF3
+}
+skinparam shadowing   false
+skinparam roundcorner 8
+
+!else
+
+' ===== Fallback Defaults (for clarity on white background) =====
+skinparam defaultFontName "Segoe UI, Arial, Helvetica"
+skinparam defaultFontSize 14
+skinparam defaultFontColor #000000
+skinparam backgroundColor  #FFFFFF
+
+skinparam rectangle {
+    BackgroundColor #FFFFFF
+    BorderColor     #000000
+    FontColor       #000000
+}
+skinparam component {
+    BackgroundColor #FFFFFF
+    BorderColor     #000000
+    FontColor       #000000
+}
+skinparam package {
+    BackgroundColor #FFFFFF
+    BorderColor     #000000
+    FontColor       #000000
+}
+skinparam actor {
+    Style           awesome
+    BackgroundColor #DDDDDD
+    BorderColor     #000000
+    FontColor       #000000
+}
+skinparam database {
+    BackgroundColor #FFFFFF
+    BorderColor     #000000
+    FontColor       #000000
+}
+skinparam note {
+    BackgroundColor #FFFFBB
+    BorderColor     #000000
+    FontColor       #000000
+}
+skinparam sequence {
+    ArrowColor                  #000000
+    LifeLineBorderColor         #000000
+    LifeLineBackgroundColor     #FFFFFF
+    ParticipantBackgroundColor  #FFFFFF
+    ParticipantBorderColor      #000000
+    ParticipantFontColor        #000000
+}
+skinparam usecase {
+    BackgroundColor #FFFFFF
+    BorderColor     #000000
+    FontColor       #000000
+}
+skinparam shadowing   false
+skinparam roundcorner 8
+
+!endif

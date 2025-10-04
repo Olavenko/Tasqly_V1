@@ -1,0 +1,49 @@
+@startuml
+' 🧱 File: component.puml
+' -----------------------
+' 📌 Purpose   : Component diagram — Repositories, UUID/Clock, InMemory store
+' 🧱 Layer     : Docs (UML)
+' 👤 Author    : Mohamed Ali
+' 🗓️ Created   : 2025-09-07
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+title Component — Persistence Abstraction (InMemory + Id/Time)
+
+' 🟦 Repositories
+FA6_CUBES(itask, ITaskRepository, rectangle, #2AA1D1)
+FA6_CUBES(igoal, IGoalRepository, rectangle, #2AA1D1)
+FA6_DATABASE(repoTask, InMemoryTaskRepository, rectangle, #FF9800)
+FA6_DATABASE(repoGoal, InMemoryGoalRepository, rectangle, #FF9800)
+
+' 🟨 Id/Time
+FA6_KEY(uuid, IUuidGen, rectangle, #D97A2B)
+FA6_CLOCK(clock, IClock, rectangle, #D97A2B)
+FA6_KEY(uuidImpl, BoostUuidGen, rectangle, #4CAF50)
+FA6_CLOCK(clockImpl, SystemClock, rectangle, #4CAF50)
+FA6_KEY(uuidFake, FakeUuidGen_Test, rectangle, #E94C3D)
+FA6_CLOCK(clockFake, FakeClock_Test, rectangle, #E94C3D)
+
+' 🟧 Infra
+FA6_CODE(log, LogManager, rectangle, #D97A2B)
+FA6_TRIANGLE_EXCLAMATION(err, ErrorHandling, rectangle, #E5C55F)
+
+' 🔗 Relations
+itask --> repoTask
+igoal --> repoGoal
+repoTask --> uuid
+repoTask --> clock
+repoGoal --> uuid
+repoGoal --> clock
+
+uuid --> uuidImpl
+uuid --> uuidFake
+clock --> clockImpl
+clock --> clockFake
+
+repoTask --> log
+repoGoal --> log
+repoTask --> err
+repoGoal --> err
+@enduml

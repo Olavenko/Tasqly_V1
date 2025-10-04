@@ -1,0 +1,43 @@
+name: UML Diagrams
+
+on:
+  push:
+    paths:
+      - 'docs/uml/**/*.puml'
+      - 'docs/uml/config/**'
+      - 'docs/uml/uml-export.sh'
+  pull_request:
+    paths:
+      - 'docs/uml/**/*.puml'
+      - 'docs/uml/config/**'
+      - 'docs/uml/uml-export.sh'
+
+jobs:
+  generate-uml:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true  # احتياطيًا لو هتستخدم LFS لملفات كبيرة مستقبلاً
+
+      # Setup Java for PlantUML
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # Run UML export script (script will ensure/download plantuml.jar)
+      - name: Run UML export script
+        shell: bash
+        run: bash docs/uml/uml-export.sh
+
+      # Upload UML diagrams as CI artifact (SVGs + index.html)
+      - name: Upload UML diagrams
+        uses: actions/upload-artifact@v4
+        with:
+          name: UML-Diagrams
+          path: |
+            docs/uml/exports/index.html
+            docs/uml/**/exports/*.svg

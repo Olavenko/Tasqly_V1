@@ -1,0 +1,33 @@
+@startuml
+' 🧱 File: sequence.puml
+' ----------------------
+' 📌 Purpose : Sequence — "Sidebar → NavigationService → StackView → SmartPageLoader → (success|fallback)"
+' 🧱 Layer   : Docs (UML)
+' 👤 Author  : Mohamed Ali
+' 🗓️ Created : 2025-09-05
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+' 🧑 Participants
+FA6_USER(USER, "User", participant, #3FB950)
+FA6_DESKTOP(SIDEBAR, "Sidebar (QML)", participant, #58A6FF)
+FA6_CUBES(NAV, "NavigationService", participant, #A371F7)
+FA6_LAYER_GROUP(STACK, "StackView", participant, #39C5CF)
+FA6_CUBES(LOADER, "SmartPageLoader", participant, #FFD700)
+FA6_BELL(FALLBACK, "SmartFallback", participant, #FFA500)
+
+' 🔗 Flow
+USER -> SIDEBAR : click(pageId)
+SIDEBAR -> NAV : navigate(pageId)
+NAV -> STACK : push(route)
+STACK -> LOADER : loadPage(route)
+
+alt success
+    LOADER -> STACK : show(page)
+else invalid route
+    NAV -> FALLBACK : show("❌ Unknown route")
+    FALLBACK --> SIDEBAR : toast + no stack change
+end
+
+@enduml

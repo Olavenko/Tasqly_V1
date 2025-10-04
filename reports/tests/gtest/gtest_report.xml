@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="79" failures="0" disabled="0" errors="0" time="4.806" timestamp="2025-09-14T04:13:20.777" name="AllTests">
+  <testsuite name="Integration_FeatureFlags" tests="2" failures="0" disabled="0" skipped="0" errors="0" time="0.017" timestamp="2025-09-14T04:13:20.777">
+    <testcase name="ErrorReporterRespectsLoggingFlag" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\integration\logging\test_error_reporter_feature_flag.cpp" line="28" status="run" result="completed" time="0.009" timestamp="2025-09-14T04:13:20.777" classname="Integration_FeatureFlags" />
+    <testcase name="LoggingRespectsFeatureFlag" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\integration\logging\test_feature_flag_logging.cpp" line="24" status="run" result="completed" time="0.007" timestamp="2025-09-14T04:13:20.787" classname="Integration_FeatureFlags" />
+  </testsuite>
+  <testsuite name="IntegrationTests" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.01" timestamp="2025-09-14T04:13:20.794">
+    <testcase name="QmlErrorTriggersToastAndLog" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\integration\logging\test_qml_error_to_toast_and_log.cpp" line="40" status="run" result="completed" time="0.01" timestamp="2025-09-14T04:13:20.794" classname="IntegrationTests" />
+  </testsuite>
+  <testsuite name="NavigateToUseCaseTest" tests="3" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2025-09-14T04:13:20.805">
+    <testcase name="ExecuteValidRouteChangesStateToReady" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\integration\navigation\test_navigate_to_uc.cpp" line="52" status="run" result="completed" time="0.001" timestamp="2025-09-14T04:13:20.805" classname="NavigateToUseCaseTest" />
+    <testcase name="ExecuteInvalidRouteChangesStateToError" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\integration\navigation\test_navigate_to_uc.cpp" line="74" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:20.806" classname="NavigateToUseCaseTest" />
+    <testcase name="RetryUsesLastValidRoute" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\integration\navigation\test_navigate_to_uc.cpp" line="92" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:20.806" classname="NavigateToUseCaseTest" />
+  </testsuite>
+  <testsuite name="InitRepositoriesTests" tests="2" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2025-09-14T04:13:20.807">
+    <testcase name="InitializesInMemoryReposWithoutSeed" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\integration\persistence\test_init_repositories.cpp" line="42" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:20.807" classname="InitRepositoriesTests" />
+    <testcase name="InitializesInMemoryReposWithSeed" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\integration\persistence\test_init_repositories.cpp" line="58" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:20.807" classname="InitRepositoriesTests" />
+  </testsuite>
+  <testsuite name="SeedToggleTests" tests="4" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2025-09-14T04:13:20.807">
+    <testcase name="TaskRepositoryWithoutSeedIsEmpty" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\integration\persistence\test_seed_toggle.cpp" line="20" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:20.807" classname="SeedToggleTests" />
+    <testcase name="TaskRepositoryWithSeedHasData" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\integration\persistence\test_seed_toggle.cpp" line="28" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:20.807" classname="SeedToggleTests" />
+    <testcase name="GoalRepositoryWithoutSeedIsEmpty" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\integration\persistence\test_seed_toggle.cpp" line="36" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:20.807" classname="SeedToggleTests" />
+    <testcase name="GoalRepositoryWithSeedHasData" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\integration\persistence\test_seed_toggle.cpp" line="44" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:20.807" classname="SeedToggleTests" />
+  </testsuite>
+  <testsuite name="ThemePersistenceTest" tests="3" failures="0" disabled="0" skipped="0" errors="0" time="0.127" timestamp="2025-09-14T04:13:20.807">
+    <testcase name="SwitchPersistsAcrossRestart" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\integration\theme\test_theme_persistence.cpp" line="40" status="run" result="completed" time="0.008" timestamp="2025-09-14T04:13:20.807" classname="ThemePersistenceTest" />
+    <testcase name="SaveUserSettingsRoundTrip" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\integration\theme\test_theme_persistence.cpp" line="59" status="run" result="completed" time="0.118" timestamp="2025-09-14T04:13:20.816" classname="ThemePersistenceTest" />
+    <testcase name="IdempotentSwitch" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\integration\theme\test_theme_persistence.cpp" line="90" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:20.934" classname="ThemePersistenceTest" />
+  </testsuite>
+  <testsuite name="ConcurrencyTests" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.191" timestamp="2025-09-14T04:13:20.935">
+    <testcase name="MultiThreadedLogging" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\logging\test_concurrency.cpp" line="26" status="run" result="completed" time="0.19" timestamp="2025-09-14T04:13:20.935" classname="ConcurrencyTests" />
+  </testsuite>
+  <testsuite name="LogLevelParsingTests" tests="4" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2025-09-14T04:13:21.127">
+    <testcase name="LevelToStringMapping" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\logging\test_log_level_parsing.cpp" line="23" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.127" classname="LogLevelParsingTests" />
+    <testcase name="DefaultLogLevel" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\logging\test_log_level_parsing.cpp" line="35" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.127" classname="LogLevelParsingTests" />
+    <testcase name="RaiseThreshold" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\logging\test_log_level_parsing.cpp" line="44" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.127" classname="LogLevelParsingTests" />
+    <testcase name="LevelOffDisablesAll" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\logging\test_log_level_parsing.cpp" line="56" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.128" classname="LogLevelParsingTests" />
+  </testsuite>
+  <testsuite name="MaskingTests" tests="4" failures="0" disabled="0" skipped="0" errors="0" time="0.096" timestamp="2025-09-14T04:13:21.128">
+    <testcase name="DefaultSensitiveKeysAreMasked" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\logging\test_masking.cpp" line="43" status="run" result="completed" time="0.035" timestamp="2025-09-14T04:13:21.128" classname="MaskingTests" />
+    <testcase name="NonSensitiveKeysRemainVisible" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\logging\test_masking.cpp" line="67" status="run" result="completed" time="0.025" timestamp="2025-09-14T04:13:21.164" classname="MaskingTests" />
+    <testcase name="CustomKeyCanBeMasked" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\logging\test_masking.cpp" line="89" status="run" result="completed" time="0.017" timestamp="2025-09-14T04:13:21.189" classname="MaskingTests" />
+    <testcase name="SetMaskedKeysOverridesDefaults" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\logging\test_masking.cpp" line="112" status="run" result="completed" time="0.016" timestamp="2025-09-14T04:13:21.207" classname="MaskingTests" />
+  </testsuite>
+  <testsuite name="MaskingConcurrencyTests" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.121" timestamp="2025-09-14T04:13:21.224">
+    <testcase name="MaskingIsThreadSafe" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\logging\test_masking_concurrency.cpp" line="34" status="run" result="completed" time="0.12" timestamp="2025-09-14T04:13:21.224" classname="MaskingConcurrencyTests" />
+  </testsuite>
+  <testsuite name="RotationPolicyTests" tests="4" failures="0" disabled="0" skipped="0" errors="0" time="0.061" timestamp="2025-09-14T04:13:21.346">
+    <testcase name="BasicRotationCreatesFiles" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\logging\test_rotation_policy.cpp" line="51" status="run" result="completed" time="0.015" timestamp="2025-09-14T04:13:21.346" classname="RotationPolicyTests" />
+    <testcase name="TruncateModeWhenMaxFilesZero" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\logging\test_rotation_policy.cpp" line="73" status="run" result="completed" time="0.008" timestamp="2025-09-14T04:13:21.361" classname="RotationPolicyTests" />
+    <testcase name="MultiFileRotationKeepsMaxFiles" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\logging\test_rotation_policy.cpp" line="92" status="run" result="completed" time="0.018" timestamp="2025-09-14T04:13:21.370" classname="RotationPolicyTests" />
+    <testcase name="FallbackOnRotationFailure" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\logging\test_rotation_policy.cpp" line="117" status="run" result="completed" time="0.017" timestamp="2025-09-14T04:13:21.389" classname="RotationPolicyTests" />
+  </testsuite>
+  <testsuite name="NavigationServiceTest" tests="4" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2025-09-14T04:13:21.407">
+    <testcase name="NavigateToValidRouteEmitsNavigated" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\navigation\test_navigation_service.cpp" line="48" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.407" classname="NavigationServiceTest" />
+    <testcase name="NavigateToInvalidRouteEmitsFailed" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\navigation\test_navigation_service.cpp" line="66" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.408" classname="NavigationServiceTest" />
+    <testcase name="GoBackWithEmptyStackFails" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\navigation\test_navigation_service.cpp" line="81" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.408" classname="NavigationServiceTest" />
+    <testcase name="RetryLastInvalidEmitsFailed" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\navigation\test_navigation_service.cpp" line="91" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.408" classname="NavigationServiceTest" />
+  </testsuite>
+  <testsuite name="RouteValidationTest" tests="4" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2025-09-14T04:13:21.409">
+    <testcase name="InvalidWhenEmptyId" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\navigation\test_route_validation.cpp" line="17" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.409" classname="RouteValidationTest" />
+    <testcase name="InvalidWhenTimestampInvalid" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\navigation\test_route_validation.cpp" line="25" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.409" classname="RouteValidationTest" />
+    <testcase name="ValidWhenIdAndTimestampSet" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\navigation\test_route_validation.cpp" line="33" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.409" classname="RouteValidationTest" />
+    <testcase name="ToStringContainsIdAndTimestamp" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\navigation\test_route_validation.cpp" line="41" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.409" classname="RouteValidationTest" />
+  </testsuite>
+  <testsuite name="FakeUuidGenTests" tests="2" failures="0" disabled="0" skipped="0" errors="0" time="0.035" timestamp="2025-09-14T04:13:21.410">
+    <testcase name="GeneratesSequentialIds" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\persistence\test_fake_uuid_clock.cpp" line="19" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.410" classname="FakeUuidGenTests" />
+    <testcase name="GeneratesUniqueIdsInParallel" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\persistence\test_fake_uuid_clock.cpp" line="28" status="run" result="completed" time="0.035" timestamp="2025-09-14T04:13:21.410" classname="FakeUuidGenTests" />
+  </testsuite>
+  <testsuite name="FakeClockTests" tests="3" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2025-09-14T04:13:21.446">
+    <testcase name="ReturnsInitialTime" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\persistence\test_fake_uuid_clock.cpp" line="59" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.446" classname="FakeClockTests" />
+    <testcase name="AdvancesTimeByMilliseconds" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\persistence\test_fake_uuid_clock.cpp" line="67" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.446" classname="FakeClockTests" />
+    <testcase name="MultipleAdvancesAccumulate" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\persistence\test_fake_uuid_clock.cpp" line="76" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.446" classname="FakeClockTests" />
+  </testsuite>
+  <testsuite name="InMemoryGoalRepositoryTests" tests="6" failures="0" disabled="0" skipped="0" errors="0" time="0.01" timestamp="2025-09-14T04:13:21.447">
+    <testcase name="AddAndGetById" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\persistence\test_inmemory_goal_repository.cpp" line="33" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.447" classname="InMemoryGoalRepositoryTests" />
+    <testcase name="UpdateExistingGoal" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\persistence\test_inmemory_goal_repository.cpp" line="48" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.447" classname="InMemoryGoalRepositoryTests" />
+    <testcase name="RemoveGoal" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\persistence\test_inmemory_goal_repository.cpp" line="62" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.447" classname="InMemoryGoalRepositoryTests" />
+    <testcase name="ListGoalsWithLimitOffset" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\persistence\test_inmemory_goal_repository.cpp" line="78" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.447" classname="InMemoryGoalRepositoryTests" />
+    <testcase name="EmptyRepoListsEmpty" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\persistence\test_inmemory_goal_repository.cpp" line="103" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.448" classname="InMemoryGoalRepositoryTests" />
+    <testcase name="ThreadSafetyConcurrentAdds" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\persistence\test_inmemory_goal_repository.cpp" line="112" status="run" result="completed" time="0.008" timestamp="2025-09-14T04:13:21.448" classname="InMemoryGoalRepositoryTests" />
+  </testsuite>
+  <testsuite name="InMemoryTaskRepositoryTests" tests="6" failures="0" disabled="0" skipped="0" errors="0" time="0.009" timestamp="2025-09-14T04:13:21.457">
+    <testcase name="AddAndGetById" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\persistence\test_inmemory_task_repository.cpp" line="32" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.457" classname="InMemoryTaskRepositoryTests" />
+    <testcase name="UpdateExistingTask" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\persistence\test_inmemory_task_repository.cpp" line="47" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.457" classname="InMemoryTaskRepositoryTests" />
+    <testcase name="RemoveTask" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\persistence\test_inmemory_task_repository.cpp" line="61" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.457" classname="InMemoryTaskRepositoryTests" />
+    <testcase name="ListTasksWithLimitOffset" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\persistence\test_inmemory_task_repository.cpp" line="77" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.458" classname="InMemoryTaskRepositoryTests" />
+    <testcase name="EmptyRepoListsEmpty" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\persistence\test_inmemory_task_repository.cpp" line="101" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.458" classname="InMemoryTaskRepositoryTests" />
+    <testcase name="ThreadSafetyConcurrentAdds" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\persistence\test_inmemory_task_repository.cpp" line="110" status="run" result="completed" time="0.008" timestamp="2025-09-14T04:13:21.458" classname="InMemoryTaskRepositoryTests" />
+  </testsuite>
+  <testsuite name="AppSettingsManagerTest" tests="6" failures="0" disabled="0" skipped="0" errors="0" time="4.109" timestamp="2025-09-14T04:13:21.467">
+    <testcase name="DefaultThemeIsLight" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\settings\test_app_settings_manager.cpp" line="38" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:21.467" classname="AppSettingsManagerTest" />
+    <testcase name="RoundTripSaveLoad" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\settings\test_app_settings_manager.cpp" line="46" status="run" result="completed" time="0.005" timestamp="2025-09-14T04:13:21.468" classname="AppSettingsManagerTest" />
+    <testcase name="InvalidIniResetsToDefault" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\settings\test_app_settings_manager.cpp" line="61" status="run" result="completed" time="0.012" timestamp="2025-09-14T04:13:21.473" classname="AppSettingsManagerTest" />
+    <testcase name="DebouncedSave" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\settings\test_app_settings_manager.cpp" line="77" status="run" result="completed" time="0.308" timestamp="2025-09-14T04:13:21.486" classname="AppSettingsManagerTest" />
+    <testcase name="WriteFailureDuringLoadEmitsError" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\settings\test_app_settings_manager.cpp" line="91" status="run" result="completed" time="0.032" timestamp="2025-09-14T04:13:21.794" classname="AppSettingsManagerTest" />
+    <testcase name="InvalidEnumEmitsPersistenceError" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\settings\test_app_settings_manager.cpp" line="119" status="run" result="completed" time="3.748" timestamp="2025-09-14T04:13:21.827" classname="AppSettingsManagerTest" />
+  </testsuite>
+  <testsuite name="FeatureFlagsSignalTests" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2025-09-14T04:13:25.576">
+    <testcase name="EmitsCorrectKeyAndValue" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\settings\test_feature_flag_signal.cpp" line="20" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.576" classname="FeatureFlagsSignalTests" />
+  </testsuite>
+  <testsuite name="FeatureFlagsManagerTests" tests="2" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2025-09-14T04:13:25.577">
+    <testcase name="LoggingEnabledByDefault" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\settings\test_feature_flags_manager.cpp" line="19" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.577" classname="FeatureFlagsManagerTests" />
+    <testcase name="SetFeatureOverridesValue" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\settings\test_feature_flags_manager.cpp" line="30" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.577" classname="FeatureFlagsManagerTests" />
+  </testsuite>
+  <testsuite name="ThemeManagerTest" tests="4" failures="0" disabled="0" skipped="0" errors="0" time="0.002" timestamp="2025-09-14T04:13:25.578">
+    <testcase name="DefaultLightModeValidPalette" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\theme\test_theme_manager.cpp" line="19" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.578" classname="ThemeManagerTest" />
+    <testcase name="SwitchToDarkUpdatesPaletteAndEmitsSignals" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\theme\test_theme_manager.cpp" line="36" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.578" classname="ThemeManagerTest" />
+    <testcase name="SwitchingToSameModeDoesNotEmitSignals" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\theme\test_theme_manager.cpp" line="54" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.579" classname="ThemeManagerTest" />
+    <testcase name="DarkModePaletteCorrectness" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\unit\theme\test_theme_manager.cpp" line="66" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.580" classname="ThemeManagerTest" />
+  </testsuite>
+  <testsuite name="ResultTests" tests="9" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2025-09-14T04:13:25.581">
+    <testcase name="OkConstruction" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\test_result.cpp" line="24" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.581" classname="ResultTests" />
+    <testcase name="ErrConstruction" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\test_result.cpp" line="33" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.581" classname="ResultTests" />
+    <testcase name="EmptyMessageDefaults" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\test_result.cpp" line="44" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.581" classname="ResultTests" />
+    <testcase name="ValueOrFallback" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\test_result.cpp" line="51" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.581" classname="ResultTests" />
+    <testcase name="MapOnSuccess" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\test_result.cpp" line="59" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.581" classname="ResultTests" />
+    <testcase name="MapErrorOnFailure" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\test_result.cpp" line="68" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.581" classname="ResultTests" />
+    <testcase name="AndThenSuccess" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\test_result.cpp" line="78" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.582" classname="ResultTests" />
+    <testcase name="AndThenFailure" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\test_result.cpp" line="86" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.582" classname="ResultTests" />
+    <testcase name="MatchOkAndErr" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\test_result.cpp" line="96" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.582" classname="ResultTests" />
+  </testsuite>
+  <testsuite name="ResultVoidTests" tests="3" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2025-09-14T04:13:25.582">
+    <testcase name="OkConstruction" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\test_result_void.cpp" line="23" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.583" classname="ResultVoidTests" />
+    <testcase name="ErrConstruction" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\test_result_void.cpp" line="31" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.583" classname="ResultVoidTests" />
+    <testcase name="MatchOkAndErr" file="C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\tests\test_result_void.cpp" line="42" status="run" result="completed" time="0." timestamp="2025-09-14T04:13:25.583" classname="ResultVoidTests" />
+  </testsuite>
+</testsuites>

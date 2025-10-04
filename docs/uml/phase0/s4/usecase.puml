@@ -1,0 +1,25 @@
+@startuml
+' 🧱 File: usecase.puml
+' ---------------------
+' 📌 Purpose   : Use Case diagram — "List Tasks (Seed vs Empty)"
+' 🧱 Layer     : Docs (UML)
+' 👤 Author    : Mohamed Ali
+' 🗓️ Created   : 2025-09-07
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+' 🧑 Actors
+FA6_USER(user, User, rectangle, #00EB09)
+FA6_DESKTOP(qml, QML_View, rectangle, #2AA1D1)
+
+rectangle "Task Management" {
+  usecase UC1 as "List Tasks (Seeded Repo)"
+  usecase UC2 as "List Tasks (Empty State)"
+}
+
+' Relations
+user --> qml
+qml --> UC1
+qml --> UC2
+@enduml

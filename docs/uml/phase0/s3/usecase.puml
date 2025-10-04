@@ -1,0 +1,36 @@
+@startuml
+' 🧱 File: usecase.puml
+' ---------------------
+' 📌 Purpose : Use Case — "Navigate to Page" / "Handle Route Error"
+' 🧱 Layer   : Docs (UML)
+' 👤 Author  : Mohamed Ali
+' 🗓️ Created : 2025-09-05
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+' 🧑 Actor
+FA6_USER(user, "User", rectangle, #3FB950)
+
+' 🎯 Use Cases
+rectangle "Navigation Use Cases" {
+  usecase UC_Navigate as "Navigate to Page"
+  usecase UC_Error as "Handle Route Error"
+}
+
+' 🖥️ Components with icons
+FA6_DESKTOP(sidebar, "Sidebar (QML)", rectangle, #58A6FF)
+FA6_CUBES(nav, "NavigationService", rectangle, #A371F7)
+FA6_LAYER_GROUP(stack, "StackView", rectangle, #39C5CF)
+FA6_CUBES(loader, "SmartPageLoader", rectangle, #FFD700)
+FA6_BELL(fallback, "SmartFallback", rectangle, #FFA500)
+
+' 🔗 Relations
+user --> sidebar
+sidebar --> UC_Navigate
+UC_Navigate --> nav
+UC_Navigate --> stack
+UC_Navigate --> loader
+UC_Error --> fallback
+
+@enduml

@@ -1,0 +1,53 @@
+@startuml
+' 🧱 File: usecase.puml
+' ---------------------
+' 📌 Purpose : Use Case — "Switch Theme & Persist"
+' 🧱 Layer   : Docs (UML)
+' 👤 Author  : Mohamed Ali
+' 🗓️ Created : 2025-09-04
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+
+' 🧑 Actors
+FA6_USER(user, "User", rectangle, #3FB950)
+
+
+rectangle "Theme & Settings" {
+  usecase UC_Toggle as "Toggle Theme (Light/Dark)"
+  usecase UC_Apply as "Apply Palette Runtime"
+  usecase UC_Save as "Persist User Preference"
+  usecase UC_Error as "Handle Persistence Errors"
+  usecase UC_Toast as "Show Toast on Failure"
+}
+
+' 🖥️ Components with icons
+FA6_DESKTOP(qml, "QML View", rectangle, #58A6FF)
+FA6_TOGGLE_ON(toggle, "Theme Switch (UI)", rectangle, #A371F7)
+FA6_GEAR(theme, "ThemeManager", rectangle, #A371F7)
+FA6_SLIDERS(settings, "SettingsManager (INI)", rectangle, #39C5CF)
+FA6_PALETTE(palette, "Palette Tokens", rectangle, #FFD700)
+FA6_BELL(notifier, "Notifier (Toast)", rectangle, #FFA500)
+FA6_FILE_CIRCLE_CHECK(ini, "Settings File (INI)", rectangle, #39C5CF)
+
+' 🔗 Relations
+user --> qml
+qml --> toggle
+toggle --> UC_Toggle
+
+UC_Toggle --> theme
+theme --> UC_Apply
+UC_Apply --> palette
+palette --> qml
+
+UC_Toggle --> UC_Save
+UC_Save --> settings
+settings --> ini
+
+UC_Save --> UC_Error
+UC_Error --> notifier
+UC_Toast .u.> UC_Error : <<extend>> (on failure)
+
+
+@enduml

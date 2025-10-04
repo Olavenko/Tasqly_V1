@@ -1,0 +1,27 @@
+@startuml
+' 🧱 File: component.puml
+' -----------------------
+' 📌 Purpose : Component — "NavigationService, PageLoader, Fallback"
+' 🧱 Layer   : Docs (UML)
+' 👤 Author  : Mohamed Ali
+' 🗓️ Created : 2025-09-05
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+' 🧑 Components
+FA6_CUBES(appNav, "App.Navigation", rectangle, #58A6FF)
+FA6_CUBES(navService, "NavigationService", rectangle, #A371F7)
+FA6_CUBES(route, "Route (struct)", rectangle, #39C5CF)
+FA6_LAYER_GROUP(stackView, "StackView", rectangle, #43FFE6)
+FA6_CUBES(pageLoader, "SmartPageLoader", rectangle, #FFD700)
+FA6_BELL(fallbackUI, "SmartFallback", rectangle, #FFA500)
+
+' 🔗 Relations
+appNav --> navService
+navService --> route
+navService --> stackView
+stackView --> pageLoader
+pageLoader --> fallbackUI
+
+@enduml

@@ -1,0 +1,72 @@
+<type>(<scope>): <short summary> ✨
+
+// 📝 Context
+- Why was this change necessary?
+- What problem or gap does it address?
+
+// ✅ Changes
+- [Added/Modified/Removed] ...
+- [Refactored] ...
+- [Cleaned up] ...
+
+// 🔬 Testing & Quality
+- ✅ Unit tests: [new/updated/unchanged]
+- 📊 Coverage: [improvement / unchanged / notes]
+- 🚀 Benchmarks: [performance results if applicable]
+- 🔒 CI/CD checks: [passed/added]
+
+Refs: ADR-XXXX | Issue # | Task ID
+
+-----------
+
+🔹 Example Commit Messages Using Template
+
+Example 1 — Tests
+test(core): add missing unit tests for Result & PageState ✅
+
+// 📝 Context
+- Coverage report showed missing tests for Result and PageState transitions.
+
+// ✅ Changes
+- Added test_result.cpp for success/failure scenarios
+- Added test_page_state.cpp for state transitions
+- Minor refactor in test helpers
+
+// 🔬 Testing & Quality
+- ✅ Unit tests: added 2 new files
+- 📊 Coverage: core coverage increased from 72% → 84%
+- 🔒 CI/CD checks: all green
+
+Refs: ADR-0005-git-hygiene
+
+-----------
+
+Example 2 — Benchmarks
+
+bench(logging): add benchmarks for LogRotation + LogFlush 📊
+
+// 📝 Context
+- Required baseline benchmarks for logging subsystem in Phase0.
+
+// ✅ Changes
+- Added Bench_LogRotation.cpp with 1k/10k rotations
+- Added Bench_LogFlush.cpp measuring sync flush latency
+- Integrated new benchmarks in CMake
+
+// 🔬 Testing & Quality
+- 🚀 Benchmarks: rotation improved baseline < 5ms (1k files)
+- 🔒 CI/CD checks: passed
+
+Refs: ADR-0003-bench-phase0_2025-09-16_bench_results
+
+-----------
+
+⚡ How to Activate It
+1- Save the file in project root:
+Tasqly_V1/.gitmessage.txt
+
+2- Configure Git globally (for all repos):
+git config --global commit.template ~/.gitmessage.txt
+
+Or just for Tasqly repo:
+git config commit.template .gitmessage.txt

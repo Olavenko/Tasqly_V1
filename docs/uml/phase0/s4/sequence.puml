@@ -1,0 +1,34 @@
+@startuml
+' 🧱 File: sequence.puml
+' ----------------------
+' 📌 Purpose : Sequence — "QML → ListTasksUC → ITaskRepository(InMemory) → SmartPageLoader → (success|fallback)"
+' 🧱 Layer   : Docs (UML)
+' 👤 Author  : Mohamed Ali
+' 🗓️ Created : 2025-09-07
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+' 🧑 Participants
+FA6_USER(USER, "User", participant, #3FB950)
+FA6_DESKTOP(QML, "QML View", participant, #58A6FF)
+FA6_CUBES(UC, "ListTasksUC", participant, #A371F7)
+FA6_DATABASE(REPO, "ITaskRepository (InMemory)", participant, #FF9800)
+FA6_CUBES(LOADER, "SmartPageLoader", participant, #FFD700)
+FA6_BELL(FALLBACK, "SmartFallback", participant, #FFA500)
+
+' 🔗 Flow
+USER -> QML : trigger load()
+QML -> UC : execute()
+UC -> REPO : listTasks(limit, offset)
+
+alt success
+    REPO --> UC : Result<Task[]>
+    UC --> LOADER : render(tasks)
+else empty/error
+    REPO --> UC : Error or Empty
+    UC -> FALLBACK : show("❌ No tasks / failure")
+    FALLBACK --> QML : toast + empty state
+end
+
+@enduml

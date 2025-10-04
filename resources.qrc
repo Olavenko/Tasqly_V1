@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <!-- Empty on purpose: all QML handled via qt_add_qml_module -->
+    </qresource>
+</RCC>

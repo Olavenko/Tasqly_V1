@@ -1,0 +1,42 @@
+@startuml
+' 🧱 File: usecase.puml
+' ---------------------
+' 📌 Purpose : Use Case — "Report Error & Notify User"
+' 🧱 Layer : Docs (UML)
+' 👤 Author : Mohamed Ali
+' 🗓️ Created : 2025-09-02
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+' 🧑 Actors
+FA6_USER(user, User, rectangle, #00CE6A)
+
+
+rectangle "Error Handling" {
+usecase UC_Report as "Report Error"
+usecase UC_Log as "Log Error"
+usecase UC_Notify as "Notify User"
+usecase UC_Fallback as "Show Fallback"
+}
+
+' Components with icons
+FA6_DESKTOP(qml, "QML View", rectangle, #FF6F5C)
+FA6_GEAR(uc, "ErrorReporterUC", rectangle, #FF6F5C)
+FA6_CODE(log, "LogManager", rectangle, #FF6F5C)
+FA6_BELL(toast, "Notifier (Toast)", rectangle, #FF6F5C)
+FA6_TRIANGLE_EXCLAMATION(fb, "SmartFallback", rectangle, #FF6F5C)
+
+' Relations
+user --> qml
+qml --> UC_Report
+UC_Report --> uc
+UC_Log .u.> UC_Report : <<include>>
+UC_Notify .u.> UC_Report : <<include>>
+UC_Fallback .d.> UC_Report : <<extend>> (on critical)
+
+uc --> log : write masked record
+uc --> toast : show(severity, message)
+uc ..> fb : activate on critical
+
+@enduml

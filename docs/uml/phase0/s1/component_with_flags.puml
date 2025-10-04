@@ -1,0 +1,41 @@
+'
+' 🧱 File: component_with_flags.puml
+' ------------------------------
+' 📌 Purpose   : Component Diagram — Slice 1 Logging & Error Backbone (with FeatureFlagsManager)
+' 🧱 Layer     : Documentation (PlantUML)
+' 👤 Author    : Mohamed Ali
+' 🗓️ Created   : 2025-09-04
+'
+' 🧠 Description:
+' Updated component diagram for Slice 1 to include the FeatureFlagsManager
+' as a runtime configuration subsystem. Shows relations between QML layer,
+' ErrorReporter, LogManager, AppErrors, and FeatureFlagsManager.
+'
+
+@startuml
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+title Component — Slice 1 Logging & Error Backbone (with FeatureFlagsManager)
+
+' ==== UI Layer ====
+FA6_DESKTOP(qml, "QML Views", rectangle, #2AA1D1)
+FA6_BELL(toast, "Toast.qml", rectangle, #E5C55F)
+FA6_CIRCLE_EXCLAMATION(fallback, "SmartFallback.qml", rectangle, #E5C55F)
+
+' ==== Application Layer ====
+FA6_CUBES(errors, "AppErrors", rectangle, #9C27B0)
+FA6_TRIANGLE_EXCLAMATION(reporter, "ErrorReporter", rectangle, #03A9F4)
+FA6_SLIDERS(flags, "FeatureFlagsManager", rectangle, #607D8B)
+
+' ==== Infrastructure Layer ====
+FA6_FILE(logmgr, "LogManager", rectangle, #FF9800)
+
+' ==== Relations ====
+qml --> reporter : report(error,severity)
+reporter --> logmgr : log(level,msg,ctx)
+reporter --> toast : toastRequested
+reporter --> fallback : on failure
+reporter --> flags : check features.logging
+logmgr --> flags : check features.logging
+
+@enduml

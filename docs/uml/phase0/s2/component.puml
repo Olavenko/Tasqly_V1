@@ -1,0 +1,41 @@
+@startuml
+' 🧱 File: component.puml
+' -----------------------
+' 📌 Purpose : Component — "QML Facades, Interfaces & Implementations"
+' 🧱 Layer   : Docs (UML)
+' 👤 Author  : Mohamed Ali
+' 🗓️ Created : 2025-09-04
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+' 🖥️ QML Facades (UI Layer)
+FA6_CUBES(appSettings, "App.Settings", rectangle, #58A6FF)
+FA6_CUBES(appTheme, "App.Theme", rectangle, #58A6FF)
+FA6_CUBES(appLog, "App.Log", rectangle, #58A6FF)
+FA6_CUBES(appNotify, "App.Notifier", rectangle, #58A6FF)
+
+' 🧩 Application Interfaces
+FA6_SLIDERS(iSettings, "ISettings", rectangle, #A371F7)
+FA6_GEAR(iTheme, "ITheme", rectangle, #A371F7)
+FA6_CODE(iLog, "ILogManager", rectangle, #A371F7)
+FA6_BELL(iNotify, "INotifier", rectangle, #A371F7)
+
+' 🏗️ Infrastructure Implementations
+FA6_FILE_CIRCLE_CHECK(settingsImpl, "AppSettingsManager (INI)", rectangle, #39C5CF)
+FA6_PALETTE(themeImpl, "ThemeManager (Palette)", rectangle, #FFD700)
+FA6_CODE(logImpl, "LogManager", rectangle, #39C5CF)
+FA6_BELL(notifyImpl, "Notifier (Toast/Fallback)", rectangle, #39C5CF)
+
+' 🔗 Relations (Facades → Interfaces → Implementations)
+appSettings --> iSettings
+appTheme --> iTheme
+appLog --> iLog
+appNotify --> iNotify
+
+iSettings --> settingsImpl
+iTheme --> themeImpl
+iLog --> logImpl
+iNotify --> notifyImpl
+
+@enduml
