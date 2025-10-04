@@ -16,7 +16,7 @@ set "CMAKE_PREFIX_PATH=C:\Qt\6.9.2\mingw_64"
 set PATH=C:\Qt\6.9.2\mingw_64\bin;%PATH%
 
 cd /c/Users/Olavenko/Desktop/TasqlyQt/Tasqly_V1
-clang-format -i $(find src -name '*.cpp' -o -name '*.h')
+./scripts/check-format.sh
 
 cmake --preset=mingw-debug
 cmake --build --preset=build-mingw-debug --parallel
@@ -31,7 +31,7 @@ ctest --preset=test-mingw-debug -R AppSettingsManagerTest -VV ## to run all file
 ```bash
 
 cd /c/Users/Olavenko/Desktop/TasqlyQt/Tasqly_V1
-clang-format -i $(find src -name '*.cpp' -o -name '*.h')
+./scripts/check-format.sh
 
 cmake --preset=mingw-benchmarks-release
 cmake --build --preset=build-mingw-benchmarks-release --parallel
@@ -71,6 +71,7 @@ cd C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1
 set "CMAKE_PREFIX_PATH=C:\Qt\6.9.2\msvc2022_64"
 set PATH=C:\Qt\6.9.2\msvc2022_64\bin;%PATH%
 
+git update-index --chmod=+x scripts/check-format.sh
 cd /c/Users/Olavenko/Desktop/TasqlyQt/Tasqly_V1
 ./scripts/check-format.sh
 
