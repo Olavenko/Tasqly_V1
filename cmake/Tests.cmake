@@ -47,12 +47,6 @@ find_package(Qt6 REQUIRED COMPONENTS
 # 🏗️ Test Runner Target
 # ---------------------------------------------------------------
 add_executable(TasqlyTestsRunner
-    # 🧪 Test Fakes
-    tests/fakes/FakeAppSettingsManager.h
-    tests/fakes/FakeClock.h
-    tests/fakes/FakeUuidGen.h
-    tests/fakes/LogManagerTestAccessor.h
-
     # 🔗 Integration Tests — Logging
     tests/integration/logging/test_error_reporter.cpp
     tests/integration/logging/test_error_reporter_feature_flag.cpp
@@ -145,6 +139,7 @@ add_executable(TasqlyTestsRunner
 target_link_libraries(TasqlyTestsRunner
     PRIVATE
         tasqly_core
+		tasqly_fakes
         GTest::gtest
         GTest::gtest_main
         Qt6::Concurrent

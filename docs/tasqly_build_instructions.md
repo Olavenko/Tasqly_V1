@@ -35,7 +35,7 @@ cd /c/Users/Olavenko/Desktop/TasqlyQt/Tasqly_V1
 
 cmake --preset=mingw-benchmarks-release
 cmake --build --preset=build-mingw-benchmarks-release --parallel
-py -3.13 scripts/run_benchmarks.py --phase Phase0 --compiler mingw
+py -3.13 scripts/run_benchmarks.py --phase Phase0 --compiler mingw --timeout 1800
 
 ```
 

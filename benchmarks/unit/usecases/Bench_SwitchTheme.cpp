@@ -25,6 +25,7 @@
 #include "app/settings/AppSettingsManager.h"
 #include "app/theme/ThemeManager.h"
 #include "app/usecases/SwitchTheme.h"
+#include "tests/fakes/FakeAppSettingsManager.h"
 #include <benchmark/benchmark.h>
 
 #include <QHash>
@@ -32,52 +33,9 @@
 
 using ThemeMode = tasqly::domain::core::ThemeMode;
 
-// 👉 FakeAppSettingsManager (in-memory only)
-namespace {
-
-class InMemorySettingsStore : public ISettingsStore
-{
-public:
-  QVariant value(const QString& key, const QVariant& defaultValue = QVariant()) const override
-  {
-    return m_values.value(key, defaultValue);
-  }
-
-  void setValue(const QString& key, const QVariant& value) override { m_values.insert(key, value); }
-
-  void sync() override {}
-
-  QSettings::Status status() const override { return QSettings::NoError; }
-
-  QString fileName() const override { return QStringLiteral("bench-in-memory"); }
-
-private:
-  QHash<QString, QVariant> m_values;
-};
-
-// 🎭 Fake settings manager for benchmark
-class BenchSettingsManager : public AppSettingsManager
-{
-public:
-  BenchSettingsManager(QObject* parent = nullptr)
-      : AppSettingsManager(parent)
-  {}
-
-  void save(bool force = false) override
-  {
-    lastForce = force;
-    saved = true;
-  }
-
-  bool saved{false};
-  bool lastForce{false};
-};
-
-} // namespace
-
 static void BM_SwitchTheme_Transition(benchmark::State& state)
 {
-  BenchSettingsManager settings;
+  FakeAppSettingsManager settings;
   ThemeManager theme;
   SwitchTheme usecase(&settings, &theme, nullptr);
 
@@ -92,7 +50,7 @@ BENCHMARK(BM_SwitchTheme_Transition);
 
 static void BM_SwitchTheme_NoOp(benchmark::State& state)
 {
-  BenchSettingsManager settings;
+  FakeAppSettingsManager settings;
   ThemeManager theme;
   SwitchTheme usecase(&settings, &theme, nullptr);
 

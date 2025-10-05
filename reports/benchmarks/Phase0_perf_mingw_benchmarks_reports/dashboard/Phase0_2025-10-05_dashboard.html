@@ -1,0 +1,113 @@
+
+    <html>
+    <head>
+      <title>Tasqly Benchmark Dashboard - Phase0 - 04:43 PM — 2025-10-05</title>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #111; color: #eee; }
+        table { border-collapse: collapse; width: 100%; margin-top: 12px; background: #222; color: #eee; }
+        th, td { border: 1px solid #444; padding: 8px; text-align: left; font-size: 13px; }
+        th { background: #333; color: #fff; }
+        h1, h2, h3 { margin: 8px 0; color: #fff; }
+      </style>
+    </head>
+    <body>
+      <h1>Tasqly Benchmark Results - Phase0 (04:43 PM — 2025-10-05) [MINGW]</h1>
+      <div><strong>Date:</strong> 04:43 PM — 2025-10-05 | <strong>Host:</strong> DYANKO | <strong>CPU:</strong> 8 cores @ 3600 MHz | <strong>Runner:</strong> C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\build\mingw-benchmarks-release\TasqlyBenchmarksRunner.exe</div><hr/>
+      
+        <div style='padding:12px; background:#111; color:#eee; font-family:Segoe UI, sans-serif; margin:15px 0; border-radius:8px;'>
+          <h3 style='margin:0 0 6px 0;'>Benchmark Summary</h3>
+          <p style='margin:4px 0;'>Total Benchmarks: <strong>73</strong></p>
+          <p style='margin:4px 0;'>Best: <strong>BM_SwitchTheme_NoOp</strong> — 0.000 ms</p>
+          <p style='margin:4px 0;'>Worst: <strong>BM_LogManager_Throughput/10000</strong> — 0.921 ms</p>
+          <p style='margin:4px 0;'>Average Real Time: <strong>0.025 ms</strong></p>
+          <p style='margin:4px 0;'>Generated On: <strong>04:43 PM — 2025-10-05</strong></p>
+          <p style='margin:4px 0;'>Execution Time: <strong>2 min 3 sec</strong></p>
+        </div>
+        
+      <h2>Slow Benchmarks</h2>
+<p>No slow benchmarks found. Performance is stable for this run.</p>
+<h2>Medium Variance Benchmarks</h2>
+<p>No medium-variance benchmarks found.</p>
+<h2>Stable Benchmarks</h2>
+<table>
+<tr><th>Name</th><th>Iterations</th><th>Real (ms)</th><th>CPU (ms)</th><th>Variance</th><th>Threads</th><th>Ops/sec</th><th>Relative</th><th>Type</th></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogManager_Throughput/10000</td><td>747</td><td>0.921</td><td>0.920</td><td>0.001</td><td>1</td><td>810.99K</td><td>775011.6x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_FeatureFlagsManager_BulkInsert</td><td>2240</td><td>0.324</td><td>0.328</td><td>-0.004</td><td>1</td><td>6.91M</td><td>272793.9x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_AppSettingsManager_Load</td><td>3446</td><td>0.238</td><td>0.240</td><td>-0.002</td><td>1</td><td>14.48M</td><td>200214.6x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_AppSettingsManager_SetThemeAndSave</td><td>896</td><td>0.103</td><td>0.575</td><td>-0.472</td><td>1</td><td>8.67M</td><td>86946.2x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_TaskRepo_AddBulk</td><td>7168</td><td>0.092</td><td>0.087</td><td>0.005</td><td>1</td><td>77.72M</td><td>77603.0x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogManager_Throughput/1000</td><td>7467</td><td>0.092</td><td>0.090</td><td>0.002</td><td>1</td><td>81.05M</td><td>77513.0x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogManager_Throughput/100</td><td>89600</td><td>0.009</td><td>0.009</td><td>-0.000</td><td>1</td><td>9.68B</td><td>7791.0x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_NavigateTo_RetryValid</td><td>89600</td><td>0.008</td><td>0.007</td><td>0.000</td><td>1</td><td>11.86B</td><td>6356.3x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_SwitchTheme_Transition</td><td>224000</td><td>0.006</td><td>0.003</td><td>0.003</td><td>1</td><td>35.98B</td><td>5238.8x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_NavigateTo_ExecuteValid</td><td>112000</td><td>0.005</td><td>0.005</td><td>0.000</td><td>1</td><td>23.99B</td><td>3927.5x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_TaskRepo_Add_CopyMove</td><td>224000</td><td>0.003</td><td>0.003</td><td>-0.000</td><td>1</td><td>72.15B</td><td>2612.1x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_TaskRepo_Update_CopyMove</td><td>448000</td><td>0.002</td><td>0.002</td><td>0.000</td><td>1</td><td>281.62B</td><td>1338.5x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_TaskRepo_Remove</td><td>344615</td><td>0.002</td><td>0.002</td><td>0.000</td><td>1</td><td>170.60B</td><td>1699.6x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_NavigationService_NavigateValid</td><td>320000</td><td>0.002</td><td>0.002</td><td>0.000</td><td>1</td><td>144.42B</td><td>1864.4x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_NavigationService_GoBack</td><td>320000</td><td>0.002</td><td>0.002</td><td>-0.000</td><td>1</td><td>146.33B</td><td>1840.0x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_NavigationService_RetryLast</td><td>344615</td><td>0.002</td><td>0.002</td><td>0.000</td><td>1</td><td>157.37B</td><td>1842.5x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_CreateTaskFlow/iterations:10000</td><td>10000</td><td>0.002</td><td>0.002</td><td>0.000</td><td>1</td><td>5.30B</td><td>1587.1x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_FeatureFlagsManager_Signal</td><td>1000000</td><td>0.001</td><td>0.001</td><td>0.000</td><td>1</td><td>1937.10B</td><td>434.4x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_TaskRepo_GetById</td><td>1120000</td><td>0.001</td><td>0.001</td><td>0.000</td><td>1</td><td>1736.60B</td><td>542.7x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_TaskRepo_List</td><td>746667</td><td>0.001</td><td>0.001</td><td>0.000</td><td>1</td><td>766.50B</td><td>819.6x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_NavigationService_NavigateInvalid</td><td>1120000</td><td>0.001</td><td>0.001</td><td>0.000</td><td>1</td><td>1955.95B</td><td>481.8x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_NavigateTo_ExecuteInvalid</td><td>640000</td><td>0.001</td><td>0.001</td><td>0.000</td><td>1</td><td>590.26B</td><td>912.3x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_SwitchTheme_NoOp</td><td>186666667</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>47025452.14B</td><td>3.3x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_SaveUserSettings</td><td>2800000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>10705.20B</td><td>220.1x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_SaveUserSettings_ForcedFlush</td><td>2800000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>10726.39B</td><td>219.6x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LoadUserSettings</td><td>2800000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>11029.01B</td><td>213.6x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ListTasks/10</td><td>3200000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>14313.71B</td><td>188.1x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ListTasks/100</td><td>2635294</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>11821.46B</td><td>187.6x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ListTasks/1000</td><td>3200000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>12468.19B</td><td>215.9x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ThemeManager_Mode</td><td>560000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>471182162.39B</td><td>1.0x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ThemeManager_SwitchMode</td><td>4977778</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>35892.79B</td><td>116.7x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ThemeManager_Palette</td><td>56000000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>3796667.63B</td><td>12.4x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ThemeManager_Fonts</td><td>64000000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>5214380.28B</td><td>10.3x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_FeatureFlagsManager_Get</td><td>8960000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>108617.46B</td><td>69.4x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_FeatureFlagsManager_SetToggle</td><td>3200000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>13239.60B</td><td>203.4x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_NavigationService_CurrentRoute</td><td>49777778</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>3505929.91B</td><td>11.9x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_NavigateTo_RetryInvalid</td><td>4072727</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>23545.42B</td><td>145.5x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogMasking_NoContext/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>4372.31B</td><td>192.4x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogMasking_NoContext/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>4389.52B</td><td>191.7x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogMasking_NoContext/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>4382.00B</td><td>192.0x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogMasking_NoContext/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>4387.85B</td><td>191.8x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogMasking_NoContext/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>4386.37B</td><td>191.8x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogMasking_SmallContext/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>4396.61B</td><td>191.4x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogMasking_SmallContext/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>4393.37B</td><td>191.5x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogMasking_SmallContext/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>4380.12B</td><td>192.1x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogMasking_SmallContext/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>4373.65B</td><td>192.4x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogMasking_SmallContext/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>4313.46B</td><td>195.1x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogMasking_LargeContext/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>4459.96B</td><td>188.7x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogMasking_LargeContext/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>4462.22B</td><td>188.6x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogMasking_LargeContext/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>4420.30B</td><td>190.3x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogMasking_LargeContext/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>4415.82B</td><td>190.5x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogMasking_LargeContext/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>4454.08B</td><td>188.9x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogFacade_Info</td><td>8960000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>122893.47B</td><td>61.3x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogFacade_Warn</td><td>8960000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>123262.59B</td><td>61.2x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogFacade_Error</td><td>8960000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>123376.66B</td><td>61.1x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogContinuous_NullSink/128/iterations:1000000</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>6303.68B</td><td>133.5x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogContinuous_NullSink/1024/iterations:1000000</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>6329.13B</td><td>132.9x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogContinuous_NullSink/4096/iterations:1000000</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>6288.22B</td><td>133.8x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogContinuous_NullSink/16384/iterations:1000000</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>6303.28B</td><td>133.5x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogContinuous_FileOnly/128/iterations:1000000</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>6360.86B</td><td>132.3x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogContinuous_FileOnly/1024/iterations:1000000</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>6364.72B</td><td>132.2x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogContinuous_FileOnly/4096/iterations:1000000</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>6264.20B</td><td>134.3x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_LogContinuous_FileOnly/16384/iterations:1000000</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>6374.06B</td><td>132.0x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ErrorReporter_Report/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>64900.51B</td><td>13.0x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ErrorReporter_Report/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>66377.26B</td><td>12.7x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ErrorReporter_Report/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>65541.54B</td><td>12.8x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ErrorReporter_Report/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>65261.37B</td><td>12.9x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ErrorReporter_Report/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>65617.66B</td><td>12.8x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ErrorReporter_ReportRaw/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>31258.60B</td><td>26.9x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ErrorReporter_ReportRaw/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>31241.90B</td><td>26.9x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ErrorReporter_ReportRaw/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>31400.23B</td><td>26.8x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ErrorReporter_ReportRaw/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>0.000</td><td>1</td><td>31148.77B</td><td>27.0x</td><td>CPU-bound</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ErrorReporter_ReportRaw/iterations:1000000/repeats:5</td><td>1000000</td><td>0.000</td><td>0.000</td><td>-0.000</td><td>1</td><td>31373.43B</td><td>26.8x</td><td>CPU-bound</td></tr>
+</table>
+<p>All benchmarks are stable and fast.</p>
+
+    </body>
+    </html>
+    

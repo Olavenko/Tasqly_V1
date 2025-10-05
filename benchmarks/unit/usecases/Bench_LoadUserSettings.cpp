@@ -31,7 +31,7 @@
 using namespace tasqly::domain::core;
 
 // 👉 FakeAppSettingsManager (returns fixed ThemeMode)
-class FakeAppSettingsManager : public AppSettingsManager
+class SimpleFakeAppSettingsManager : public AppSettingsManager
 {
 public:
   ThemeMode themeMode() const { return ThemeMode::Dark; }
@@ -50,7 +50,7 @@ public:
 // 🧪 Benchmark
 static void BM_LoadUserSettings(benchmark::State& state)
 {
-  FakeAppSettingsManager settings;
+  SimpleFakeAppSettingsManager settings;
   FakeThemeManager theme;
 
   // ✅ Use real LogManager but disable sinks (CPU-bound only)

@@ -79,6 +79,7 @@ target_include_directories(TasqlyBenchmarksRunner PRIVATE
 target_link_libraries(TasqlyBenchmarksRunner
     PRIVATE
         tasqly_core
+        tasqly_fakes
         benchmark::benchmark
 )
 

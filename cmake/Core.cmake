@@ -133,3 +133,60 @@ target_link_libraries(tasqly_core
 # ---------------------------------------------------------------
 tasqly_apply_warnings(tasqly_core)
 tasqly_apply_debug_sanitizers(tasqly_core)
+
+# ---------------------------------------------------------------
+# 🧪 Test Utilities Library — tasqly_fakes
+# ---------------------------------------------------------------
+# 📌 Purpose : Provide fake implementations for testing and benchmarking
+# 🧱 Layer   : Test Utilities (Fakes / Stubs / Mocks)
+# 👤 Author  : Mohamed Ali
+# 🗓️ Added   : 2025-10-05
+#
+# 🧠 Description:
+# - Includes fake managers and utility classes used in Benchmarks and Tests.
+# - Depends on tasqly_core to access interfaces and domain entities.
+# - Prevents duplicate fake definitions across multiple test targets.
+# ---------------------------------------------------------------
+
+# ---------------------------------------------------------------
+# 🏗️ Static Library Definition
+# ---------------------------------------------------------------
+add_library(tasqly_fakes STATIC
+    tests/fakes/FakeAppSettingsManager.h
+    tests/fakes/FakeSettingsStore.h
+    tests/fakes/FakeClock.h
+    tests/fakes/FakeUuidGen.h
+    tests/fakes/LogManagerTestAccessor.h
+)
+
+# ---------------------------------------------------------------
+# 📂 Include Directories
+# ---------------------------------------------------------------
+# Expose the "tests/fakes" folder for use by all test and benchmark targets.
+target_include_directories(tasqly_fakes PUBLIC
+    ${PROJECT_SOURCE_DIR}/tests/fakes
+)
+
+# ---------------------------------------------------------------
+# 🔗 Dependencies
+# ---------------------------------------------------------------
+# tasqly_fakes depends on tasqly_core to reuse domain/application interfaces.
+target_link_libraries(tasqly_fakes
+    PUBLIC
+        tasqly_core
+        Qt6::Core
+)
+
+# ---------------------------------------------------------------
+# 🛡️ Quality Gates
+# ---------------------------------------------------------------
+tasqly_apply_warnings(tasqly_fakes)
+tasqly_apply_debug_sanitizers(tasqly_fakes)
+
+# ---------------------------------------------------------------
+# ⚙️ Target Properties
+# ---------------------------------------------------------------
+set_target_properties(tasqly_fakes PROPERTIES
+    OUTPUT_NAME "tasqly_fakes"
+    FOLDER "Tests/Fakes"
+)
