@@ -47,34 +47,34 @@ find_package(Qt6 REQUIRED COMPONENTS
 # 🏗️ Test Runner Target
 # ---------------------------------------------------------------
 add_executable(TasqlyTestsRunner
-    # 🔗 Integration Tests — Logging
+    # 🔗 Integration Tests — Logging [Phase0]
     tests/integration/logging/test_error_reporter.cpp
     tests/integration/logging/test_error_reporter_feature_flag.cpp
     tests/integration/logging/test_feature_flag_logging.cpp
     tests/integration/logging/test_log_manager_extended.cpp
     tests/integration/logging/test_qml_error_to_toast_and_log.cpp
 
-    # 🔗 Integration Tests — Navigation
+    # 🔗 Integration Tests — Navigation [Phase0]
     tests/integration/navigation/test_navigate_to_uc.cpp
 
-    # 🔗 Integration Tests — Notifier
+    # 🔗 Integration Tests — Notifier [Phase0]
     tests/integration/notifier/test_notifier.cpp
 
-    # 🔗 Integration Tests — Persistence
+    # 🔗 Integration Tests — Persistence [Phase0]
     tests/integration/persistence/test_seed_toggle.cpp
 
-    # 🔗 Integration Tests — Settings
+    # 🔗 Integration Tests — Settings [Phase0]
     tests/integration/settings/test_appsettingsmanager.cpp
 
-    # 🔗 Integration Tests — Theme
+    # 🔗 Integration Tests — Theme [Phase0]
     tests/integration/theme/test_theme_persistence.cpp
 
-    # 🔗 Integration Tests — UseCases
+    # 🔗 Integration Tests — UseCases [Phase0]
     tests/integration/usecases/test_init_repositories.cpp
     tests/integration/usecases/test_save_user_settings.cpp
 
 
-    # 🛠️ Unit Tests — Core
+    # 🛠️ Unit Tests — Core [Phase0]
     tests/unit/core/test_app_context.cpp
     tests/unit/core/test_error.cpp
     tests/unit/core/test_goal.cpp
@@ -82,13 +82,13 @@ add_executable(TasqlyTestsRunner
     tests/unit/core/test_task.cpp
     tests/unit/core/test_theme_mode.cpp
 
-    # 🛠️ Unit Tests — Domain
+    # 🛠️ Unit Tests — Domain [Phase0]
     tests/unit/domain/test_page_state.cpp
 
-    # 🛠️ Unit Tests — Errors
+    # 🛠️ Unit Tests — Errors [Phase0]
     tests/unit/errors/test_app_errors.cpp
 
-    # 🛠️ Unit Tests — Logging
+    # 🛠️ Unit Tests — Logging [Phase0]
     tests/unit/logging/test_autoflush.cpp
     tests/unit/logging/test_concurrency.cpp
     tests/unit/logging/test_error_reporter.cpp
@@ -103,29 +103,38 @@ add_executable(TasqlyTestsRunner
     tests/unit/logging/test_periodic_rotation.cpp
     tests/unit/logging/test_rotation_policy.cpp
 
-    # 🛠️ Unit Tests — Navigation
+    # 🛠️ Unit Tests — Navigation [Phase0]
     tests/unit/navigation/test_route_validation.cpp
     tests/unit/navigation/test_navigation_service_extended.cpp
 
-    # 🛠️ Unit Tests — Persistence
+    # 🛠️ Unit Tests — Persistence [Phase0]
     tests/unit/persistence/test_fake_uuid_clock.cpp
     tests/unit/persistence/test_inmemory_goal_repository.cpp
     tests/unit/persistence/test_inmemory_task_repository.cpp
 
-    # 🛠️ Unit Tests — Settings
+    # 🛠️ Unit Tests — Settings [Phase0]
     tests/unit/settings/test_app_settings_manager.cpp
     tests/unit/settings/test_feature_flag_signal.cpp
     tests/unit/settings/test_feature_flags_manager.cpp
 
-    # 🛠️ Unit Tests — UseCases
+    # 🛠️ Unit Tests — UseCases [Phase0]
     tests/unit/usecases/test_switch_theme.cpp
 
-    # 🛠️ Unit Tests — Theme
+    # 🛠️ Unit Tests — Theme [Phase0]
     tests/unit/theme/test_theme_manager.cpp
 
-    # 🛠️ Unit Tests — Utils
+    # 🛠️ Unit Tests — Utils [Phase0]
     tests/unit/utils/test_system_clock.cpp
     tests/unit/utils/test_system_uuidgen.cpp
+    # =========================================================
+    # 🛠️ Unit Tests Domain — entities [Phase1][Slice1]
+    tests/unit/domain/entities/test_DomainValidation.cpp
+
+    # 🛠️ Unit Tests Domain — mappers [Phase1][Slice1]
+    tests/unit/domain/mappers/test_TaskMapper.cpp
+
+    # 🛠️ Integration Tests Domain [Phase1][Slice1]
+    tests/integration/domain/test_FakeTaskRepository.cpp
 
     # 🧪 Main Test Files
     tests/test_main.cpp
@@ -139,7 +148,7 @@ add_executable(TasqlyTestsRunner
 target_link_libraries(TasqlyTestsRunner
     PRIVATE
         tasqly_core
-		tasqly_fakes
+        tasqly_fakes
         GTest::gtest
         GTest::gtest_main
         Qt6::Concurrent

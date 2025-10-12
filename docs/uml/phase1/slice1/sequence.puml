@@ -1,0 +1,25 @@
+@startuml
+' 🧱 File: sequence.puml
+' ----------------------
+' 📌 Purpose   : Sequence Diagram — Task Use Case Execution (Domain Boundary Only)
+' 🧱 Layer     : Docs (UML)
+' 👤 Author    : Mohamed Ali
+' 🗓️ Created   : 2025-10-06
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+title Sequence — Task Creation Flow (Domain Boundary Only)
+
+actor User as user
+participant "App.Tasks" as app
+participant "CreateTaskUseCase" as uc
+participant "ITaskRepository" as repo
+
+user -> app : CreateTask(title, notes, priority)
+app -> uc : execute(request)
+uc -> repo : create(Task)
+repo --> uc : Result<Task, Error>
+uc --> app : Result<Task, Error>
+app --> user : Success / ValidationError
+@enduml

@@ -17,49 +17,49 @@
 # ---------------------------------------------------------------
 add_library(tasqly_core STATIC
     # -------------------------
-    # 🏛️ Application Layer — Core
+    # 🏛️ Application Layer — Core [Phase0]
     # -------------------------
     src/app/core/AppContext.cpp
     src/app/core/AppContext.h
 
-    # 🏛️ Application Layer — Errors
+    # 🏛️ Application Layer — Errors [Phase0]
     src/app/errors/AppErrors.cpp
     src/app/errors/AppErrors.h
 
-    # 🏛️ Application Layer — Loading
+    # 🏛️ Application Layer — Loading [Phase0]
     src/app/loading/AppLoadingManager.cpp
     src/app/loading/AppLoadingManager.h
 
-    # 🏛️ Application Layer — Logging
+    # 🏛️ Application Layer — Logging [Phase0]
     src/app/logging/ErrorReporter.cpp
     src/app/logging/ErrorReporter.h
     src/app/logging/ILogManager.h
     src/app/logging/LogFacade.cpp
     src/app/logging/LogFacade.h
 
-    # 🏛️ Application Layer — Navigation
+    # 🏛️ Application Layer — Navigation [Phase0]
     src/app/navigation/NavigationService.cpp
     src/app/navigation/NavigationService.h
 
-    # 🏛️ Application Layer — Notifier
+    # 🏛️ Application Layer — Notifier [Phase0]
     src/app/notifier/Notifier.cpp
     src/app/notifier/Notifier.h
 
-    # 🏛️ Application Layer — Settings
+    # 🏛️ Application Layer — Settings[Phase0]
     src/app/settings/AppSettingsManager.cpp
     src/app/settings/AppSettingsManager.h
     src/app/settings/FeatureFlagsManager.cpp
     src/app/settings/FeatureFlagsManager.h
 
-    # 🏛️ Application Layer — Theme
+    # 🏛️ Application Layer — Theme [Phase0]
     src/app/theme/ThemeManager.cpp
     src/app/theme/ThemeManager.h
 
-    # 🏛️ Application Layer — QML Facade
+    # 🏛️ Application Layer — QML Facade [Phase0]
     src/app/qml/QmlSingletonProvider.cpp
     src/app/qml/QmlSingletonProvider.h
 
-    # 🏛️ Application Layer — UseCases
+    # 🏛️ Application Layer — UseCases [Phase0]
     src/app/usecases/InitRepositories.cpp
     src/app/usecases/InitRepositories.h
     src/app/usecases/ListTasks.cpp
@@ -74,7 +74,7 @@ add_library(tasqly_core STATIC
     src/app/usecases/SwitchTheme.h
 
     # -------------------------
-    # 🧩 Domain Layer — Core Entities & Contracts
+    # 🧩 Domain Layer — Core [Phase0]
     # -------------------------
     src/domain/core/Error.h
     src/domain/core/Goal.h
@@ -89,20 +89,49 @@ add_library(tasqly_core STATIC
     src/domain/core/ThemeMode.h
 
     # -------------------------
-    # 🏗️ Infrastructure Layer — Logging
+    # 🏗️ Infrastructure Layer — Logging [Phase0]
     # -------------------------
     src/infra/logging/LogManager.cpp
     src/infra/logging/LogManager.h
 
-    # 🏗️ Infrastructure Layer — Persistence
+    # 🏗️ Infrastructure Layer — Persistence [Phase0]
     src/infra/persistence/InMemoryGoalRepository.cpp
     src/infra/persistence/InMemoryGoalRepository.h
     src/infra/persistence/InMemoryTaskRepository.cpp
     src/infra/persistence/InMemoryTaskRepository.h
 
-    # 🏗️ Infrastructure Layer — Utils
+    # 🏗️ Infrastructure Layer — Utils [Phase0]
     src/infra/utils/SystemClock.h
     src/infra/utils/SystemUuidGen.h
+
+    # -------------------------
+    # 🧩 Domain Layer — Core Contracts [Phase1][Slice1]
+    # -------------------------
+    src/domain/core/contracts/ITaskRepository.h
+
+    # -------------------------
+    # 🧩 Domain Layer — Core Entities [Phase1][Slice1]
+    # -------------------------
+    src/domain/core/entities/TaskStatus.h
+    src/domain/core/entities/TaskPriority.h
+    src/domain/core/entities/Task.h
+    src/domain/core/entities/DomainValidation.h
+    src/domain/core/entities/DomainValidation.cpp
+
+    # -------------------------
+    # 🧩 Domain Layer — Core Mappers [Phase1][Slice1]
+    # -------------------------
+    src/domain/core/mappers/TaskDto.h
+    src/domain/core/mappers/TaskMapper.h
+    src/domain/core/mappers/TaskMapper.cpp
+    src/domain/core/mappers/TaskMapper.cpp
+
+    # -------------------------
+    # 🧩 Domain Layer — Core Errors [Phase1][Slice1]
+    # -------------------------
+    src/domain/core/errors/DomainError.h
+    src/domain/core/errors/DomainResult.h
+
 )
 
 # ---------------------------------------------------------------
@@ -152,11 +181,16 @@ tasqly_apply_debug_sanitizers(tasqly_core)
 # 🏗️ Static Library Definition
 # ---------------------------------------------------------------
 add_library(tasqly_fakes STATIC
+    # [Phase0][Slice0]
     tests/fakes/FakeAppSettingsManager.h
     tests/fakes/FakeSettingsStore.h
     tests/fakes/FakeClock.h
     tests/fakes/FakeUuidGen.h
     tests/fakes/LogManagerTestAccessor.h
+    # Domain Fakes [Phase1][Slice1]
+    tests/fakes/domain/FakeTaskRepository.h
+    tests/fakes/domain/FakeTaskRepository.cpp
+
 )
 
 # ---------------------------------------------------------------

@@ -71,12 +71,15 @@ def process_file(entry, rel_path, ftype, phase, slice_name, run_ts, old_data):
     - Count lines of code (LOC)
     - Return structured metadata record + console label
     """
+
     file_size, mtime = entry.stat().st_size, entry.stat().st_mtime
     if file_size > MAX_FILE_SIZE:
         return None, None, f"{entry.name} [SKIPPED: >5MB]"
 
+    # ابحث عن نسخة قديمة من نفس الملف في snapshot السابق
     old_entry = next((e for e in old_data if e["file"] == rel_path), None) if old_data else None
 
+    # --- Detect status and hash ---
     if old_entry and old_entry.get("size") == file_size and old_entry.get("mtime") == mtime:
         file_hash = old_entry["hash"]
         status = "same"
@@ -89,10 +92,15 @@ def process_file(entry, rel_path, ftype, phase, slice_name, run_ts, old_data):
         else:
             status = "same"
 
+    # --- Preserve old metadata when appropriate ---
     file_ts = old_entry["timestamp"] if old_entry else run_ts
-    tags = generate_tags(rel_path, ftype, phase, slice_name)
+    effective_phase = old_entry.get("phase", phase) if old_entry else phase
+    effective_slice = old_entry.get("slice", slice_name) if old_entry else slice_name
 
-    # Count number of lines (LOC) if text file
+    # --- Generate tags (بناءً على المرحلة الحالية أو القديمة حسب الملف) ---
+    tags = generate_tags(rel_path, ftype, effective_phase, effective_slice)
+
+    # --- Count lines (LOC) ---
     loc = None
     try:
         if ftype not in ("Other", "Binary") and file_size < MAX_FILE_SIZE:
@@ -101,7 +109,7 @@ def process_file(entry, rel_path, ftype, phase, slice_name, run_ts, old_data):
     except Exception:
         loc = None
 
-    # Build labels
+    # --- Build labels ---
     label = f"{entry.name} [{ftype}] {' '.join(f'[{t}]' for t in tags)}" if tags else f"{entry.name} [{ftype}]"
 
     if status == "new":
@@ -111,18 +119,20 @@ def process_file(entry, rel_path, ftype, phase, slice_name, run_ts, old_data):
     else:
         console_label = Fore.LIGHTBLACK_EX + label + Style.RESET_ALL
 
+    # --- Final record ---
     record = {
         "file": rel_path,
         "type": ftype,
         "tags": tags,
-        "phase": phase,
-        "slice": slice_name,
+        "phase": effective_phase,
+        "slice": effective_slice,
         "status": status,
         "timestamp": file_ts,
         "size": file_size,
         "mtime": mtime,
         "hash": file_hash,
     }
+
     if loc is not None:
         record["loc"] = loc
 

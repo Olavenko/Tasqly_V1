@@ -1,34 +1,28 @@
 #!/usr/bin/env python3
 import json
-from datetime import datetime
 from pathlib import Path
-
 from .cli import parse_args
 from .walker import walk_tree
 from .console import print_status
 from .exporter import export_outputs
-from .utils import load_gitignore   # ← جديد
+from .utils import load_gitignore
 
 
 def main():
-    # --- Parse CLI arguments ---
     args = parse_args()
 
-    # --- Prepare runtime timestamps ---
-    run_ts = datetime.now().strftime("%Y-%m-%d %H:%M")
-    run_stamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
+    run_ts = args.run_ts
+    run_stamp = args.run_stamp
 
-    # --- Locate project root and snapshot directory ---
     ROOT = Path(__file__).resolve().parent.parent.parent
     SNAPSHOT_DIR = ROOT / "reports" / "project_tree" / "snapshots"
     SNAPSHOT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # --- Load .gitignore patterns ---
-    load_gitignore()   # ← دي أهم خطوة عشان is_excluded يشتغل بالـ .gitignore
+    load_gitignore()
 
-    # --- Load previous JSON snapshot if available ---
     old_data = []
     latest_snapshot = None
+
     snapshots = sorted(
         SNAPSHOT_DIR.glob("Project_Tree_*.json"),
         key=lambda f: f.stat().st_mtime,
@@ -42,10 +36,8 @@ def main():
         except Exception:
             print("⚠️ Warning: Could not read last snapshot, starting fresh.")
 
-    # --- Initialize statistics ---
     stats = {"files": 0, "dirs": 0, "types": {}}
 
-    # --- Markdown header ---
     header = [
         "# 📂 Project Tree (Raw Snapshot)",
         "",
@@ -55,13 +47,10 @@ def main():
         ROOT.name + "/",
     ]
 
-    # --- Walk project tree ---
     json_store, body = walk_tree(ROOT, args.phase, args.slice, run_ts, old_data, stats)
 
-    # --- Print console diff (Summary) ---
-    print_status(json_store, old_data)
+    print_status(json_store, old_data, args.phase)
 
-    # --- Export outputs (Markdown + JSON + Snapshots) ---
     export_outputs(
         run_ts, run_stamp, header, body, stats,
         json_store, args.phase, args.slice, latest_snapshot

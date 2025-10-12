@@ -1,0 +1,32 @@
+@startuml
+' 🧱 File: component.puml
+' -----------------------
+' 📌 Purpose   : Component Diagram — Domain, App, Infra layering (Task Contracts)
+' 🧱 Layer     : Docs (UML)
+' 👤 Author    : Mohamed Ali
+' 🗓️ Created   : 2025-10-06
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+title Component — Domain Entities, Repositories & Mappers
+
+' 🟦 Application Layer
+FA6_BRIEFCASE(app_uc, "UseCases\n(CreateTaskUC, ListTasksUC)", rectangle, #4C9AFF)
+
+' 🟪 Domain Layer
+FA6_CUBES(domain, "Domain Core\n(Task, TaskStatus, TaskPriority)", rectangle, #8E44AD)
+FA_EXCHANGE(mapper, "TaskMapper", rectangle, #9B59B6)
+FA6_DATABASE(repo_iface, "ITaskRepository (interface)", rectangle, #B27DFF)
+
+' 🩶 Infrastructure Layer
+FA5_HDD(repo_inmem, "InMemoryTaskRepository", rectangle, #95A5A6)
+FA6_SERVER(repo_pg, "PostgresTaskRepository", rectangle, #7F8C8D)
+
+' Relations
+app_uc --> domain
+domain --> mapper
+mapper --> repo_iface
+repo_iface --> repo_inmem
+repo_iface --> repo_pg
+@enduml

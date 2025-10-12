@@ -13,6 +13,7 @@ def walk_tree(start_path: Path, phase: str, slice_name: str, run_ts: str, old_da
     - Process files for metadata and tags
     - Build Markdown tree lines
     - Update stats for summary
+    - Build phase/slice breakdown for analytics
     """
     json_store, lines = [], []
     entries = [e for e in start_path.iterdir() if not is_excluded(e)]
@@ -52,9 +53,25 @@ def walk_tree(start_path: Path, phase: str, slice_name: str, run_ts: str, old_da
             record, _, label = process_file(entry, rel_path, ftype, phase, slice_name, run_ts, old_data)
 
             if record:
+                # Add record to output
                 json_store.append(record)
+
+                # Update counters
                 stats["files"] += 1
                 stats["types"][ftype] = stats["types"].get(ftype, 0) + 1
+
+                # ✅ Build phase breakdown for summary
+                if "phase_breakdown" not in stats:
+                    stats["phase_breakdown"] = []
+
+                stats["phase_breakdown"].append({
+                    "file": rel_path,
+                    "phase": record["phase"],
+                    "slice": record["slice"],
+                    "status": record["status"],
+                })
+
+                # Add Markdown label
                 lines.append(prefix + connector + label)
 
     stats["dirs"] += 1

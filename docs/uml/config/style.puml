@@ -49,8 +49,14 @@
 ' ==================================================
 !includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/bell.puml
 !includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/circle_exclamation.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons/material/layers.puml
 !includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/layer_group.puml
 !includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/key.puml
+
+' ==================================================
+' ==== Domain Layer ====
+' ==================================================
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome/exchange.puml
 
 ' ==================================================
 ' ==== Application Layer (Use Cases / Services) ====
@@ -60,12 +66,14 @@
 !includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/sliders.puml
 !includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/clock.puml
 !includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/rectangle_list.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/briefcase.puml
 
 ' ==================================================
 ' ==== Infrastructure Layer (Persistence / Files) ====
 ' ==================================================
 !includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/file.puml
 !includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/main/icons/font-awesome-6/file_circle_check.puml
+!includeurl https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons/font-awesome-5/hdd.puml
 
 ' ==================================================
 ' ==== Theme & Palette (Slice 2 Specific) ====

@@ -1,0 +1,34 @@
+@startuml
+' 🧱 File: usecase.puml
+' ---------------------
+' 📌 Purpose   : Use Case Diagram — Domain Task CRUD & Filtering
+' 🧱 Layer     : Docs (UML)
+' 👤 Author    : Mohamed Ali
+' 🗓️ Created   : 2025-10-06
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+title Use Case — Domain Task Operations
+
+' Actors
+FA6_USER(user, "User (via QML UI)", rectangle, #00EB09)
+MATERIAL_LAYERS(app, "App.Tasks (UseCase Facade)", rectangle, #4C9AFF)
+
+' System Boundary
+rectangle "Tasqly Domain Layer" as Domain {
+    usecase "Create Task" as UC_Create
+    usecase "Load Tasks" as UC_Load
+    usecase "Update Task" as UC_Update
+    usecase "Delete Task" as UC_Delete
+    usecase "Filter Tasks" as UC_Filter
+}
+
+' Relationships
+user --> app
+app --> UC_Create
+app --> UC_Load
+app --> UC_Update
+app --> UC_Delete
+app --> UC_Filter
+@enduml

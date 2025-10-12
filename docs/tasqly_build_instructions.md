@@ -24,7 +24,7 @@ cmake --build --preset=build-mingw-debug --parallel
 # Run unit tests
 ctest --preset=test-mingw-debug --output-on-failure ## to run all tests
 ctest --preset=test-mingw-debug -R WriteFailureDuringLoadThrows -VV ## to run single test in file
-ctest --preset=test-mingw-debug -R AppSettingsManagerTest -VV ## to run all file tests
+ctest --preset=test-mingw-debug -R FakeTaskRepositoryTest -VV ## to run all file tests
 ```
 
 ### 2. Benchmarks build (performance benchmarks, always Release mode)
