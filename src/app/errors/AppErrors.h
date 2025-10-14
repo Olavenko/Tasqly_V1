@@ -20,7 +20,7 @@
 #include <QVariantMap>
 
 // Domain
-#include "../../domain/core/Error.h"
+#include "domain/core/Error.h"
 
 namespace tasqly::app::errors {
 

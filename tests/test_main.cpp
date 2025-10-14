@@ -14,11 +14,12 @@
  * Cleans up temporary test output folder (tests_tmp) after all tests.
  */
 
+#include "tests/common/RuntimeDiagnostic.h"
+#include <gtest/gtest.h>
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
 #include <QStandardPaths>
-#include <gtest/gtest.h>
 
 /// 🧹 Cleanup helper: remove tests_tmp folder if it exists
 static void cleanupTestsTmp()
@@ -37,6 +38,7 @@ static void cleanupTestsTmp()
 int main(int argc, char **argv)
 {
   QCoreApplication app(argc, argv);
+  tasqly::diagnostic::printRuntimeInfo(); // 🧠 Print environment info
   testing::InitGoogleTest(&argc, argv);
 
   int result = RUN_ALL_TESTS();

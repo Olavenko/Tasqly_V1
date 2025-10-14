@@ -1,5 +1,5 @@
 /*
- * 🧱 File: TaskMapper.h
+ * 🧱 File: P1_TaskMapper.h
  * ---------------------
  * 📌 Purpose   : Defines manual conversion between Task and TaskDto.
  * 🧱 Layer     : Domain (Core) — Mappers
@@ -18,8 +18,8 @@
  */
 
 #pragma once
-#include "domain/core/entities/Task.h"
-#include "domain/core/mappers/TaskDto.h"
+#include "domain/core/entities/P1_Task.h"
+#include "domain/core/mappers/P1_TaskDto.h"
 #include <string>
 
 namespace tasqly::domain::core {

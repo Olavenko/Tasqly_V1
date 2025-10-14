@@ -103,34 +103,35 @@ add_library(tasqly_core STATIC
     # 🏗️ Infrastructure Layer — Utils [Phase0]
     src/infra/utils/SystemClock.h
     src/infra/utils/SystemUuidGen.h
-
+	
+	#=================================================
+	# [Phase1]
     # -------------------------
     # 🧩 Domain Layer — Core Contracts [Phase1][Slice1]
     # -------------------------
-    src/domain/core/contracts/ITaskRepository.h
+    src/domain/core/contracts/P1_ITaskRepository.h
 
     # -------------------------
     # 🧩 Domain Layer — Core Entities [Phase1][Slice1]
     # -------------------------
-    src/domain/core/entities/TaskStatus.h
-    src/domain/core/entities/TaskPriority.h
-    src/domain/core/entities/Task.h
-    src/domain/core/entities/DomainValidation.h
-    src/domain/core/entities/DomainValidation.cpp
+    src/domain/core/entities/P1_TaskStatus.h
+    src/domain/core/entities/P1_TaskPriority.h
+    src/domain/core/entities/P1_Task.h
+    src/domain/core/entities/P1_DomainValidation.h
+    src/domain/core/entities/P1_DomainValidation.cpp
 
     # -------------------------
     # 🧩 Domain Layer — Core Mappers [Phase1][Slice1]
     # -------------------------
-    src/domain/core/mappers/TaskDto.h
-    src/domain/core/mappers/TaskMapper.h
-    src/domain/core/mappers/TaskMapper.cpp
-    src/domain/core/mappers/TaskMapper.cpp
+    src/domain/core/mappers/P1_TaskDto.h
+    src/domain/core/mappers/P1_TaskMapper.cpp
+    src/domain/core/mappers/P1_TaskMapper.h
 
     # -------------------------
     # 🧩 Domain Layer — Core Errors [Phase1][Slice1]
     # -------------------------
-    src/domain/core/errors/DomainError.h
-    src/domain/core/errors/DomainResult.h
+    src/domain/core/errors/P1_DomainResult.h
+    src/domain/core/errors/P1_DomainError.h
 
 )
 

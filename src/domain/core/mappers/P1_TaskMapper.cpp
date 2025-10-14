@@ -1,173 +1,141 @@
 /*
- * 🧱 File: P1_TaskMapper.cpp (Diagnostic Trace Build)
- * -----------------------------------------------
- * Purpose: Deep trace build to locate runtime crash in TaskMapper logic.
- * Author : Mohamed Ali
- * Date   : 2025-10-14
+ * 🧱 File: P1_TaskMapper.cpp
+ * --------------------------
+ * 📌 Purpose   : Manual conversion between Task and TaskDto.
+ * 🧱 Layer     : Domain (Core)
+ * 👤 Author    : Mohamed Ali
+ * 🗓️ Created   : 2025-10-14
+ * 🔖 Version   : 1.2 (Stable, Clean Build)
+ * 🛡️ Stability : Production Ready
+ *
+ * 🧠 Description:
+ * Provides deterministic and dependency-free conversion between:
+ *   - Domain entity (Task)
+ *   - Data Transfer Object (TaskDto)
+ *
+ * Conversion ensures:
+ *   - Optional fields handled safely
+ *   - ISO8601 formatting for time values
+ *   - No Qt, DB, or external dependencies
  */
 
 #include "domain/core/mappers/P1_TaskMapper.h"
+#include "domain/core/entities/P1_TaskPriority.h"
+#include "domain/core/entities/P1_TaskStatus.h"
 #include <cstring>
 #include <ctime>
 #include <iomanip>
-#include <iostream>
 #include <sstream>
 
-using namespace tasqly::domain::core;
-
-#define TRACE(ID, MSG) std::cout << "[TRACE:" << ID << "] " << MSG << std::endl
+namespace tasqly::domain::core::v1 {
 
 // =====================================================================
-// 🕓 Convert chrono::time_point -> ISO8601 string (Diagnostic version)
+// 🕓 Convert chrono::time_point -> ISO8601 string
 // =====================================================================
 std::string TaskMapper::timePointToIso(const std::chrono::system_clock::time_point& tp)
 {
-  TRACE(100, "Entered timePointToIso()");
   std::time_t t = std::chrono::system_clock::to_time_t(tp);
-  TRACE(101, "time_t value = " << t);
-
-  if (t < 0) {
-    TRACE(102, "Invalid time_t, using 0");
+  if (t < 0)
     t = 0;
-  }
 
   std::tm tm{};
 #if defined(_WIN32)
-  TRACE(103, "Calling gmtime_s()");
   if (gmtime_s(&tm, &t) != 0) {
-    TRACE(104, "gmtime_s failed");
     std::memset(&tm, 0, sizeof(tm));
     tm.tm_year = 70;
     tm.tm_mday = 1;
   }
 #else
-  TRACE(103, "Calling gmtime_r()");
   if (gmtime_r(&t, &tm) == nullptr) {
-    TRACE(104, "gmtime_r failed");
     std::memset(&tm, 0, sizeof(tm));
     tm.tm_year = 70;
     tm.tm_mday = 1;
   }
 #endif
 
-  TRACE(105, "Preparing strftime()");
   char buf[32] = {};
-  if (std::strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", &tm)) {
-    TRACE(106, "strftime success, returning string");
+  if (std::strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", &tm))
     return std::string(buf);
-  }
 
-  TRACE(107, "strftime failed, fallback to epoch");
   return "1970-01-01T00:00:00Z";
 }
 
 // =====================================================================
-// 🕓 Convert ISO8601 string -> chrono::time_point (Diagnostic version)
+// 🕓 Convert ISO8601 string -> chrono::time_point
 // =====================================================================
 std::chrono::system_clock::time_point TaskMapper::isoToTimePoint(const std::string& iso)
 {
-  TRACE(200, "Entered isoToTimePoint()");
   std::tm tm{};
   if (!iso.empty()) {
-    TRACE(201, "Parsing ISO string: " << iso);
     std::istringstream ss(iso);
     ss >> std::get_time(&tm, "%Y-%m-%dT%H:%M:%SZ");
   } else {
-    TRACE(202, "ISO empty, using epoch");
     tm.tm_year = 70;
     tm.tm_mday = 1;
   }
 
 #if defined(_WIN32)
-  TRACE(203, "Calling _mkgmtime()");
   std::time_t tt = _mkgmtime(&tm);
 #else
-  TRACE(203, "Calling timegm()");
   std::time_t tt = timegm(&tm);
 #endif
 
-  TRACE(204, "Returning time_point from tt=" << tt);
   return std::chrono::system_clock::from_time_t(tt);
 }
 
 // =====================================================================
-// 🧩 Convert Task -> TaskDto (Diagnostic version)
+// 🧩 Convert Task -> TaskDto
 // =====================================================================
 TaskDto TaskMapper::toDto(const Task& task)
 {
-  TRACE(1, "Entered toDto()");
   TaskDto dto;
-
-  TRACE(2, "Assigning primitive fields");
   dto.id = task.id;
   dto.title = task.title;
   dto.status = toString(task.status);
   dto.priority = toString(task.priority);
 
-  TRACE(3, "Handling notes");
-  if (task.notes.has_value() && !task.notes->empty()) {
-    TRACE(4, "notes valid");
+  if (task.notes.has_value() && !task.notes->empty())
     dto.notes = *task.notes;
-  } else {
-    TRACE(5, "notes empty or nullopt");
+  else
     dto.notes.reset();
-  }
 
-  TRACE(6, "Handling deadline");
-  if (task.deadline.has_value()) {
-    TRACE(7, "deadline valid, converting");
+  if (task.deadline.has_value())
     dto.deadline = timePointToIso(*task.deadline);
-  } else {
-    TRACE(8, "deadline nullopt");
+  else
     dto.deadline.reset();
-  }
 
-  TRACE(9, "Converting createdAt");
   dto.createdAt = timePointToIso(task.createdAt);
-
-  TRACE(10, "Converting updatedAt");
   dto.updatedAt = timePointToIso(task.updatedAt);
 
-  TRACE(11, "Returning DTO");
   return dto;
 }
 
 // =====================================================================
-// 🧩 Convert TaskDto -> Task (Diagnostic version)
+// 🧩 Convert TaskDto -> Task
 // =====================================================================
 Task TaskMapper::fromDto(const TaskDto& dto)
 {
-  TRACE(20, "Entered fromDto()");
   Task task;
   task.id = dto.id;
   task.title = dto.title;
 
-  TRACE(21, "Handling notes");
-  if (dto.notes.has_value() && !dto.notes->empty()) {
-    TRACE(22, "dto.notes valid");
+  if (dto.notes.has_value() && !dto.notes->empty())
     task.notes = *dto.notes;
-  } else {
-    TRACE(23, "dto.notes nullopt");
+  else
     task.notes.reset();
-  }
 
-  TRACE(24, "Handling status/priority");
   task.status = taskStatusFromString(dto.status).value_or(TaskStatus::Todo);
   task.priority = taskPriorityFromString(dto.priority).value_or(TaskPriority::Normal);
 
-  TRACE(25, "Handling deadline");
-  if (dto.deadline.has_value() && !dto.deadline->empty()) {
-    TRACE(26, "deadline valid");
+  if (dto.deadline.has_value() && !dto.deadline->empty())
     task.deadline = isoToTimePoint(*dto.deadline);
-  } else {
-    TRACE(27, "deadline empty");
+  else
     task.deadline.reset();
-  }
 
-  TRACE(28, "Handling created/updated times");
   task.createdAt = isoToTimePoint(dto.createdAt);
   task.updatedAt = isoToTimePoint(dto.updatedAt);
 
-  TRACE(29, "Returning Task");
   return task;
 }
+
+} // namespace tasqly::domain::core::v1

@@ -14,10 +14,10 @@
  * specialization for void, and all factory and accessor methods.
  */
 
-#include "domain/core/errors/DomainResult.h"
+#include "domain/core/errors/P1_DomainResult.h"
 #include <gtest/gtest.h>
 
-using namespace tasqly::domain::core;
+using namespace tasqly::domain::core::v1;
 
 // 🧩 Test: ok() factory creates success result
 TEST(DomainResultTest, OkFactoryCreatesSuccess)
@@ -32,7 +32,7 @@ TEST(DomainResultTest, OkFactoryCreatesSuccess)
 // 🧩 Test: err() factory creates error result
 TEST(DomainResultTest, ErrFactoryCreatesError)
 {
-  auto err = DomainError::Validation("Invalid input");
+  auto err = DomainError::makeValidation("Invalid input");
   auto result = DomainResult<int>::err(err);
 
   EXPECT_TRUE(result.isErr());
@@ -47,7 +47,7 @@ TEST(DomainResultTest, ErrFactoryCreatesError)
 TEST(DomainResultTest, AccessingValueOnErrorIsUnsafe)
 {
 #ifndef NDEBUG
-  auto err = DomainError::NotFound("Missing ID");
+  auto err = DomainError::makeNotFound("Missing ID");
   auto result = DomainResult<int>::err(err);
   EXPECT_DEATH((void) result.value(), ""); // death test for assert
 #endif
@@ -74,7 +74,7 @@ TEST(DomainResultVoidTest, OkSpecializationWorks)
 // 🧩 Test: DomainResult<void> err() specialization works
 TEST(DomainResultVoidTest, ErrSpecializationWorks)
 {
-  auto err = DomainError::Storage("Disk failure");
+  auto err = DomainError::makeStorage("Disk failure");
   auto result = DomainResult<void>::err(err);
 
   EXPECT_TRUE(result.isErr());

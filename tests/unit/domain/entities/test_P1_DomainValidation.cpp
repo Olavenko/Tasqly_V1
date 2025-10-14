@@ -1,5 +1,5 @@
 /*
- * 🧱 File: test_DomainValidation.cpp
+ * 🧱 File: test_P1_DomainValidation.cpp
  * ---------------------------------
  * 📌 Purpose   : Unit tests for DomainValidation helpers (title & deadline).
  * 🧱 Layer     : Tests (Unit / Domain)
@@ -15,15 +15,15 @@
  * These tests ensure domain consistency rules hold before any persistence.
  *
  * 🔗 Depends On:
- *   - domain/core/entities/DomainValidation.h
+ *   - domain/core/entities/P1_DomainValidation.h
  * ✅ Tested In : TasqlyTestsRunner
  * ⚡ Performance: Negligible (pure CPU checks)
  */
 
-#include "domain/core/entities/DomainValidation.h"
+#include "domain/core/entities/P1_DomainValidation.h"
 #include <gtest/gtest.h>
 
-using namespace tasqly::domain::core;
+using namespace tasqly::domain::core::v1;
 
 // 🧩 Fixture for DomainValidation tests
 class DomainValidationTest : public ::testing::Test

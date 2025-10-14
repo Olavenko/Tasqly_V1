@@ -22,6 +22,8 @@
  * ⚠️ Notes     : InitSuccess deferred to Phase1 once infra ready.
  */
 
+#include <QtCore/QDateTime>
+#include <QtCore/QString>
 #include "app/core/AppContext.h"
 #include "domain/core/Error.h"
 #include "domain/core/Goal.h"
@@ -30,8 +32,6 @@
 #include "domain/core/Result.h"
 #include "domain/core/Task.h"
 #include <gtest/gtest.h>
-#include <QtCore/QDateTime>
-#include <QtCore/QString>
 
 #include "tests/fakes/FakeClock.h"
 #include "tests/fakes/FakeUuidGen.h"

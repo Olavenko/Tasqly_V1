@@ -1,11 +1,11 @@
 /*
- * 🧱 File: DomainValidation.cpp
+ * 🧱 File: P1_DomainValidation.cpp
  * -----------------------------
  * 📌 Purpose   : Implements domain validation logic for Task entity.
- * 🧱 Layer     : Domain (Core)
+ * 🧱 Layer     : Domain (Core) — Validation (Phase 1)
  * 👤 Author    : Mohamed Ali
  * 🗓️ Created   : 2025-10-08
- * 🔖 Version   : 1.0 (Initial Implementation)
+ * 🔖 Version   : 1.1 (Namespace Isolation + Consistency)
  * 🛡️ Stability : Stable
  *
  * 🧠 Description:
@@ -15,9 +15,10 @@
  * These rules ensure that invalid entities never cross the domain boundary.
  */
 
-#include "domain/core/entities/DomainValidation.h"
+#include "domain/core/entities/P1_DomainValidation.h"
+#include <chrono>
 
-namespace tasqly::domain::core {
+namespace tasqly::domain::core::v1 {
 
 // 🧩 Validate Task title
 ValidationResult DomainValidation::validateTitle(const std::string& title)
@@ -45,4 +46,4 @@ ValidationResult DomainValidation::validateDeadline(
   return {true, ""};
 }
 
-} // namespace tasqly::domain::core
+} // namespace tasqly::domain::core::v1

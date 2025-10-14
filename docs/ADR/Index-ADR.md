@@ -57,16 +57,18 @@ Each ADR documents a significant architectural or tooling decision.
 | 0004 | Tracking-Of-Newly-Introduced-Files | Draft  | 2025-09-07    | [0004](phase0/Slice4/0004-tracking-new-files.md)           |
 | 0005 | qml-tasklistpage-tests-phase0      | Draft  | 2025-09-08    | [0005](phase0/Slice4/0005-adr_qml_task_list_page_tests.md) |
 
-### phase1/slice1 (6 ADRs)
+### phase1/slice1 (8 ADRs)
 
-| ID   | Title                                        | Status   | Last Modified | File                                                         |
-|------|----------------------------------------------|----------|---------------|--------------------------------------------------------------|
-| 0001 | Domain Entities, Contracts & Mappers         | Draft    | 2025-10-09    | [0001](phase1/slice1/0001-phase_1_slice_1_analysis.md)       |
-| 0002 | Task Entity & Contracts — No Qt/DB in Domain | Draft    | 2025-10-06    | [0002](phase1/slice1/0002-task_entity_contracts.md)          |
-| 0003 | DTO Mappers vs Direct Entity Exposure        | Draft    | 2025-10-06    | [0003](phase1/slice1/0003-dto_vs_direct_entity.md)           |
-| 0004 | Mapper Strategy — Manual vs Codegen          | Draft    | 2025-10-06    | [0004](phase1/slice1/0004-mapper_strategy.md)                |
-| 0005 | Phase 1 Domain Isolation Policy              | Accepted | 2025-10-09    | [0005](phase1/slice1/0005-phase1_domain_isolation_policy.md) |
-| 0006 | Task Mapper Strategy: Manual Conversion      | :Doing;  | 2025-10-09    | [0006](phase1/slice1/0006-task-mapper-strategy-manual.md)    |
+| ID   | Title                                                              | Status   | Last Modified | File                                                         |
+|------|--------------------------------------------------------------------|----------|---------------|--------------------------------------------------------------|
+| 0001 | Domain Entities, Contracts & Mappers                               | Draft    | 2025-10-09    | [0001](phase1/slice1/0001-phase_1_slice_1_analysis.md)       |
+| 0002 | Task Entity & Contracts — No Qt/DB in Domain                       | Draft    | 2025-10-06    | [0002](phase1/slice1/0002-task_entity_contracts.md)          |
+| 0003 | DTO Mappers vs Direct Entity Exposure                              | Draft    | 2025-10-06    | [0003](phase1/slice1/0003-dto_vs_direct_entity.md)           |
+| 0004 | Mapper Strategy — Manual vs Codegen                                | Draft    | 2025-10-06    | [0004](phase1/slice1/0004-mapper_strategy.md)                |
+| 0005 | Phase 1 Domain Isolation Policy                                    | Accepted | 2025-10-09    | [0005](phase1/slice1/0005-phase1_domain_isolation_policy.md) |
+| 0006 | Task Mapper Strategy: Manual Conversion                            | :Doing;  | 2025-10-14    | [0006](phase1/slice1/0006-task-mapper-strategy-manual.md)    |
+| 0007 | Phase0/Phase1 Header Collision in Task.h                           | Accepted | 2025-10-14    | [0007](phase1/slice1/0007-phase0_Phase1_Header_Collision.md) |
+| 0008 | Namespace Isolation & Resolution Strategy in Domain/Core (Phase 1) | Accepted | 2025-10-14    | [0008](phase1/slice1/0008-Namespace-Isolation.md)            |
 
 ---
 
@@ -76,4 +78,4 @@ Each ADR documents a significant architectural or tooling decision.
 - **Proposed** → Under discussion.
 - **Draft** → Created but not yet reviewed.
 
-*Index generated on 2025-10-12 10:57 UTC*
+*Index generated on 2025-10-14 11:48 UTC*

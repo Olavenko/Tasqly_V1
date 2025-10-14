@@ -18,6 +18,21 @@ set PATH=C:\Qt\6.9.2\mingw_64\bin;%PATH%
 cd /c/Users/Olavenko/Desktop/TasqlyQt/Tasqly_V1
 ./scripts/check-format.sh
 
+====================================================================
+## to debug in GDP
+cd C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\build\mingw-debug
+gdb TasqlyTestsRunner.exe
+run --gtest_filter=TaskMapperDiagnostic.ToDtoBasicConversion
+bt
+gdb build/mingw-debug/TasqlyTestsRunner.exe
+run --gtest_filter=TaskMapperDiagnostic.ToDtoBasicConversion
+bt
+info locals
+info args
+frame 0
+info registers
+=======================================================================
+
 cmake --preset=mingw-debug
 cmake --build --preset=build-mingw-debug --parallel
 

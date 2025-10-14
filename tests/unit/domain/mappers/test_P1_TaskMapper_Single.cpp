@@ -5,7 +5,7 @@
  * 🧱 Layer     : Domain (Core) — Tests
  * 👤 Author    : Mohamed Ali
  * 🗓️ Created   : 2025-10-14
- * 🔖 Version   : 1.0 (Diagnostic Test)
+ * 🔖 Version   : 1.1 (Namespace Isolation Fix)
  * 🛡️ Stability : Safe for debug builds
  *
  * 🧠 Description:
@@ -14,12 +14,12 @@
  * It helps detect invalid std::optional access before running full suites.
  */
 
-#include "domain/core/entities/Task.h"
-#include "domain/core/mappers/TaskMapper.h"
+#include "domain/core/entities/P1_Task.h"
+#include "domain/core/mappers/P1_TaskMapper.h"
 #include <gtest/gtest.h>
 #include <iostream>
 
-using namespace tasqly::domain::core;
+using namespace tasqly::domain::core::v1; // ✅ FIXED: isolate Phase1 namespace
 
 // ============================================================================
 // 🧪 TEST CASE — Minimal ToDto conversion smoke test

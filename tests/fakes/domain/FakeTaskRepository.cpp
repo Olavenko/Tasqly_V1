@@ -5,7 +5,7 @@
  * 🧱 Layer     : Domain (Fakes / Testing)
  * 👤 Author    : Mohamed Ali
  * 🗓️ Created   : 2025-10-12
- * 🔖 Version   : 1.0
+ * 🔖 Version   : 1.1 (Aligned with v1 DomainError API)
  * 🛡️ Stability : Stable
  *
  * 🧠 Description:
@@ -14,8 +14,9 @@
  */
 
 #include "FakeTaskRepository.h"
+#include <algorithm>
 
-namespace tasqly::domain::core {
+namespace tasqly::domain::core::v1 {
 
 // 📝 Create
 DomainResult<Task> FakeTaskRepository::create(const Task& task)
@@ -25,12 +26,12 @@ DomainResult<Task> FakeTaskRepository::create(const Task& task)
   auto exists = std::any_of(_tasks.begin(), _tasks.end(), [&](const Task& t) {
     return t.id == task.id;
   });
+
   if (exists)
-    return DomainResult<Task>::err(DomainError::Conflict("Task with same ID already exists"));
+    return DomainResult<Task>::err(DomainError::makeConflict("Task with same ID already exists"));
 
   _tasks.push_back(task);
-  Task created = _tasks.back();
-  return DomainResult<Task>::ok(std::move(created)); // ✅ move-safe
+  return DomainResult<Task>::ok(_tasks.back());
 }
 
 // 🔎 GetById
@@ -39,11 +40,11 @@ DomainResult<Task> FakeTaskRepository::getById(const std::string& id) const
   std::scoped_lock lock(_mutex);
 
   auto it = std::find_if(_tasks.begin(), _tasks.end(), [&](const Task& t) { return t.id == id; });
-  if (it == _tasks.end())
-    return DomainResult<Task>::err(DomainError::NotFound("Task not found"));
 
-  Task found = *it;
-  return DomainResult<Task>::ok(std::move(found)); // ✅ move-safe
+  if (it == _tasks.end())
+    return DomainResult<Task>::err(DomainError::makeNotFound("Task not found"));
+
+  return DomainResult<Task>::ok(*it);
 }
 
 // ✏️ Update
@@ -55,12 +56,11 @@ DomainResult<Task> FakeTaskRepository::update(const Task& task)
     if (t.id == task.id) {
       t = task;
       t.updatedAt = std::chrono::system_clock::now();
-      Task updated = t;
-      return DomainResult<Task>::ok(std::move(updated)); // ✅ move-safe
+      return DomainResult<Task>::ok(t);
     }
   }
 
-  return DomainResult<Task>::err(DomainError::NotFound("Cannot update non-existent task"));
+  return DomainResult<Task>::err(DomainError::makeNotFound("Cannot update non-existent task"));
 }
 
 // 🗑️ Remove
@@ -71,7 +71,7 @@ DomainResult<void> FakeTaskRepository::remove(const std::string& id)
   auto it = std::remove_if(_tasks.begin(), _tasks.end(), [&](const Task& t) { return t.id == id; });
 
   if (it == _tasks.end())
-    return DomainResult<void>::err(DomainError::NotFound("Task not found"));
+    return DomainResult<void>::err(DomainError::makeNotFound("Task not found"));
 
   _tasks.erase(it, _tasks.end());
   return DomainResult<void>::ok();
@@ -112,4 +112,4 @@ void FakeTaskRepository::clear()
   _tasks.clear();
 }
 
-} // namespace tasqly::domain::core
+} // namespace tasqly::domain::core::v1

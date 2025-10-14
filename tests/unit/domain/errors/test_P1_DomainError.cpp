@@ -1,12 +1,12 @@
 /*
- * 🧱 File: test_DomainError.cpp
+ * 🧱 File: test_P1_DomainError.cpp
  * -----------------------------
  * 📌 Purpose   : Unit tests for DomainError struct and factory helpers.
  * 🧱 Layer     : Domain (Core)
  * 🧪 Type      : Unit Test (GoogleTest)
  * 👤 Author    : Tasqly QA Bot
  * 🗓️ Created   : 2025-10-12
- * 🔖 Version   : 1.0
+ * 🔖 Version   : 1.1 (Aligned with v1 API)
  * 🛡️ Stability : Stable
  *
  * 🧠 Description:
@@ -14,10 +14,10 @@
  * and equality comparison operators.
  */
 
-#include "domain/core/errors/DomainError.h"
+#include "domain/core/errors/P1_DomainError.h"
 #include <gtest/gtest.h>
 
-using namespace tasqly::domain::core;
+using namespace tasqly::domain::core::v1;
 
 // 🧩 Test: Default constructor initializes with Unknown code
 TEST(DomainErrorTest, DefaultConstructorSetsUnknown)
@@ -50,11 +50,11 @@ TEST(DomainErrorTest, ContextConstructorStoresContext)
 // 🧩 Test: Factory helpers create correct codes
 TEST(DomainErrorTest, FactoryHelpersCreateCorrectCodes)
 {
-  auto v = DomainError::Validation("Missing title");
-  auto nf = DomainError::NotFound("Task not found");
-  auto c = DomainError::Conflict("Duplicate");
-  auto s = DomainError::Storage("IO error");
-  auto u = DomainError::Unknown();
+  auto v = DomainError::makeValidation("Missing title");
+  auto nf = DomainError::makeNotFound("Task not found");
+  auto c = DomainError::makeConflict("Duplicate");
+  auto s = DomainError::makeStorage("IO error");
+  auto u = DomainError::makeUnknown();
 
   EXPECT_EQ(v.code, DomainErrorCode::Validation);
   EXPECT_EQ(nf.code, DomainErrorCode::NotFound);

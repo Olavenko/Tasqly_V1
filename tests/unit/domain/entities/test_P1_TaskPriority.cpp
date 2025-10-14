@@ -17,10 +17,10 @@
  * Ensures round-trip consistency and case-sensitivity behavior.
  */
 
-#include "domain/core/entities/TaskPriority.h"
+#include "domain/core/entities/P1_TaskPriority.h"
 #include <gtest/gtest.h>
 
-using namespace tasqly::domain::core;
+using namespace tasqly::domain::core::v1;
 
 // 🧩 Test: toString() should return correct string for each enum value
 TEST(TaskPriorityTest, ToStringReturnsCorrectValue)

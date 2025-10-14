@@ -5,7 +5,7 @@
  * 🧱 Layer     : Domain (Fakes / Testing)
  * 👤 Author    : Mohamed Ali
  * 🗓️ Created   : 2025-10-12
- * 🔖 Version   : 1.0 (Initial)
+ * 🔖 Version   : 1.1 (Namespace Alignment with v1)
  * 🛡️ Stability : Stable
  *
  * 🧠 Description:
@@ -16,13 +16,17 @@
 
 #pragma once
 
-#include "domain/core/contracts/ITaskRepository.h"
-#include "domain/core/errors/DomainResult.h"
+#include "domain/core/contracts/P1_ITaskRepository.h"
+#include "domain/core/entities/P1_Task.h"
+#include "domain/core/entities/P1_TaskPriority.h"
+#include "domain/core/entities/P1_TaskStatus.h"
+#include "domain/core/errors/P1_DomainResult.h"
+
 #include <mutex>
 #include <optional>
 #include <vector>
 
-namespace tasqly::domain::core {
+namespace tasqly::domain::core::v1 {
 
 class FakeTaskRepository final : public ITaskRepository
 {
@@ -56,4 +60,4 @@ private:
   std::vector<Task> _tasks;
 };
 
-} // namespace tasqly::domain::core
+} // namespace tasqly::domain::core::v1

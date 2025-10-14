@@ -1,24 +1,25 @@
 /*
- * 🧱 File: DomainError.h
- * ----------------------
+ * 🧱 File: P1_DomainError.h
+ * -------------------------
  * 📌 Purpose   : Pure C++ domain error type (no Qt dependencies).
- * 🧱 Layer     : Domain (Core)
+ * 🧱 Layer     : Domain (Core) — Errors (Phase 1)
  * 👤 Author    : Mohamed Ali
  * 🗓️ Created   : 2025-10-12
- * 🔖 Version   : 1.1 (Enum-based codes + factories)
+ * 🔖 Version   : 1.2 (Namespace Isolation + Inline Factories)
  * 🛡️ Stability : Stable
  *
  * 🧠 Description:
  * Represents a domain-level error in a pure C++ context.
  * This error type contains a strongly-typed error code enum,
  * a descriptive message, and an optional key-value context map.
- * 
+ *
  * ⚙️ Characteristics:
  * - No Qt dependencies
- * - Fully portable
+ * - Fully portable & serializable
  * - Deterministic error codes (enum-based)
- * 
- * 🧩 Related:
+ * - Factory helpers for readability
+ *
+ * 🔗 Related:
  *   - DomainResult<T>
  *   - ITaskRepository
  *   - FakeTaskRepository
@@ -30,18 +31,18 @@
 #include <unordered_map>
 #include <utility>
 
-namespace tasqly::domain::core {
+namespace tasqly::domain::core::v1 {
 
-/// 🧱 Enumerates all domain-level error categories.
+/// @brief Enumerates all domain-level error categories.
 enum class DomainErrorCode {
-  Unknown = 0,
-  Validation = 1001,
-  NotFound = 1002,
-  Conflict = 1003,
-  Storage = 1004
+  Unknown = 0,       ///< Undefined or unexpected error
+  Validation = 1001, ///< Entity validation failed
+  NotFound = 1002,   ///< Entity not found
+  Conflict = 1003,   ///< Conflict with existing entity (e.g., duplicate key)
+  Storage = 1004     ///< Failure in repository or data persistence
 };
 
-/// 🧩 DomainError — pure C++ representation of an error in domain logic.
+/// @brief Represents a domain error with code, message, and optional context.
 struct DomainError
 {
   DomainErrorCode code = DomainErrorCode::Unknown;
@@ -62,25 +63,28 @@ struct DomainError
       , context(std::move(ctx))
   {}
 
-  // 🧩 Factory helpers
-  static DomainError Validation(std::string msg)
+  // 🧩 Factory helpers (inline)
+  static inline DomainError makeValidation(std::string msg)
   {
     return {DomainErrorCode::Validation, std::move(msg)};
   }
 
-  static DomainError NotFound(std::string msg)
+  static inline DomainError makeNotFound(std::string msg)
   {
     return {DomainErrorCode::NotFound, std::move(msg)};
   }
 
-  static DomainError Conflict(std::string msg)
+  static inline DomainError makeConflict(std::string msg)
   {
     return {DomainErrorCode::Conflict, std::move(msg)};
   }
 
-  static DomainError Storage(std::string msg) { return {DomainErrorCode::Storage, std::move(msg)}; }
+  static inline DomainError makeStorage(std::string msg)
+  {
+    return {DomainErrorCode::Storage, std::move(msg)};
+  }
 
-  static DomainError Unknown(std::string msg = "Unknown error")
+  static inline DomainError makeUnknown(std::string msg = "Unknown error")
   {
     return {DomainErrorCode::Unknown, std::move(msg)};
   }
@@ -94,4 +98,4 @@ struct DomainError
   bool operator!=(const DomainError& other) const noexcept { return !(*this == other); }
 };
 
-} // namespace tasqly::domain::core
+} // namespace tasqly::domain::core::v1

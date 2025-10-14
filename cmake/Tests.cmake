@@ -130,26 +130,82 @@ add_executable(TasqlyTestsRunner
     tests/unit/utils/test_system_clock.cpp
     tests/unit/utils/test_system_uuidgen.cpp
 
+    #=========================================================
     # Phase[1]
     # =========================================================
+    # 🛠️ integration Tests Domain — mappers [Phase1][Slice1]
+    tests/integration/domain/mappers/test_P1_TaskRepositoryIntegration.cpp
+    tests/integration/domain/mappers/test_P1_TaskMapperRepository_RoundTrip.cpp
+
     # 🛠️ Unit Tests Domain — entities [Phase1][Slice1]
-    tests/unit/domain/entities/test_DomainValidation.cpp
-    tests/unit/domain/entities/test_TaskPriority.cpp
-    tests/unit/domain/entities/test_TaskStatus.cpp
+    tests/unit/domain/entities/test_P1_DomainValidation.cpp
+    tests/unit/domain/entities/test_P1_TaskPriority.cpp
+    tests/unit/domain/entities/test_P1_TaskStatus.cpp
 
     # 🛠️ Unit Tests Domain — errors [Phase1][Slice1]
-    tests/unit/domain/errors/test_DomainError.cpp
-    tests/unit/domain/errors/test_DomainResult.cpp
+    tests/unit/domain/errors/test_P1_DomainError.cpp
+    tests/unit/domain/errors/test_P1_DomainResult.cpp
 
     # 🛠️ Unit Tests Domain — mappers [Phase1][Slice1]
-
-    # 🛠️ Integration Tests Domain [Phase1][Slice1]
+    tests/unit/domain/mappers/test_P1_TaskMapper.cpp
 
     # 🧪 Main Test Files
+    tests/common/RuntimeDiagnostic.h
     tests/test_main.cpp
     tests/test_result.cpp
     tests/test_result_void.cpp
 )
+
+#=====================================================================
+# 🧩 Diagnostic: print compiler configuration info
+message(STATUS "====================================================")
+message(STATUS " Tasqly Diagnostic Build Info")
+message(STATUS "====================================================")
+message(STATUS "C++ Compiler ID     : ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "C++ Compiler Path   : ${CMAKE_CXX_COMPILER}")
+message(STATUS "C++ Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}")
+message(STATUS "C++ Flags (common)  : ${CMAKE_CXX_FLAGS}")
+message(STATUS "C++ Flags (debug)   : ${CMAKE_CXX_FLAGS_DEBUG}")
+message(STATUS "Generator           : ${CMAKE_GENERATOR}")
+message(STATUS "System Name         : ${CMAKE_SYSTEM_NAME}")
+message(STATUS "Build Type          : ${CMAKE_BUILD_TYPE}")
+
+# ✅ Detect ABI definition at compile time
+include(CheckCXXSourceCompiles)
+check_cxx_source_compiles("
+#include <iostream>
+int main() {
+#ifdef _GLIBCXX_USE_CXX11_ABI
+# if _GLIBCXX_USE_CXX11_ABI == 1
+#error ABI_IS_1
+# else
+#error ABI_IS_0
+# endif
+#else
+#error ABI_UNDEFINED
+#endif
+return 0;
+}
+" TASQLY_ABI_DETECTED)
+
+if (TASQLY_ABI_DETECTED)
+    message(STATUS "ABI Mode (detected): _GLIBCXX_USE_CXX11_ABI = 1")
+else()
+    # try again manually to extract macro value (compile only)
+    execute_process(
+        COMMAND ${CMAKE_CXX_COMPILER} -dM -E -x c++ NUL
+        OUTPUT_VARIABLE _macro_dump
+    )
+    if (_macro_dump MATCHES "_GLIBCXX_USE_CXX11_ABI 0")
+        message(STATUS "ABI Mode (detected): _GLIBCXX_USE_CXX11_ABI = 0")
+    elseif (_macro_dump MATCHES "_GLIBCXX_USE_CXX11_ABI 1")
+        message(STATUS "ABI Mode (detected): _GLIBCXX_USE_CXX11_ABI = 1")
+    else()
+        message(STATUS "ABI Mode (detected): Not defined")
+    endif()
+endif()
+
+message(STATUS "====================================================")
 
 # ---------------------------------------------------------------
 # 🔗 Test Runner Dependencies

@@ -14,10 +14,10 @@
  * Verifies correctness, case handling, and invalid input behavior.
  */
 
-#include "domain/core/entities/TaskStatus.h"
+#include "domain/core/entities/P1_TaskStatus.h"
 #include <gtest/gtest.h>
 
-using namespace tasqly::domain::core;
+using namespace tasqly::domain::core::v1;
 
 // 🧩 Test: toString() returns correct values
 TEST(TaskStatusTest, ToStringReturnsExpectedValues)

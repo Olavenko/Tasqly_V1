@@ -1,8 +1,8 @@
 # ADR 0006: Task Mapper Strategy: Manual Conversion
 
-- **Status:** Draft  
+- **Status:** Accepted  
 - **Date:** 2025-10-06  
-- **Owners:** Tasqly Team  
+- **Owner:** Tasqly Team  
 - **Related:** Phase 1 — Slice 1  
 - **Tags:** Domain Entities, Contracts & Mappers
 ---
