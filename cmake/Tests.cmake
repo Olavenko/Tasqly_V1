@@ -47,6 +47,9 @@ find_package(Qt6 REQUIRED COMPONENTS
 # 🏗️ Test Runner Target
 # ---------------------------------------------------------------
 add_executable(TasqlyTestsRunner
+
+    # Phase[0]
+    #=========================================
     # 🔗 Integration Tests — Logging [Phase0]
     tests/integration/logging/test_error_reporter.cpp
     tests/integration/logging/test_error_reporter_feature_flag.cpp
@@ -126,15 +129,21 @@ add_executable(TasqlyTestsRunner
     # 🛠️ Unit Tests — Utils [Phase0]
     tests/unit/utils/test_system_clock.cpp
     tests/unit/utils/test_system_uuidgen.cpp
+
+    # Phase[1]
     # =========================================================
     # 🛠️ Unit Tests Domain — entities [Phase1][Slice1]
     tests/unit/domain/entities/test_DomainValidation.cpp
+    tests/unit/domain/entities/test_TaskPriority.cpp
+    tests/unit/domain/entities/test_TaskStatus.cpp
+
+    # 🛠️ Unit Tests Domain — errors [Phase1][Slice1]
+    tests/unit/domain/errors/test_DomainError.cpp
+    tests/unit/domain/errors/test_DomainResult.cpp
 
     # 🛠️ Unit Tests Domain — mappers [Phase1][Slice1]
-    tests/unit/domain/mappers/test_TaskMapper.cpp
 
     # 🛠️ Integration Tests Domain [Phase1][Slice1]
-    tests/integration/domain/test_FakeTaskRepository.cpp
 
     # 🧪 Main Test Files
     tests/test_main.cpp

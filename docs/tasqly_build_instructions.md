@@ -24,7 +24,7 @@ cmake --build --preset=build-mingw-debug --parallel
 # Run unit tests
 ctest --preset=test-mingw-debug --output-on-failure ## to run all tests
 ctest --preset=test-mingw-debug -R WriteFailureDuringLoadThrows -VV ## to run single test in file
-ctest --preset=test-mingw-debug -R FakeTaskRepositoryTest -VV ## to run all file tests
+ctest --preset=test-mingw-debug -R TaskMapperDiagnostic -VV ## to run all file tests
 ```
 
 ### 2. Benchmarks build (performance benchmarks, always Release mode)
@@ -54,13 +54,15 @@ set PATH=C:\Qt\6.9.2\msvc2022_64\bin;%PATH%
 cd /c/Users/Olavenko/Desktop/TasqlyQt/Tasqly_V1
 ./scripts/check-format.sh
 
+devenv TasqlyTestsRunner.exe
+
 cmake --preset=msvc-debug
 cmake --build --preset=build-msvc-debug --parallel
 
 # Run unit tests
 ctest --preset=test-msvc-debug --output-on-failure ## to run all tests
 ctest --preset=test-msvc-debug -R AppContextTest -VV ## to run single test in file
-ctest --preset=test-msvc-debug -R AppSettingsManagerTest -VV ## to run all file tests
+ctest --preset=test-msvc-debug -R TaskMapperIntegration -VV ## to run all file tests
 ```
 
 ### 2. Reports build (tests + coverage reports)

@@ -1,0 +1,25 @@
+{
+  "OutputFoldersPerTargetSystem": {
+    "Local Machine": [
+      "build\\default-release",
+      "build\\gcc-debug",
+      "build\\clang-debug",
+      "build\\mingw-debug",
+      "build\\mingw-release",
+      "build\\mingw-tests-reports-debug",
+      "build\\mingw-tests-reports-release",
+      "build\\mingw-benchmarks-release",
+      "build\\msvc-debug",
+      "build\\msvc-release",
+      "build\\msvc-tests-reports-debug",
+      "build\\msvc-tests-reports-release",
+      "build\\msvc-benchmarks-release",
+      "build\\msvc-benchmarks-reports-debug",
+      "build\\msvc-benchmarks-reports-release"
+    ]
+  },
+  "ExpandedNodes": [
+    ""
+  ],
+  "PreviewInSolutionExplorer": false
+}

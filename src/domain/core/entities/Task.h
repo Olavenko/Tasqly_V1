@@ -29,16 +29,21 @@ namespace tasqly::domain::core {
 // 🧩 Utility — lightweight UUID generator (portable)
 inline std::string generateUuid()
 {
-  static std::mt19937_64 rng{std::random_device{}()};
-  static std::uniform_int_distribution<uint64_t> dist;
+  // ✅ Avoid static RNG — prevents crash on program exit (Windows/MSVC)
+  std::random_device rd;
+  std::mt19937_64 rng(rd());
+  std::uniform_int_distribution<uint64_t> dist;
+
   uint64_t high = dist(rng);
   uint64_t low = dist(rng);
+
   char buffer[33];
   std::snprintf(buffer,
                 sizeof(buffer),
                 "%016llx%016llx",
                 static_cast<unsigned long long>(high),
                 static_cast<unsigned long long>(low));
+
   return std::string(buffer);
 }
 

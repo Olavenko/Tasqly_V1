@@ -14,11 +14,11 @@
  * Cleans up temporary test output folder (tests_tmp) after all tests.
  */
 
-#include <gtest/gtest.h>
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
 #include <QStandardPaths>
+#include <gtest/gtest.h>
 
 /// 🧹 Cleanup helper: remove tests_tmp folder if it exists
 static void cleanupTestsTmp()
