@@ -1,0 +1,157 @@
+{
+  "meta": {
+    "phase": "Phase1",
+    "compiler": "mingw",
+    "commit": "local",
+    "job": "manual",
+    "date": "2025-10-15",
+    "os": "windows",
+    "execution_time_sec": 10.42
+  },
+  "benchmarks": [
+    {
+      "name": "BM_TaskMapper_ToDto_1000",
+      "iterations": "1600",
+      "real_ms": 0.423,
+      "cpu_ms": 0.42,
+      "variance_ms": 0.003,
+      "threads": 1,
+      "ops_sec": "3.78M",
+      "relative_factor": "6932.0x",
+      "type": "CPU-bound",
+      "status": "Stable"
+    },
+    {
+      "name": "BM_TaskMapper_FromDto_1000",
+      "iterations": "264",
+      "real_ms": 2.774,
+      "cpu_ms": 2.663,
+      "variance_ms": 0.11,
+      "threads": 1,
+      "ops_sec": "95.18K",
+      "relative_factor": "45410.3x",
+      "type": "CPU-bound",
+      "status": "Medium Variance"
+    },
+    {
+      "name": "BM_TaskMapper_TimeHelpers_10000",
+      "iterations": "64",
+      "real_ms": 10.119,
+      "cpu_ms": 9.766,
+      "variance_ms": 0.353,
+      "threads": 1,
+      "ops_sec": "6.32K",
+      "relative_factor": "165668.7x",
+      "type": "CPU-bound",
+      "status": "Medium Variance"
+    },
+    {
+      "name": "BM_Task_Construct",
+      "iterations": "640000",
+      "real_ms": 0.001,
+      "cpu_ms": 0.001,
+      "variance_ms": 0.0,
+      "threads": 1,
+      "ops_sec": "572.59B",
+      "relative_factor": "18.3x",
+      "type": "CPU-bound",
+      "status": "Stable"
+    },
+    {
+      "name": "BM_Task_Copy",
+      "iterations": "11200000",
+      "real_ms": 0.0,
+      "cpu_ms": 0.0,
+      "variance_ms": 0.0,
+      "threads": 1,
+      "ops_sec": "183364.84B",
+      "relative_factor": "1.0x",
+      "type": "CPU-bound",
+      "status": "Stable"
+    },
+    {
+      "name": "BM_Task_Move",
+      "iterations": "640000",
+      "real_ms": 0.001,
+      "cpu_ms": 0.001,
+      "variance_ms": 0.0,
+      "threads": 1,
+      "ops_sec": "570.26B",
+      "relative_factor": "18.4x",
+      "type": "CPU-bound",
+      "status": "Stable"
+    },
+    {
+      "name": "BM_GenerateUuid_1000",
+      "iterations": "640",
+      "real_ms": 1.085,
+      "cpu_ms": 1.074,
+      "variance_ms": 0.01,
+      "threads": 1,
+      "ops_sec": "590.05K",
+      "relative_factor": "17757.8x",
+      "type": "CPU-bound",
+      "status": "Medium Variance"
+    },
+    {
+      "name": "BM_ValidateTitle_Valid_1000",
+      "iterations": "263529",
+      "real_ms": 0.003,
+      "cpu_ms": 0.003,
+      "variance_ms": -0.0,
+      "threads": 1,
+      "ops_sec": "103.45B",
+      "relative_factor": "41.7x",
+      "type": "CPU-bound",
+      "status": "Stable"
+    },
+    {
+      "name": "BM_ValidateTitle_Empty_1000",
+      "iterations": "10000",
+      "real_ms": 0.051,
+      "cpu_ms": 0.052,
+      "variance_ms": -0.0,
+      "threads": 1,
+      "ops_sec": "195.05M",
+      "relative_factor": "839.4x",
+      "type": "CPU-bound",
+      "status": "Stable"
+    },
+    {
+      "name": "BM_ValidateTitle_Long_1000",
+      "iterations": "10000",
+      "real_ms": 0.051,
+      "cpu_ms": 0.052,
+      "variance_ms": -0.001,
+      "threads": 1,
+      "ops_sec": "196.30M",
+      "relative_factor": "834.0x",
+      "type": "CPU-bound",
+      "status": "Stable"
+    },
+    {
+      "name": "BM_ValidateDeadline_Future_1000",
+      "iterations": "21333",
+      "real_ms": 0.032,
+      "cpu_ms": 0.031,
+      "variance_ms": 0.001,
+      "threads": 1,
+      "ops_sec": "658.13M",
+      "relative_factor": "530.7x",
+      "type": "CPU-bound",
+      "status": "Stable"
+    },
+    {
+      "name": "BM_ValidateDeadline_Past_1000",
+      "iterations": "8960",
+      "real_ms": 0.081,
+      "cpu_ms": 0.078,
+      "variance_ms": 0.003,
+      "threads": 1,
+      "ops_sec": "109.94M",
+      "relative_factor": "1334.3x",
+      "type": "CPU-bound",
+      "status": "Stable"
+    }
+  ]
+}

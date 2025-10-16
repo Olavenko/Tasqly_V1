@@ -1,0 +1,116 @@
+
+    <html>
+    <head>
+        <title>Tasqly Benchmark Dashboard - Phase1 - 12:15 PM — 2025-10-16</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+                background: #111;
+                color: #eee;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-top: 12px;
+                background: #222;
+                color: #eee;
+            }
+            th, td {
+                border: 1px solid #444;
+                padding: 6px 8px;
+                text-align: left;
+                font-size: 13px;
+            }
+            th {
+                background: #333;
+                color: #fff;
+            }
+            h1, h2, h3 {
+                color: #fff;
+                margin: 8px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Tasqly Benchmark Results - Phase1 (MINGW)</h1>
+        
+    <div style='font-family:Segoe UI, sans-serif; font-size:14px; margin-bottom:10px;'>
+        <strong>Date:</strong> 12:15 PM — 2025-10-16 |
+        <strong>Host:</strong> DYANKO |
+        <strong>CPU:</strong> 8 cores @ 3600 MHz |
+        <strong>Runner:</strong> C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\build\mingw-benchmarks-release\TasqlyBenchmarksRunner.exe
+    </div>
+    <hr/>
+    
+        
+        <div style='padding:12px; background:#111; color:#eee; font-family:Segoe UI, sans-serif; margin:15px 0; border-radius:8px;'>
+            <h3 style='margin:0 0 6px 0;'>Benchmark Summary</h3>
+            <p style='margin:4px 0;'>Total Benchmarks: <strong>12</strong></p>
+            <p style='margin:4px 0;'>Best: <strong>BM_Task_Construct</strong> — 0.000 ms</p>
+            <p style='margin:4px 0;'>Worst: <strong>BM_TaskMapper_TimeHelpers_10000</strong> — 3.400 ms</p>
+            <p style='margin:4px 0;'>Average Real Time: <strong>0.407 ms</strong></p>
+            <p style='margin:4px 0;'>Generated On: <strong>12:15 PM — 2025-10-16</strong></p>
+            <p style='margin:4px 0;'>Execution Time: <strong>0 min 10 sec</strong></p>
+        </div>
+        
+        <h2>Slow Benchmarks</h2><p>No slow benchmarks found.</p>
+<h2>Medium Variance Benchmarks</h2>
+<table>
+
+    <tr>
+        <th>Benchmark</th>
+        <th>Iterations</th>
+        <th>Real (ms)</th>
+        <th>CPU (ms)</th>
+        <th>Variance</th>
+        <th>Threads</th>
+        <th>Ops/sec</th>
+        <th>Relative</th>
+        <th>Type</th>
+        <th>Baseline (ms)</th>
+        <th>Speedup (x)</th>
+        <th>Δ Time (ms)</th>
+        <th>Change (%)</th>
+        <th>Trend</th>
+    </tr>
+    
+<tr style='background: rgba(200, 180, 80, 0.8);'><td>BM_TaskMapper_TimeHelpers_10000</td><td>204</td><td>3.400</td><td>3.370</td><td>   0.030</td><td>1</td><td>60.00K</td><td>56062.5x</td><td>CPU-bound</td><td>10.119</td><td>2.98x</td><td>-6.719</td><td>66.40%</td><td>Faster</td></tr>
+</table>
+<h2>Stable Benchmarks</h2>
+<table>
+
+    <tr>
+        <th>Benchmark</th>
+        <th>Iterations</th>
+        <th>Real (ms)</th>
+        <th>CPU (ms)</th>
+        <th>Variance</th>
+        <th>Threads</th>
+        <th>Ops/sec</th>
+        <th>Relative</th>
+        <th>Type</th>
+        <th>Baseline (ms)</th>
+        <th>Speedup (x)</th>
+        <th>Δ Time (ms)</th>
+        <th>Change (%)</th>
+        <th>Trend</th>
+    </tr>
+    
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_TaskMapper_ToDto_1000</td><td>1120</td><td>0.628</td><td>0.600</td><td>   0.028</td><td>1</td><td>1.78M</td><td>10355.5x</td><td>CPU-bound</td><td>0.423</td><td>0.67x</td><td>+0.205</td><td>48.32%</td><td>Slower</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_TaskMapper_FromDto_1000</td><td>1867</td><td>0.379</td><td>0.377</td><td>   0.003</td><td>1</td><td>4.92M</td><td>6251.5x</td><td>CPU-bound</td><td>2.774</td><td>7.32x</td><td>-2.395</td><td>86.33%</td><td>Faster</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_GenerateUuid_1000</td><td>2635</td><td>0.257</td><td>0.255</td><td>   0.002</td><td>1</td><td>10.25M</td><td>4239.8x</td><td>CPU-bound</td><td>1.085</td><td>4.22x</td><td>-0.828</td><td>76.29%</td><td>Faster</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ValidateDeadline_Past_1000</td><td>8960</td><td>0.080</td><td>0.080</td><td>   0.000</td><td>1</td><td>111.65M</td><td>1323.3x</td><td>CPU-bound</td><td>0.081</td><td>1.02x</td><td>-0.001</td><td>1.53%</td><td>Faster</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ValidateTitle_Empty_1000</td><td>11200</td><td>0.051</td><td>0.049</td><td>   0.002</td><td>1</td><td>218.79M</td><td>844.1x</td><td>CPU-bound</td><td>0.051</td><td>1.00x</td><td>-0.000</td><td>0.15%</td><td>Same</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ValidateTitle_Long_1000</td><td>11200</td><td>0.051</td><td>0.047</td><td>   0.004</td><td>1</td><td>219.35M</td><td>842.0x</td><td>CPU-bound</td><td>0.051</td><td>1.00x</td><td>+0.000</td><td>0.23%</td><td>Same</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ValidateDeadline_Future_1000</td><td>21333</td><td>0.032</td><td>0.029</td><td>   0.003</td><td>1</td><td>661.44M</td><td>531.8x</td><td>CPU-bound</td><td>0.032</td><td>1.01x</td><td>-0.000</td><td>0.50%</td><td>Faster</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_ValidateTitle_Valid_1000</td><td>280000</td><td>0.003</td><td>0.002</td><td>   0.000</td><td>1</td><td>110.22B</td><td>41.9x</td><td>CPU-bound</td><td>0.003</td><td>1.00x</td><td>-0.000</td><td>0.28%</td><td>Same</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_Task_Construct</td><td>2357895</td><td>0.000</td><td>0.000</td><td>   0.000</td><td>1</td><td>8069.63B</td><td>4.8x</td><td>CPU-bound</td><td>0.001</td><td>3.83x</td><td>-0.001</td><td>73.86%</td><td>Faster</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_Task_Copy</td><td>10000000</td><td>0.000</td><td>0.000</td><td>   0.000</td><td>1</td><td>164891.74B</td><td>1.0x</td><td>CPU-bound</td><td>0.000</td><td>1.01x</td><td>-0.000</td><td>0.71%</td><td>Faster</td></tr>
+<tr style='background: rgba(80, 160, 80, 0.8);'><td>BM_Task_Move</td><td>2635294</td><td>0.000</td><td>0.000</td><td>  -0.000</td><td>1</td><td>9142.38B</td><td>4.8x</td><td>CPU-bound</td><td>0.001</td><td>3.89x</td><td>-0.001</td><td>74.32%</td><td>Faster</td></tr>
+</table>
+
+    </body>
+    </html>
+    

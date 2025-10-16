@@ -33,7 +33,7 @@ frame 0
 info registers
 =======================================================================
 
-cmake --preset=mingw-debug
+cmake --preset=mingw-debug -DTASQLY_TEST_PHASE=Phase1
 cmake --build --preset=build-mingw-debug --parallel
 
 # Run unit tests
@@ -48,9 +48,9 @@ ctest --preset=test-mingw-debug -R TaskMapperDiagnostic -VV ## to run all file t
 cd /c/Users/Olavenko/Desktop/TasqlyQt/Tasqly_V1
 ./scripts/check-format.sh
 
-cmake --preset=mingw-benchmarks-release
+cmake --preset=mingw-benchmarks-release -DTASQLY_BENCHMARK_PHASE=Phase1
 cmake --build --preset=build-mingw-benchmarks-release --parallel
-py -3.13 scripts/run_benchmarks.py --phase Phase0 --compiler mingw --timeout 1800
+py -3.13 scripts/run_benchmarks.py --phase Phase1 --compiler mingw --timeout 3600
 
 ```
 
@@ -71,7 +71,7 @@ cd /c/Users/Olavenko/Desktop/TasqlyQt/Tasqly_V1
 
 devenv TasqlyTestsRunner.exe
 
-cmake --preset=msvc-debug
+cmake --preset=msvc-debug -DTASQLY_TEST_PHASE=Phase1
 cmake --build --preset=build-msvc-debug --parallel
 
 # Run unit tests
@@ -92,9 +92,9 @@ git update-index --chmod=+x scripts/check-format.sh
 cd /c/Users/Olavenko/Desktop/TasqlyQt/Tasqly_V1
 ./scripts/check-format.sh
 
-cmake --preset=msvc-tests-reports-debug -DENABLE_COVERAGE=ON
+cmake --preset=msvc-tests-reports-debug -DENABLE_COVERAGE=ON -DTASQLY_TEST_PHASE=Phase1
 cmake --build --preset=build-msvc-tests-reports-debug --target coverage_tests --parallel
-py -3.13 scripts\coverage_report_updated.py reports\coverage\tests\coverage.xml all --archive Phase0
+py -3.13 scripts\coverage_report_updated.py reports\coverage\tests\coverage.xml all --archive Phase1
 py -3.13 scripts\coverage_report_updated.py reports\coverage\tests\coverage.xml all
 
 ```
@@ -110,9 +110,9 @@ set PATH=C:\Qt\6.9.2\msvc2022_64\bin;%PATH%
 cd /c/Users/Olavenko/Desktop/TasqlyQt/Tasqly_V1
 ./scripts/check-format.sh
 
-cmake --preset=msvc-benchmarks-release
+cmake --preset=msvc-benchmarks-release -DTASQLY_BENCHMARK_PHASE=Phase1
 cmake --build --preset=build-msvc-benchmarks-release --parallel
-py -3.13 scripts/run_benchmarks.py --phase Phase0 --compiler msvc --timeout 1800
+py -3.13 scripts/run_benchmarks.py --phase Phase1 --compiler msvc --timeout 3600
 
 ```
 

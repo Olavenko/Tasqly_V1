@@ -36,6 +36,7 @@ namespace tasqly::domain::core::v1 {
 class TaskMapper
 {
 public:
+  friend class TaskMapperBenchAccess;
   // ------------------------------------------------------------------
   // 🔁 Convert Domain → DTO
   // ------------------------------------------------------------------

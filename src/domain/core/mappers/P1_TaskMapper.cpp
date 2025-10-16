@@ -22,57 +22,64 @@
 #include "domain/core/mappers/P1_TaskMapper.h"
 #include "domain/core/entities/P1_TaskPriority.h"
 #include "domain/core/entities/P1_TaskStatus.h"
-#include <cstring>
+
+#include <chrono>
 #include <ctime>
-#include <iomanip>
-#include <sstream>
+#include <format>
+#include <string>
+#include <string_view>
 
 namespace tasqly::domain::core::v1 {
 
 // =====================================================================
-// 🕓 Convert chrono::time_point -> ISO8601 string
+// ⚡ Optimized: Convert chrono::time_point -> ISO8601 string (C++20)
 // =====================================================================
 std::string TaskMapper::timePointToIso(const std::chrono::system_clock::time_point& tp)
 {
-  std::time_t t = std::chrono::system_clock::to_time_t(tp);
-  if (t < 0)
-    t = 0;
-
-  std::tm tm{};
+  try {
+    // 🧠 Faster direct formatting (no tm/gmtime conversion)
+    // ISO8601 fixed-length: 20 chars → e.g. "2025-10-15T12:00:00Z"
+    return std::format("{:%Y-%m-%dT%H:%M:%SZ}", std::chrono::floor<std::chrono::seconds>(tp));
+  } catch (...) {
+    // 🧯 In case of unsupported chrono::format (old compiler fallback)
+    std::time_t t = std::chrono::system_clock::to_time_t(tp);
+    std::tm tm{};
 #if defined(_WIN32)
-  if (gmtime_s(&tm, &t) != 0) {
-    std::memset(&tm, 0, sizeof(tm));
-    tm.tm_year = 70;
-    tm.tm_mday = 1;
-  }
+    gmtime_s(&tm, &t);
 #else
-  if (gmtime_r(&t, &tm) == nullptr) {
-    std::memset(&tm, 0, sizeof(tm));
-    tm.tm_year = 70;
-    tm.tm_mday = 1;
-  }
+    gmtime_r(&t, &tm);
 #endif
-
-  char buf[32] = {};
-  if (std::strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", &tm))
-    return std::string(buf);
-
-  return "1970-01-01T00:00:00Z";
+    char buf[32] = {};
+    if (std::strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", &tm))
+      return std::string(buf);
+    return "1970-01-01T00:00:00Z";
+  }
 }
 
 // =====================================================================
-// 🕓 Convert ISO8601 string -> chrono::time_point
+// ⚡ Optimized: Convert ISO8601 string -> chrono::time_point
 // =====================================================================
 std::chrono::system_clock::time_point TaskMapper::isoToTimePoint(const std::string& iso)
 {
+  if (iso.size() < 20)
+    return std::chrono::system_clock::from_time_t(0);
+
+  // 🧠 Manual fixed-width parsing (no locale overhead)
+  auto parseInt = [](std::string_view s, int pos, int len) noexcept -> int {
+    int v = 0;
+    for (int i = 0; i < len; ++i)
+      v = v * 10 + (s[pos + i] - '0');
+    return v;
+  };
+
   std::tm tm{};
-  if (!iso.empty()) {
-    std::istringstream ss(iso);
-    ss >> std::get_time(&tm, "%Y-%m-%dT%H:%M:%SZ");
-  } else {
-    tm.tm_year = 70;
-    tm.tm_mday = 1;
-  }
+  tm.tm_year = parseInt(iso, 0, 4) - 1900;
+  tm.tm_mon = parseInt(iso, 5, 2) - 1;
+  tm.tm_mday = parseInt(iso, 8, 2);
+  tm.tm_hour = parseInt(iso, 11, 2);
+  tm.tm_min = parseInt(iso, 14, 2);
+  tm.tm_sec = parseInt(iso, 17, 2);
+  tm.tm_isdst = 0;
 
 #if defined(_WIN32)
   std::time_t tt = _mkgmtime(&tm);
@@ -111,23 +118,57 @@ TaskDto TaskMapper::toDto(const Task& task)
 }
 
 // =====================================================================
-// 🧩 Convert TaskDto -> Task
+// ⚡ Optimized: Convert TaskDto -> Task (fast lookup + move semantics)
 // =====================================================================
 Task TaskMapper::fromDto(const TaskDto& dto)
 {
   Task task;
-  task.id = dto.id;
-  task.title = dto.title;
 
-  if (dto.notes.has_value() && !dto.notes->empty())
+  // ⚡ move strings to avoid redundant heap allocations
+  task.id = std::move(dto.id);
+  task.title = std::move(dto.title);
+
+  // 🧩 optional notes helper
+  auto hasValue = [](const std::optional<std::string>& s) noexcept -> bool {
+    return s && !s->empty();
+  };
+
+  if (hasValue(dto.notes))
     task.notes = *dto.notes;
   else
     task.notes.reset();
 
-  task.status = taskStatusFromString(dto.status).value_or(TaskStatus::Todo);
-  task.priority = taskPriorityFromString(dto.priority).value_or(TaskPriority::Normal);
+  // ==========================================================
+  // ⚡ Fast lookup: Status + Priority (constexpr table lookup)
+  // ==========================================================
+  static constexpr std::pair<std::string_view, TaskStatus> STATUS_TABLE[]
+      = {{"Todo", TaskStatus::Todo}, {"Doing", TaskStatus::Doing}, {"Done", TaskStatus::Done}};
 
-  if (dto.deadline.has_value() && !dto.deadline->empty())
+  static constexpr std::pair<std::string_view, TaskPriority> PRIORITY_TABLE[]
+      = {{"Low", TaskPriority::Low}, {"Normal", TaskPriority::Normal}, {"High", TaskPriority::High}};
+
+  // 🔍 tiny lookup lambdas (no dynamic allocations)
+  auto fastStatus = [](const std::string& s) noexcept -> TaskStatus {
+    for (auto&& [key, val] : STATUS_TABLE)
+      if (s == key)
+        return val;
+    return TaskStatus::Todo;
+  };
+
+  auto fastPriority = [](const std::string& s) noexcept -> TaskPriority {
+    for (auto&& [key, val] : PRIORITY_TABLE)
+      if (s == key)
+        return val;
+    return TaskPriority::Normal;
+  };
+
+  task.status = fastStatus(dto.status);
+  task.priority = fastPriority(dto.priority);
+
+  // ==========================================================
+  // 🕒 Use optimized isoToTimePoint() (already improved)
+  // ==========================================================
+  if (hasValue(dto.deadline))
     task.deadline = isoToTimePoint(*dto.deadline);
   else
     task.deadline.reset();

@@ -130,7 +130,7 @@ jobs:
         shell: powershell
         run: |
           if (Test-Path build/msvc-tests-reports-debug) { Remove-Item -Recurse -Force build/msvc-tests-reports-debug }
-          cmake --preset=msvc-tests-reports-debug -DENABLE_COVERAGE=ON
+          cmake --preset=msvc-tests-reports-debug -DENABLE_COVERAGE=ON -DTASQLY_TEST_PHASE=Phase1
 
       - name: Build Debug (MSVC Coverage)
         #if: false   # 🚫 disabled temporarily
@@ -157,29 +157,29 @@ jobs:
 
       # --- Benchmarks (Release) ---
       - name: Configure Release (MSVC Benchmarks)
-        if: false   # 🚫 disabled temporarily
+        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: |
           if (Test-Path build/msvc-benchmarks-release) { Remove-Item -Recurse -Force build/msvc-benchmarks-release }
-          cmake --preset=msvc-benchmarks-release
+          cmake --preset=msvc-benchmarks-release -DTASQLY_BENCHMARK_PHASE=Phase1
 
       - name: Build Release (MSVC Benchmarks)
-        if: false   # 🚫 disabled temporarily
+        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: cmake --build --preset=build-msvc-benchmarks-release --parallel
 
       - name: Run Benchmarks
-        if: false   # 🚫 disabled temporarily
+        #if: false   # 🚫 disabled temporarily
         shell: powershell
         env:
           QT_QPA_PLATFORM: offscreen
           QSG_RHI_BACKEND: software
         run: |
-          python scripts/run_benchmarks.py --phase Phase0 --compiler msvc --timeout 1800
+          python scripts/run_benchmarks.py --phase Phase1 --compiler msvc --timeout 3600
 
       # --- Upload Coverage Reports ---
       - name: Upload Test Coverage Reports
-        if: always()
+        if: always() #always()
         uses: actions/upload-artifact@v4
         with:
           name: Tests-Coverage-Report-MSVC
@@ -190,7 +190,7 @@ jobs:
 
       # --- Upload Benchmark Reports ---
       - name: Upload Benchmark Performance Reports
-        if: false #always()
+        if: always() #always()
         uses: actions/upload-artifact@v4
         with:
           name: benchmarks-Reports-MSVC
@@ -229,7 +229,7 @@ jobs:
           export PATH="/mingw64/bin:$PATH"
           echo "QT_PREFIX=/mingw64" >> $GITHUB_ENV
           rm -rf build/mingw-debug
-          cmake --preset=mingw-debug
+          cmake --preset=mingw-debug -DTASQLY_TEST_PHASE=Phase1
           
       - name: Build Debug (MinGW)
         shell: msys2 {0}
@@ -273,9 +273,9 @@ jobs:
         run: |
           rm -rf build/${{ matrix.compiler }}-debug
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
-            cmake --preset=gcc-debug
+            cmake --preset=gcc-debug -DTASQLY_TEST_PHASE=Phase1
           else
-            cmake --preset=clang-debug
+            cmake --preset=clang-debug -DTASQLY_TEST_PHASE=Phase1
           fi
           
       - name: Build Debug (${{ matrix.compiler }})

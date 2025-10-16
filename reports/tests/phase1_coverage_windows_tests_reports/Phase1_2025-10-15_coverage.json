@@ -1,0 +1,73 @@
+{
+  "meta": {
+    "timestamp": "2025-10-15 16:42",
+    "phase": "Phase1",
+    "commit": "local",
+    "branch": "main",
+    "job": "manual",
+    "compiler": "windows",
+    "os": "windows"
+  },
+  "files": [
+    {
+      "file": "Error.h",
+      "coverage": 100.0,
+      "covered": 14,
+      "total": 14
+    },
+    {
+      "file": "Result.h",
+      "coverage": 94.73684210526315,
+      "covered": 54,
+      "total": 57
+    },
+    {
+      "file": "P1_ITaskRepository.h",
+      "coverage": 100.0,
+      "covered": 1,
+      "total": 1
+    },
+    {
+      "file": "P1_DomainValidation.cpp",
+      "coverage": 100.0,
+      "covered": 15,
+      "total": 15
+    },
+    {
+      "file": "P1_Task.h",
+      "coverage": 100.0,
+      "covered": 8,
+      "total": 8
+    },
+    {
+      "file": "P1_TaskPriority.h",
+      "coverage": 93.75,
+      "covered": 15,
+      "total": 16
+    },
+    {
+      "file": "P1_TaskStatus.h",
+      "coverage": 93.75,
+      "covered": 15,
+      "total": 16
+    },
+    {
+      "file": "P1_DomainError.h",
+      "coverage": 100.0,
+      "covered": 28,
+      "total": 28
+    },
+    {
+      "file": "P1_DomainResult.h",
+      "coverage": 100.0,
+      "covered": 38,
+      "total": 38
+    },
+    {
+      "file": "P1_TaskMapper.cpp",
+      "coverage": 87.71929824561403,
+      "covered": 50,
+      "total": 57
+    }
+  ]
+}

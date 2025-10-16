@@ -27,7 +27,6 @@
 #pragma once
 
 #include <chrono>
-#include <cstdio>
 #include <optional>
 #include <random>
 #include <string>
@@ -37,25 +36,30 @@
 
 namespace tasqly::domain::core::v1 {
 
-// 🧩 Utility — lightweight UUID generator (portable & deterministic)
+// 🧩 Utility — lightweight UUID generator (optimized, portable, thread-safe)
 inline std::string generateUuid()
 {
-  // ✅ Avoid static RNG — prevents crash on program exit (especially on Windows/MSVC)
-  std::random_device rd;
-  std::mt19937_64 rng(rd());
-  std::uniform_int_distribution<uint64_t> dist;
+  // ⚙️ static thread-local generator to avoid reinitialization overhead
+  static thread_local std::mt19937_64 rng{std::random_device{}()};
+  static thread_local std::uniform_int_distribution<uint64_t> dist;
 
   uint64_t high = dist(rng);
   uint64_t low = dist(rng);
 
+#if __cpp_lib_format >= 201907L
+  // ⚡ Faster formatting with std::format (C++20)
+  return std::format("{:016x}{:016x}",
+                     static_cast<unsigned long long>(high),
+                     static_cast<unsigned long long>(low));
+#else
   char buffer[33];
   std::snprintf(buffer,
                 sizeof(buffer),
                 "%016llx%016llx",
                 static_cast<unsigned long long>(high),
                 static_cast<unsigned long long>(low));
-
   return std::string(buffer);
+#endif
 }
 
 // 🧱 Domain Entity — Task

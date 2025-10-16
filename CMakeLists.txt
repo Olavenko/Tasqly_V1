@@ -134,6 +134,12 @@ option(TASQLY_BUILD_BENCHMARKS "Build Google Benchmark targets" OFF)
 option(TASQLY_BUILD_REPORTS "Build reports (coverage, XML, benchmarks)" OFF)
 
 # ---------------------------------------------------------------
+# ⚙️ Phase Control (for selective Tests / Benchmarks builds)
+# ---------------------------------------------------------------
+set(TASQLY_TEST_PHASE "Phase1" CACHE STRING "Select which test phase to build")
+set(TASQLY_BENCHMARK_PHASE "Phase1" CACHE STRING "Select which benchmark phase to build")
+
+# ---------------------------------------------------------------
 # 📦 Core Library Target
 # ---------------------------------------------------------------
 include(cmake/Core.cmake)
@@ -147,14 +153,26 @@ include(cmake/App.cmake)
 # 🧪 Tests Target (GoogleTest Integration)
 # ---------------------------------------------------------------
 if(TASQLY_BUILD_TESTS)
-    include(cmake/Tests.cmake)
+    if(EXISTS "${CMAKE_SOURCE_DIR}/cmake/${TASQLY_TEST_PHASE}_Tests.cmake")
+        message(STATUS "🧪 Loading tests for phase: ${TASQLY_TEST_PHASE}")
+        include(cmake/${TASQLY_TEST_PHASE}_Tests.cmake)
+    else()
+        message(WARNING "⚠️ Phase file not found for: ${TASQLY_TEST_PHASE}, falling back to default Tests.cmake")
+        include(cmake/Tests.cmake)
+    endif()
 endif()
 
 # ---------------------------------------------------------------
 # ⚡ Benchmarks Target (Google Benchmark Integration)
 # ---------------------------------------------------------------
 if(TASQLY_BUILD_BENCHMARKS)
-    include(cmake/Benchmarks.cmake)
+    if(EXISTS "${CMAKE_SOURCE_DIR}/cmake/${TASQLY_BENCHMARK_PHASE}_Benchmarks.cmake")
+        message(STATUS "📊 Loading benchmarks for phase: ${TASQLY_BENCHMARK_PHASE}")
+        include(cmake/${TASQLY_BENCHMARK_PHASE}_Benchmarks.cmake)
+    else()
+        message(WARNING "⚠️ Phase file not found for: ${TASQLY_BENCHMARK_PHASE}, falling back to default Benchmarks.cmake")
+        include(cmake/Benchmarks.cmake)
+    endif()
 endif()
 
 # ---------------------------------------------------------------

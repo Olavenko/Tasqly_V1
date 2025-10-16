@@ -37,37 +37,12 @@ FetchContent_MakeAvailable(googlebenchmark)
 add_executable(TasqlyBenchmarksRunner
 
     #========================================================
-    # [Phase0]
+    # [Phase1]
     #========================================================
-    # 📊 Integration Benchmarks (Integration)
-    benchmarks/integration/Bench_CreateTaskFlow.cpp
-
-    # 📊 Logging Benchmarks (Unit)
-    benchmarks/unit/logging/Bench_ErrorReporter.cpp
-    benchmarks/unit/logging/Bench_LogContinuous.cpp
-    benchmarks/unit/logging/Bench_LogFacade.cpp
-    benchmarks/unit/logging/Bench_LogManager_Throughput.cpp
-    benchmarks/unit/logging/Bench_LogMasking.cpp
-
-    # 📊 Navigation Benchmarks (Unit)
-    benchmarks/unit/navigation/Bench_NavigateTo.cpp
-    benchmarks/unit/navigation/Bench_NavigationService.cpp
-
-    # 📊 Persistence Benchmarks (Unit)
-    benchmarks/unit/persistence/Bench_InMemoryTaskRepo_CRUD.cpp
-
-    # 📊 Settings Benchmarks (Unit)
-    benchmarks/unit/settings/Bench_AppSettingsManager.cpp
-    benchmarks/unit/settings/Bench_FeatureFlagsManager.cpp
-
-    # 📊 Theme Benchmarks (Unit)
-    benchmarks/unit/theme/Bench_ThemeManager.cpp
-
-    # 📊 Usecases Benchmarks (Unit)
-    benchmarks/unit/usecases/Bench_ListTasks.cpp
-    benchmarks/unit/usecases/Bench_LoadUserSettings.cpp
-    benchmarks/unit/usecases/Bench_SaveUserSettings.cpp
-    benchmarks/unit/usecases/Bench_SwitchTheme.cpp
+    # 📊 Domain Benchmarks (Unit)
+    benchmarks/unit/domain/P1_S1_Bench_DomainValidation.cpp
+    benchmarks/unit/domain/P1_S1_Bench_TaskEntity.cpp
+    benchmarks/unit/domain/P1_S1_Bench_TaskMapper.cpp
 
     # 📊 Main entry
     benchmarks/bench_main.cpp
@@ -175,6 +150,7 @@ message(STATUS "Elapsed Time (approx): ${TASQLY_ELAPSED} seconds since configure
 message(STATUS "====================================================")
 
 #=====================================================================
+
 set_target_properties(TasqlyBenchmarksRunner PROPERTIES AUTOMOC ON)
 
 target_include_directories(TasqlyBenchmarksRunner PRIVATE
