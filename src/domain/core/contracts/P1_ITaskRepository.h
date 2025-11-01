@@ -46,7 +46,7 @@
 // must reside in tasqly::domain::core::v1 to ensure full isolation.
 //
 
-namespace tasqly::domain::core::v1 {
+namespace tasqly::p1::s1::domain::core {
 
 /// @brief Pure domain repository contract for managing `P1_Task` aggregates.
 class ITaskRepository
@@ -102,4 +102,4 @@ public:
       = 0;
 };
 
-} // namespace tasqly::domain::core::v1
+} // namespace tasqly::p1::s1::domain::core

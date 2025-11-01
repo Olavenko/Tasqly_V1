@@ -34,7 +34,7 @@
 #include "domain/core/entities/P1_TaskPriority.h"
 #include "domain/core/entities/P1_TaskStatus.h"
 
-namespace tasqly::domain::core::v1 {
+namespace tasqly::p1::s1::domain::core {
 
 // 🧩 Utility — lightweight UUID generator (optimized, portable, thread-safe)
 inline std::string generateUuid()
@@ -76,4 +76,4 @@ struct Task
   std::chrono::system_clock::time_point updatedAt = createdAt; ///< Last modification timestamp
 };
 
-} // namespace tasqly::domain::core::v1
+} // namespace tasqly::p1::s1::domain::core

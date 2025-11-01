@@ -22,7 +22,7 @@
 #include <optional>
 #include <string>
 
-namespace tasqly::domain::core::v1 {
+namespace tasqly::p1::s1::domain::core {
 
 /// @brief Serializable representation of a Task entity (Phase 1).
 struct TaskDto
@@ -64,4 +64,4 @@ struct TaskDto
   bool operator!=(const TaskDto& other) const noexcept { return !(*this == other); }
 };
 
-} // namespace tasqly::domain::core::v1
+} // namespace tasqly::p1::s1::domain::core

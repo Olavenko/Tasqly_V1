@@ -61,11 +61,68 @@ FA6_FLASK(tests, Test_Runner, rectangle, #E5C55F)
 
 ---
 
+## 🧩 Diagram Type Detection
+
+PlantUML determines **diagram type automatically** based on the **first shape used**.
+
+| First Element Used                         | Diagram Type Assumed | Example Usage            |
+|--------------------------------------------|----------------------|--------------------------|
+| `actor`, `participant`, `boundary`         | Sequence / Use Case  | UseCase / Sequence       |
+| `class`, `interface`, `object`             | Class Diagram        | Domain / Entity Models   |
+| `component`, `rectangle`, `node`, `folder` | Component Diagram    | Architecture / Layered   |
+| `database`, `cloud`, `artifact`            | Deployment / Storage | ERD / Deployment         |
+| `state`, `[*]`                             | State Diagram        | Workflow / State Machine |
+
+💡 **Tip:** avoid mixing `class` and `component` in the same diagram (causes “Assumed diagram type” errors).
+
+---
+
+## 🧠 Recommended Layouts by Diagram Type
+
+| Type               | Typical File      | Core Macros                               | First Shape                | Notes                                                                    |
+|--------------------|-------------------|-------------------------------------------|----------------------------|--------------------------------------------------------------------------|
+| **Use Case**       | `usecase.puml`    | `FA6_USER`, `usecase`                     | `actor`                    | Represents actors and high-level flows                                   |
+| **Sequence**       | `sequence.puml`   | `FA6_* (participant)`                     | `participant`              | Use FA6 icons for participants; no `activate`/`deactivate` unless needed |
+| **Component**      | `component.puml`  | `FA6_* (rectangle/component)`             | `component` or `rectangle` | Used for architecture layers (Domain, App, Infra)                        |
+| **ERD (Database)** | `erd.puml`        | `FA6_DATABASE`, `FA6_TABLE`               | `component`                | Represent tables and relations via notes and arrows                      |
+| **Deployment**     | `deployment.puml` | `FA6_SERVER`, `FA6_CLOUD`, `FA6_DATABASE` | `node` / `database`        | Represents runtime infrastructure                                        |
+| **State Machine**  | `state.puml`      | `state`                                   | `state`                    | Use `[*] -->` for initial states                                         |
+
+---
+
+## 🧰 FA6 Macro Behavior
+
+All FA6 macros accept the following pattern:
+
+```puml
+FA6_<ICON>(ALIAS, "Label", SHAPE, COLOR)
+Parameter	Meaning
+ALIAS	internal reference name
+"Label"	visible name under the icon
+SHAPE	component, rectangle, node, etc.
+COLOR	hex code for background
+
+Example
+puml
+Copy code
+FA6_DATABASE(DB, "PostgreSQL DB", component, #E5C55F)
+FA6_TABLE(TASKS, "tasks", component, #E2C22F)
+These expand internally to:
+
+puml
+Copy code
+component "PostgreSQL DB\n<color:gray><size:10>database</size></color>" as DB <<FA6 DATABASE>> #E5C55F
+component "tasks\n<color:gray><size:10>table</size></color>" as TASKS <<FA6 TABLE>> #E2C22F
+```
+
+---
+
 ## 📂 Folder Structure
 
 ---
 
 ├── Diagrams-Readme.md [Markdown Doc]
+├── How to use uml-export.py.txt
 ├── config
 │   └── style.puml [UML Diagram]
 ├── exports
@@ -120,14 +177,24 @@ FA6_FLASK(tests, Test_Runner, rectangle, #E5C55F)
 │       ├── sequence_tasklist.puml [UML Diagram]
 │       └── usecase.puml [UML Diagram]
 ├── phase1
-│   └── slice1
-│       ├── component.puml [UML Diagram]
+│   ├── slice1
+│   │   ├── component.puml [UML Diagram]
+│   │   ├── exports
+│   │   │   ├── component.svg
+│   │   │   ├── sequence.svg
+│   │   │   └── usecase.svg
+│   │   ├── sequence.puml [UML Diagram]
+│   │   └── usecase.puml [UML Diagram]
+│   └── slice2
+│       ├── erd.puml [UML Diagram]
+│       ├── error_flow_across_layers.puml [UML Diagram]
 │       ├── exports
-│       │   ├── component.svg
-│       │   ├── sequence.svg
-│       │   └── usecase.svg
-│       ├── sequence.puml [UML Diagram]
-│       └── usecase.puml [UML Diagram]
+│       │   ├── erd.svg
+│       │   ├── error_flow_across_layers.svg
+│       │   ├── runtime_error_component.svg
+│       │   └── sequence.svg
+│       ├── runtime_error_component.puml [UML Diagram]
+│       └── sequence.puml [UML Diagram]
 ├── tools
 │   └── plantuml.jar [Tool]
 ├── uml-export.py [Python Script]
@@ -136,9 +203,9 @@ FA6_FLASK(tests, Test_Runner, rectangle, #E5C55F)
 ---
 
 📊 Summary
-- Directories: 17
-- Files: 50
-⏱️ Updated: 2025-10-14 14:44:57
+- Directories: 19
+- Files: 59
+⏱️ Updated: 2025-11-01 15:35:00
 
 ---
 

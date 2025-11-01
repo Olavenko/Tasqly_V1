@@ -29,7 +29,7 @@
 #include <string>
 #include <string_view>
 
-namespace tasqly::domain::core::v1 {
+namespace tasqly::p1::s1::domain::core {
 
 // =====================================================================
 // ⚡ Optimized: Convert chrono::time_point -> ISO8601 string (C++20)
@@ -179,4 +179,4 @@ Task TaskMapper::fromDto(const TaskDto& dto)
   return task;
 }
 
-} // namespace tasqly::domain::core::v1
+} // namespace tasqly::p1::s1::domain::core

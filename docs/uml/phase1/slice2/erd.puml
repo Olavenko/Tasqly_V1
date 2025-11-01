@@ -1,0 +1,39 @@
+@startuml
+' 🧱 File: erd.puml
+' -----------------
+' 📌 Purpose : ERD — PostgreSQL schema for "tasks" table (component-style)
+' 🧱 Layer   : Infrastructure / Persistence (Phase 1, Slice 2)
+' 👤 Author  : Mohamed Ali
+' 🗓️ Created : 2025-10-19
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+title ERD — tasks table (PostgreSQL)
+
+' 🧩 Icons (component diagram context)
+FA6_DATABASE(DB, "PostgreSQL DB", component, #E5C55F)
+FA6_TABLE(TASKS, "tasks", component, #E2C22F)
+
+DB -[hidden]-> TASKS
+
+' 📋 Columns & Indexes as a note (to avoid class/entity syntax)
+note right of TASKS
+== Columns ==
+- id : uuid [PK]
+- title : text
+- notes : text (nullable)
+- status : int (0=pending,1=done)
+- priority : int (0=normal)
+- deadline : timestamptz (nullable)
+- created_at : timestamptz (default now())
+- updated_at : timestamptz (default now())
+
+== Indexes ==
+- idx_tasks_status
+- idx_tasks_priority
+- idx_tasks_deadline
+- idx_tasks_status_priority
+end note
+
+@enduml

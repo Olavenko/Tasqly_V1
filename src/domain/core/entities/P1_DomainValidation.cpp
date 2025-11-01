@@ -18,7 +18,7 @@
 #include "domain/core/entities/P1_DomainValidation.h"
 #include <chrono>
 
-namespace tasqly::domain::core::v1 {
+namespace tasqly::p1::s1::domain::core {
 
 // 🧩 Validate Task title
 ValidationResult DomainValidation::validateTitle(const std::string& title)
@@ -46,4 +46,4 @@ ValidationResult DomainValidation::validateDeadline(
   return {true, ""};
 }
 
-} // namespace tasqly::domain::core::v1
+} // namespace tasqly::p1::s1::domain::core

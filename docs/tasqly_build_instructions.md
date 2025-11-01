@@ -22,7 +22,7 @@ cd /c/Users/Olavenko/Desktop/TasqlyQt/Tasqly_V1
 ## to debug in GDP
 cd C:\Users\Olavenko\Desktop\TasqlyQt\Tasqly_V1\build\mingw-debug
 gdb TasqlyTestsRunner.exe
-run --gtest_filter=TaskMapperDiagnostic.ToDtoBasicConversion
+run --gtest_filter=TaskMapperRepositoryIntegration.FullRoundTrip
 bt
 gdb build/mingw-debug/TasqlyTestsRunner.exe
 run --gtest_filter=TaskMapperDiagnostic.ToDtoBasicConversion
@@ -38,8 +38,8 @@ cmake --build --preset=build-mingw-debug --parallel
 
 # Run unit tests
 ctest --preset=test-mingw-debug --output-on-failure ## to run all tests
-ctest --preset=test-mingw-debug -R WriteFailureDuringLoadThrows -VV ## to run single test in file
-ctest --preset=test-mingw-debug -R TaskMapperDiagnostic -VV ## to run all file tests
+ctest --preset=test-mingw-debug -R AddAndRetrieveTask -VV ## to run single test in file
+ctest --preset=test-mingw-debug -R ApplyAndRollbackMigrations -VV ## to run all file tests
 ```
 
 ### 2. Benchmarks build (performance benchmarks, always Release mode)

@@ -29,7 +29,7 @@
 #include <optional>
 #include <string>
 
-namespace tasqly::domain::core::v1 {
+namespace tasqly::p1::s1::domain::core {
 
 /// @brief Defines task lifecycle states.
 enum class TaskStatus {
@@ -65,4 +65,4 @@ inline std::optional<TaskStatus> taskStatusFromString(const std::string& str)
   return std::nullopt;
 }
 
-} // namespace tasqly::domain::core::v1
+} // namespace tasqly::p1::s1::domain::core

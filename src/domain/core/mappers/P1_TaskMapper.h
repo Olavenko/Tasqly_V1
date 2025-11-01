@@ -30,7 +30,7 @@
 #include "domain/core/entities/P1_Task.h"
 #include "domain/core/mappers/P1_TaskDto.h"
 
-namespace tasqly::domain::core::v1 {
+namespace tasqly::p1::s1::domain::core {
 
 /// @brief Responsible for manual conversion between Task ↔ TaskDto.
 class TaskMapper
@@ -61,4 +61,4 @@ private:
   static std::chrono::system_clock::time_point isoToTimePoint(const std::string& iso);
 };
 
-} // namespace tasqly::domain::core::v1
+} // namespace tasqly::p1::s1::domain::core

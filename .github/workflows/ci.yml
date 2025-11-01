@@ -103,73 +103,89 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Install OpenCppCoverage
-        #if: false # 🚫 disabled temporarily
+      # ------------------------------------------------------------
+      # 🧩 Setup Local PostgreSQL Server for Integration Tests
+      # ------------------------------------------------------------
+      - name: Install and Initialize PostgreSQL Server (Windows)
         shell: powershell
         run: |
-          choco install opencppcoverage --no-progress -y
-          $exePath = (Get-Command OpenCppCoverage.exe -ErrorAction SilentlyContinue).Source
-          if (-not $exePath) {
-            $searchDirs = @(
-              "C:\\ProgramData\\chocolatey\\bin",
-              "C:\\Program Files\\OpenCppCoverage"
-            )
-            $exePath = $searchDirs |
-              ForEach-Object { Get-ChildItem -Path $_ -Filter "OpenCppCoverage*.exe" -Recurse -ErrorAction SilentlyContinue } |
-              Select-Object -First 1 -ExpandProperty FullName
-          }
-          if (-not $exePath) {
-            throw "OpenCppCoverage executable not found after installation."
-          }
-          Write-Output "✅ OpenCppCoverage installed at: $exePath"
-          echo (Split-Path $exePath) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          choco install postgresql --version=17.2 --no-progress -y
+          $pgRoot = "C:\Program Files\PostgreSQL\17"
+          $pgBin = "$pgRoot\bin"
+          $pgData = "$pgRoot\data"
+          echo "PG_ROOT=$pgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "INCLUDE=$pgRoot\include" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "LIB=$pgRoot\lib" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "PGDATA=$pgData" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "✅ PostgreSQL installed at $pgRoot"
 
-      # --- Coverage (Debug) ---
-      - name: Configure Debug (MSVC Coverage)
-        #if: false   # 🚫 disabled temporarily
+          # Initialize database cluster
+          New-Item -ItemType Directory -Force -Path $pgData | Out-Null
+          $pwFile = "$pgData\pw.txt"
+          "themyth2060" | Out-File -FilePath $pwFile -Encoding ascii
+          & "$pgBin\initdb.exe" -D "$pgData" -U postgres --pwfile=$pwFile
+
+          # Start the PostgreSQL service
+          & "$pgBin\pg_ctl.exe" start -D "$pgData" -l "$pgData\logfile.log"
+          Start-Sleep -Seconds 10
+
+          # Create the test database
+          & "$pgBin\createdb.exe" -U postgres tasqly_test
+          Write-Host "✅ PostgreSQL service started and tasqly_test created."
+
+      - name: Verify PostgreSQL is running
         shell: powershell
+        run: |
+          $pgBin = "C:\Program Files\PostgreSQL\17\bin"
+          & "$pgBin\pg_isready.exe" -U postgres
+
+      # ------------------------------------------------------------
+      # 🧪 Build & Test — Debug (Coverage)
+      # ------------------------------------------------------------
+      - name: Configure Debug (MSVC Coverage)
+        shell: powershell
+        env:
+          TASQLY_PG_ROOT: ${{ env.PG_ROOT }}
         run: |
           if (Test-Path build/msvc-tests-reports-debug) { Remove-Item -Recurse -Force build/msvc-tests-reports-debug }
           cmake --preset=msvc-tests-reports-debug -DENABLE_COVERAGE=ON -DTASQLY_TEST_PHASE=Phase1
 
       - name: Build Debug (MSVC Coverage)
-        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: cmake --build --preset=build-msvc-tests-reports-debug --target coverage_tests --parallel
 
       - name: Run Tests (MSVC Debug + Coverage)
-        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: ctest --test-dir build/msvc-tests-reports-debug --output-on-failure
 
+      # ------------------------------------------------------------
+      # 📊 Generate Coverage Reports
+      # ------------------------------------------------------------
       - name: Install Python dependencies for coverage report
-        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: |
           pip install --upgrade pip
           pip install plotly pandas
 
       - name: Generate Coverage Reports
-        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: |
           python scripts/coverage_report_updated.py reports/coverage/tests/coverage.xml all --archive Phase0
 
-      # --- Benchmarks (Release) ---
+      # ------------------------------------------------------------
+      # ⚙️ Benchmarks — Release Build
+      # ------------------------------------------------------------
       - name: Configure Release (MSVC Benchmarks)
-        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: |
           if (Test-Path build/msvc-benchmarks-release) { Remove-Item -Recurse -Force build/msvc-benchmarks-release }
           cmake --preset=msvc-benchmarks-release -DTASQLY_BENCHMARK_PHASE=Phase1
 
       - name: Build Release (MSVC Benchmarks)
-        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: cmake --build --preset=build-msvc-benchmarks-release --parallel
 
       - name: Run Benchmarks
-        #if: false   # 🚫 disabled temporarily
         shell: powershell
         env:
           QT_QPA_PLATFORM: offscreen
@@ -177,9 +193,11 @@ jobs:
         run: |
           python scripts/run_benchmarks.py --phase Phase1 --compiler msvc --timeout 3600
 
-      # --- Upload Coverage Reports ---
+      # ------------------------------------------------------------
+      # 📤 Upload Reports
+      # ------------------------------------------------------------
       - name: Upload Test Coverage Reports
-        if: always() #always()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Tests-Coverage-Report-MSVC
@@ -188,16 +206,26 @@ jobs:
             reports/tests/**/*.html
             reports/tests/**/*.json
 
-      # --- Upload Benchmark Reports ---
       - name: Upload Benchmark Performance Reports
-        if: always() #always()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: benchmarks-Reports-MSVC
+          name: Benchmarks-Reports-MSVC
           path: |
             reports/benchmarks/**/*.md
             reports/benchmarks/**/*.html
             reports/benchmarks/**/*.json
+
+      # ------------------------------------------------------------
+      # 🧹 Shutdown PostgreSQL After Tests
+      # ------------------------------------------------------------
+      - name: Stop PostgreSQL Server
+        if: always()
+        shell: powershell
+        run: |
+          $pgBin = "C:\Program Files\PostgreSQL\17\bin"
+          & "$pgBin\pg_ctl.exe" stop -D "$env:PGDATA" -m fast
+          Write-Host "🧹 PostgreSQL stopped and cleaned up."
 
   # ------------------------------------------------------------
   # 🪟 Windows — MinGW (Debug only)
@@ -209,7 +237,44 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
+      
+      # ------------------------------------------------------------
+      # 🧩 Install and Run PostgreSQL Server for Integration Tests
+      # ------------------------------------------------------------
+      - name: Install PostgreSQL Server (Windows)
+        shell: powershell
+        run: |
+          choco install postgresql --version=17.2 --no-progress -y
+          $pgRoot = "C:\Program Files\PostgreSQL\17"
+          Write-Host "✅ PostgreSQL installed at $pgRoot"
+          echo "PG_ROOT=$pgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "INCLUDE=$pgRoot\include" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "LIB=$pgRoot\lib" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "PGDATA=$pgRoot\data" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Initialize PostgreSQL database
+        shell: powershell
+        run: |
+          $pgBin = "C:\Program Files\PostgreSQL\17\bin"
+          $pwFile = "$env:PGDATA\pw.txt"
+          New-Item -ItemType Directory -Force -Path $env:PGDATA | Out-Null
+          "themyth2060" | Out-File -FilePath $pwFile -Encoding ascii
+          & "$pgBin\initdb.exe" -D "$env:PGDATA" -U postgres --pwfile=$pwFile
+          & "$pgBin\pg_ctl.exe" start -D "$env:PGDATA" -l "$env:PGDATA\logfile.log"
+          Start-Sleep -Seconds 10
+          & "$pgBin\createdb.exe" -U postgres tasqly_test
+          Write-Host "✅ PostgreSQL service started and tasqly_test created."
+
+      - name: Verify PostgreSQL is running    
+        shell: powershell
+        run: |
+          Start-Sleep -Seconds 5
+          $pgBin = "C:\Program Files\PostgreSQL\17\bin"
+          & "$pgBin\pg_isready.exe" -U postgres
+          
+      # ------------------------------------------------------------
+      # ⚙️ Build + Test with MSYS2 (MinGW)
+      # ------------------------------------------------------------
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
         with:
@@ -238,6 +303,17 @@ jobs:
       - name: Run Tests (MinGW Debug)
         shell: msys2 {0}
         run: ctest --preset=test-mingw-debug --output-on-failure
+        
+      # ------------------------------------------------------------
+      # 🧹 Stop PostgreSQL after tests
+      # ------------------------------------------------------------
+      - name: Stop PostgreSQL Server  
+        if: always()
+        shell: powershell
+        run: |
+          $pgBin = "C:\Program Files\PostgreSQL\17\bin"
+          & "$pgBin\pg_ctl.exe" stop -D "$env:PGDATA" -m fast
+          Write-Host "🧹 PostgreSQL stopped and cleaned up."
 
   # ------------------------------------------------------------
   # 🐧 Linux (GCC + Clang, Debug only)
@@ -250,6 +326,24 @@ jobs:
       fail-fast: false
       matrix:
         compiler: [gcc, clang]
+
+    # ------------------------------------------------------------
+    # 🧩 PostgreSQL Service Container
+    # ------------------------------------------------------------
+    services:
+      postgres:
+        image: postgres:17
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: themyth2060
+          POSTGRES_DB: tasqly_test
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -257,10 +351,19 @@ jobs:
       - name: Install build deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential ninja-build clang python3-pip
+          sudo apt-get install -y build-essential ninja-build clang python3-pip libpq-dev
           cmake --version
           ninja --version
-          
+
+      - name: Wait for PostgreSQL
+        run: |
+          echo "⏳ Waiting for PostgreSQL to be ready..."
+          for i in {1..10}; do
+            pg_isready -h localhost -p 5432 -U postgres && break
+            echo "Waiting..."; sleep 2
+          done
+          echo "✅ PostgreSQL is ready."
+
       - name: Setup Qt 6.9.2
         uses: jurplel/install-qt-action@v3
         with:
@@ -287,9 +390,16 @@ jobs:
           fi
           
       - name: Run Tests (${{ matrix.compiler }} Debug)
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: postgres
+          PGPASSWORD: themyth2060
+          PGDATABASE: tasqly_test
         run: |
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
             ctest --preset=test-gcc-debug --output-on-failure
           else
             ctest --preset=test-clang-debug --output-on-failure
           fi
+

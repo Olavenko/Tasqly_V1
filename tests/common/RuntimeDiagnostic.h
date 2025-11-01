@@ -57,7 +57,7 @@ inline void printRuntimeInfo()
     std::cout << "Build Type   : Release\n";
 #endif
 
-    using tasqly::domain::core::v1::TaskDto;
+    using tasqly::p1::s1::domain::core::TaskDto;
     std::cout << "sizeof(std::string)            = " << sizeof(std::string) << "\n";
     std::cout << "sizeof(std::optional<string>)  = " << sizeof(std::optional<std::string>) << "\n";
     std::cout << "sizeof(TaskDto)                = " << sizeof(TaskDto) << "\n";

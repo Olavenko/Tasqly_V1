@@ -133,7 +133,52 @@ add_library(tasqly_core STATIC
     src/domain/core/errors/P1_DomainResult.h
     src/domain/core/errors/P1_DomainError.h
 
+    # -------------------------
+    # 🧩 Database Layer [Phase1][Slice2]
+    # -------------------------
+    src/infra/db/P1_S2_PostgresTaskRepository.h
+    src/infra/db/P1_S2_PostgresTaskRepository.cpp
+
+    # -------------------------
+    # 🧩 Persistence Layer [Phase1][Slice2]
+    # -------------------------
+    src/infra/persistence/P1_S2_InMemoryTaskRepository.h
+    src/infra/persistence/P1_S2_InMemoryTaskRepository.cpp
+
+    # -------------------------
+    # 🧩 Runtime Layer [Phase1][Slice2]
+    # -------------------------
+    src/infra/runtime/P1_Error.cpp
+    src/infra/runtime/P1_Error.h
+    src/infra/runtime/P1_Logger.h
+    src/infra/runtime/P1_Logger.cpp
+    src/infra/runtime/P1_Notifier.h
+    src/infra/runtime/P1_Notifier.cpp
+    src/infra/runtime/P1_AppSettings.h
+    src/infra/runtime/P1_AppSettings.cpp
+
+    # -------------------------
+    # 🧩 Factory Layer [Phase1][Slice2]
+    # -------------------------
+    src/infra/factories/P1_S2_TaskRepositoryFactory.cpp
+    src/infra/factories/P1_S2_TaskRepositoryFactory.h
+
 )
+
+# ---------------------------------------------------------------
+# 🧩 PostgreSQL Integration (via FindTasqlyPostgreSQL)
+# ---------------------------------------------------------------
+include(cmake/FindTasqlyPostgreSQL.cmake)
+
+if (TASQLY_PG_AVAILABLE)
+    message(STATUS "[tasqly_core] Linking with PostgreSQL client library")
+    target_include_directories(tasqly_core PRIVATE ${TASQLY_PG_INCLUDE_DIRS})
+    target_link_libraries(tasqly_core PRIVATE ${TASQLY_PG_LIBRARIES})
+    target_compile_definitions(tasqly_core PRIVATE TASQLY_WITH_POSTGRESQL=1)
+else()
+    message(WARNING "[tasqly_core] PostgreSQL not available — building in InMemory mode")
+    target_compile_definitions(tasqly_core PRIVATE TASQLY_WITH_POSTGRESQL=0)
+endif()
 
 # ---------------------------------------------------------------
 # 📂 Include Directories
@@ -143,20 +188,26 @@ add_library(tasqly_core STATIC
 target_include_directories(tasqly_core PUBLIC
     ${CMAKE_SOURCE_DIR}/src
 )
-
 # ---------------------------------------------------------------
 # 🔗 Dependencies
 # ---------------------------------------------------------------
 # Core library links against essential Qt modules.
 # QuickControls2 is included here since AppSettings/Theme depend on it.
+
 target_link_libraries(tasqly_core
     PUBLIC
         Qt6::Core
         Qt6::Gui
         Qt6::Qml
         Qt6::Quick
+        gtest          # ✅ GoogleTest
+        gmock          # ✅ GoogleMock
+        benchmark      # ✅ Google Benchmark
+    PRIVATE
         Qt6::QuickControls2
 )
+
+message(STATUS "[App] Tasqly_core linked successfully with Qt + GoogleTest + Benchmark")
 
 # ---------------------------------------------------------------
 # 🛡️ Quality Gates
@@ -217,11 +268,3 @@ target_link_libraries(tasqly_fakes
 # ---------------------------------------------------------------
 tasqly_apply_warnings(tasqly_fakes)
 tasqly_apply_debug_sanitizers(tasqly_fakes)
-
-# ---------------------------------------------------------------
-# ⚙️ Target Properties
-# ---------------------------------------------------------------
-set_target_properties(tasqly_fakes PROPERTIES
-    OUTPUT_NAME "tasqly_fakes"
-    FOLDER "Tests/Fakes"
-)

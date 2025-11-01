@@ -23,7 +23,7 @@
 #include "domain/core/entities/P1_DomainValidation.h"
 #include <gtest/gtest.h>
 
-using namespace tasqly::domain::core::v1;
+using namespace tasqly::p1::s1::domain::core;
 
 // 🧩 Fixture for DomainValidation tests
 class DomainValidationTest : public ::testing::Test

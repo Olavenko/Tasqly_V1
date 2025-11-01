@@ -1,0 +1,48 @@
+@startuml
+' ============================================================
+' 📄 File: runtime_error_component.puml
+' 🧱 Layer: Infrastructure (Runtime)
+' 🎯 Purpose: Represent P1_Error runtime system and its relations
+' 🧑 Author: Mohamed Ali
+' 🗓️ Created: 2025-10-21
+' ============================================================
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+FA6_BUG(ERROR, "P1_Error", component, #E2C22F)
+FA6_CUBE(DOMERR, "P1_DomainError", component, #D97A2B)
+FA6_GEAR(LOGGER, "P1_Logger", component, #E5C55F)
+FA6_BELL(NOTIFIER, "P1_Notifier", component, #C2C2C2)
+FA6_DATABASE(FACTORY, "P1_S2_TaskRepositoryFactory", component, #4DA6FF)
+
+' ----------------------
+' Relationships
+' ----------------------
+ERROR --> DOMERR : converts to/from
+LOGGER --> ERROR : logs runtime failures
+NOTIFIER --> ERROR : displays user feedback
+FACTORY --> ERROR : raises runtime errors
+FACTORY --> LOGGER : logs initialization results
+FACTORY --> NOTIFIER : shows fallback messages
+
+' ----------------------
+' Notes and Tags
+' ----------------------
+note right of ERROR
+  🧩 Represents runtime/infrastructure error model
+  Contains:
+  - code (enum)
+  - message
+  - context (optional map)
+  - conversion helpers
+end note
+
+note bottom of FACTORY
+  ⚙️ Factory uses P1_Error to:
+  - detect DB init/auth issues
+  - trigger fallback (InMemory)
+  - log + notify failures
+end note
+
+@enduml

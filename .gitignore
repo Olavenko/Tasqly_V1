@@ -134,3 +134,10 @@ tests_tmp/
 # reports/benchmarks/phase0_perf_reports/
 # reports/performance/
 
+# ----------------------------------------------------------------------
+# 📦 External / Vendored Libraries
+# ----------------------------------------------------------------------
+externals/*
+!externals/CMakeLists.txt   # keep control file
+/externals/postgresql/lib/
+/externals/postgresql/include/

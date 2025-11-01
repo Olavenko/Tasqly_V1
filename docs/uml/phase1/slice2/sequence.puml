@@ -1,0 +1,37 @@
+@startuml
+' 🧱 File: sequence.puml
+' ----------------------
+' 📌 Purpose : Sequence — "App.Tasks → PostgresRepo → Fallback(InMemory)"
+' 🧱 Layer   : Docs (UML)
+' 👤 Author  : Mohamed Ali
+' 🗓️ Created : 2025-10-19
+
+!define USE_CUSTOM_THEME
+!include ../../config/style.puml
+
+title Sequence — App.Tasks → Repo(Postgres) → (success | fallback)
+
+' 🧑 Participants
+FA6_LAPTOP(APP, "App.Tasks", participant, #58A6FF)
+FA6_DATABASE(REPO, "PostgresTaskRepository", participant, #E5C55F)
+FA6_CUBES(MEM, "InMemoryTaskRepository", participant, #A371F7)
+FA6_BELL(NOTIFY, "Notifier (Toast)", participant, #FFA500)
+FA6_BUG(LOG, "LogManager", participant, #39C5CF)
+
+' 🔗 Flow
+APP -> REPO : connect()
+REPO -> LOG : info("Connecting to DB…")
+REPO -> REPO : try_connect()
+
+alt success
+  REPO --> APP : ok
+  APP -> REPO : listTasks(limit, offset)
+  REPO --> APP : Result<Task[]>
+else failure
+  REPO -> LOG : error("DB_INIT_FAIL")
+  APP -> NOTIFY : showToast("DB unavailable — fallback to InMemory")
+  APP -> MEM : init()
+  MEM --> APP : Ready (Fallback Active)
+end
+
+@enduml

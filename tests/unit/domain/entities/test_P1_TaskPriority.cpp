@@ -20,7 +20,7 @@
 #include "domain/core/entities/P1_TaskPriority.h"
 #include <gtest/gtest.h>
 
-using namespace tasqly::domain::core::v1;
+using namespace tasqly::p1::s1::domain::core;
 
 // 🧩 Test: toString() should return correct string for each enum value
 TEST(TaskPriorityTest, ToStringReturnsCorrectValue)

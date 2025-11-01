@@ -70,6 +70,13 @@ Each ADR documents a significant architectural or tooling decision.
 | 0007 | Phase0/Phase1 Header Collision in Task.h                           | Accepted | 2025-10-14    | [0007](phase1/slice1/0007-phase0_Phase1_Header_Collision.md) |
 | 0008 | Namespace Isolation & Resolution Strategy in Domain/Core (Phase 1) | Accepted | 2025-10-14    | [0008](phase1/slice1/0008-Namespace-Isolation.md)            |
 
+### phase1/slice2 (2 ADRs)
+
+| ID   | Title                                                 | Status | Last Modified | File                                                       |
+|------|-------------------------------------------------------|--------|---------------|------------------------------------------------------------|
+| 0001 | runtime-error-layer-adoption                          | Draft  | 2025-10-21    | [0001](phase1/slice2/0001-runtime-error-layer-adoption.md) |
+| 0002 | PostgreSQL Connection Policy and Fallback to InMemory | Draft  | 2025-10-23    | [0002](phase1/slice2/0002-db_connection_and_fallback.md)   |
+
 ---
 
 ## Status Legend
@@ -78,4 +85,4 @@ Each ADR documents a significant architectural or tooling decision.
 - **Proposed** → Under discussion.
 - **Draft** → Created but not yet reviewed.
 
-*Index generated on 2025-10-14 11:48 UTC*
+*Index generated on 2025-11-01 13:35 UTC*

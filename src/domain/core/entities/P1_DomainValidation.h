@@ -30,7 +30,7 @@
 #include <optional>
 #include <string>
 
-namespace tasqly::domain::core::v1 {
+namespace tasqly::p1::s1::domain::core {
 
 /// @brief Represents the result of a domain validation check.
 struct ValidationResult
@@ -55,4 +55,4 @@ public:
       const std::optional<std::chrono::system_clock::time_point>& deadline);
 };
 
-} // namespace tasqly::domain::core::v1
+} // namespace tasqly::p1::s1::domain::core

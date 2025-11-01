@@ -20,7 +20,7 @@
 #include "tests/fakes/domain/FakeTaskRepository.h"
 #include <gtest/gtest.h>
 
-using namespace tasqly::domain::core::v1;
+using namespace tasqly::p1::s1::domain::core;
 
 // ----------------------------------------------------------------------------
 // 🧩 Test Fixture

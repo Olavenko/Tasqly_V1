@@ -16,7 +16,7 @@
 #include <utility>
 #include <variant>
 
-namespace tasqly::domain::core::v1 {
+namespace tasqly::p1::s1::domain::core {
 
 /// @brief Represents either a success value (T) or a DomainError.
 template<typename T>
@@ -106,4 +106,4 @@ private:
   std::variant<std::monostate, DomainError> _data{};
 };
 
-} // namespace tasqly::domain::core::v1
+} // namespace tasqly::p1::s1::domain::core

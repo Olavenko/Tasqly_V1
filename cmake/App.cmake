@@ -69,7 +69,11 @@ target_include_directories(appTasqly_V1 PUBLIC
 target_link_libraries(appTasqly_V1
     PRIVATE
         tasqly_core
+        Qt6::Core
+        Qt6::Gui
+        Qt6::Qml
         Qt6::Quick
+        Qt6::QuickControls2
 )
 
 # ---------------------------------------------------------------
@@ -97,3 +101,5 @@ install(TARGETS appTasqly_V1
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+message(STATUS "[App] appTasqly_V1 linked successfully with tasqly_core + Qt (Core/Gui/Qml/Quick)")

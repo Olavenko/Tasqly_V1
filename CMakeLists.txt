@@ -140,6 +140,11 @@ set(TASQLY_TEST_PHASE "Phase1" CACHE STRING "Select which test phase to build")
 set(TASQLY_BENCHMARK_PHASE "Phase1" CACHE STRING "Select which benchmark phase to build")
 
 # ---------------------------------------------------------------
+# 📦 External Dependencies
+# ---------------------------------------------------------------
+include(cmake/ExternalDeps.cmake)
+
+# ---------------------------------------------------------------
 # 📦 Core Library Target
 # ---------------------------------------------------------------
 include(cmake/Core.cmake)
@@ -154,10 +159,10 @@ include(cmake/App.cmake)
 # ---------------------------------------------------------------
 if(TASQLY_BUILD_TESTS)
     if(EXISTS "${CMAKE_SOURCE_DIR}/cmake/${TASQLY_TEST_PHASE}_Tests.cmake")
-        message(STATUS "🧪 Loading tests for phase: ${TASQLY_TEST_PHASE}")
+        message(STATUS "[App] Loading tests for phase: ${TASQLY_TEST_PHASE}")
         include(cmake/${TASQLY_TEST_PHASE}_Tests.cmake)
-    else()
-        message(WARNING "⚠️ Phase file not found for: ${TASQLY_TEST_PHASE}, falling back to default Tests.cmake")
+else()
+        message(WARNING "Phase file not found for: ${TASQLY_TEST_PHASE}, falling back to default Tests.cmake")
         include(cmake/Tests.cmake)
     endif()
 endif()
@@ -167,10 +172,10 @@ endif()
 # ---------------------------------------------------------------
 if(TASQLY_BUILD_BENCHMARKS)
     if(EXISTS "${CMAKE_SOURCE_DIR}/cmake/${TASQLY_BENCHMARK_PHASE}_Benchmarks.cmake")
-        message(STATUS "📊 Loading benchmarks for phase: ${TASQLY_BENCHMARK_PHASE}")
+        message(STATUS "Loading benchmarks for phase: ${TASQLY_BENCHMARK_PHASE}")
         include(cmake/${TASQLY_BENCHMARK_PHASE}_Benchmarks.cmake)
     else()
-        message(WARNING "⚠️ Phase file not found for: ${TASQLY_BENCHMARK_PHASE}, falling back to default Benchmarks.cmake")
+        message(WARNING "Phase file not found for: ${TASQLY_BENCHMARK_PHASE}, falling back to default Benchmarks.cmake")
         include(cmake/Benchmarks.cmake)
     endif()
 endif()
@@ -181,3 +186,30 @@ endif()
 if(TASQLY_BUILD_REPORTS)
     include(cmake/Reports.cmake)
 endif()
+
+# ---------------------------------------------------------------
+# 🧩 PostgreSQL Integration (Windows + Linux)
+# ---------------------------------------------------------------
+# Ensures PostgreSQL headers and libraries are available for C++ code.
+# This enables inclusion of <libpq-fe.h> and linking with libpq.
+if (WIN32)
+    # ⚙️ Default install path (from Chocolatey)
+    set(PostgreSQL_ROOT "C:/Program Files/PostgreSQL/17")
+
+    # 🧩 Add include and lib directories
+    include_directories("${PostgreSQL_ROOT}/include")
+    link_directories("${PostgreSQL_ROOT}/lib")
+
+    message(STATUS "[PostgreSQL] Using PostgreSQL from: ${PostgreSQL_ROOT}")
+elseif (UNIX)
+    # Linux systems use libpq-dev from apt
+    find_package(PostgreSQL REQUIRED)
+    include_directories(${PostgreSQL_INCLUDE_DIRS})
+    link_directories(${PostgreSQL_LIBRARY_DIRS})
+    message(STATUS "[PostgreSQL] Using system PostgreSQL: ${PostgreSQL_VERSION_STRING}")
+endif()
+
+#=====================================================================
+# 🧩 Unified Diagnostics Summary
+#=====================================================================
+include(cmake/DiagnosticsSummary.cmake)

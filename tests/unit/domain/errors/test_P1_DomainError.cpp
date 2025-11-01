@@ -17,7 +17,7 @@
 #include "domain/core/errors/P1_DomainError.h"
 #include <gtest/gtest.h>
 
-using namespace tasqly::domain::core::v1;
+using namespace tasqly::p1::s1::domain::core;
 
 // 🧩 Test: Default constructor initializes with Unknown code
 TEST(DomainErrorTest, DefaultConstructorSetsUnknown)

@@ -31,7 +31,7 @@
 #include <unordered_map>
 #include <utility>
 
-namespace tasqly::domain::core::v1 {
+namespace tasqly::p1::s1::domain::core {
 
 /// @brief Enumerates all domain-level error categories.
 enum class DomainErrorCode {
@@ -98,4 +98,4 @@ struct DomainError
   bool operator!=(const DomainError& other) const noexcept { return !(*this == other); }
 };
 
-} // namespace tasqly::domain::core::v1
+} // namespace tasqly::p1::s1::domain::core

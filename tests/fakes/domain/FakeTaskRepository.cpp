@@ -5,24 +5,30 @@
  * 🧱 Layer     : Domain (Fakes / Testing)
  * 👤 Author    : Mohamed Ali
  * 🗓️ Created   : 2025-10-12
- * 🔖 Version   : 1.1 (Aligned with v1 DomainError API)
+ * 🔖 Version   : 1.2 (Safe Copy Return + Memory Hygiene Fix)
  * 🛡️ Stability : Stable
  *
  * 🧠 Description:
  * Implements CRUD logic using an in-memory vector<Task>.
- * Suitable for integration testing without DB or Qt dependencies.
+ * Fully isolated from DB and Qt dependencies.
+ * 
+ * ✅ Fixes:
+ *   - Prevents SegFaults caused by dangling references
+ *   - Ensures DomainResult<Task> always holds a copy (value semantics)
+ *   - Adds thread-safe vector cleanup with shrink_to_fit()
  */
 
 #include "FakeTaskRepository.h"
 #include <algorithm>
 
-namespace tasqly::domain::core::v1 {
+namespace tasqly::p1::s1::domain::core {
 
-// 📝 Create
+// 📝 Create — add a new Task to the in-memory store
 DomainResult<Task> FakeTaskRepository::create(const Task& task)
 {
   std::scoped_lock lock(_mutex);
 
+  // 🔍 Check for duplicate IDs
   auto exists = std::any_of(_tasks.begin(), _tasks.end(), [&](const Task& t) {
     return t.id == task.id;
   });
@@ -30,11 +36,14 @@ DomainResult<Task> FakeTaskRepository::create(const Task& task)
   if (exists)
     return DomainResult<Task>::err(DomainError::makeConflict("Task with same ID already exists"));
 
+  // ✅ Push copy (not reference) into vector
   _tasks.push_back(task);
-  return DomainResult<Task>::ok(_tasks.back());
+
+  // ✅ Return copy of stored object (avoid dangling references)
+  return DomainResult<Task>::ok(Task(_tasks.back()));
 }
 
-// 🔎 GetById
+// 🔎 Retrieve task by ID
 DomainResult<Task> FakeTaskRepository::getById(const std::string& id) const
 {
   std::scoped_lock lock(_mutex);
@@ -44,10 +53,11 @@ DomainResult<Task> FakeTaskRepository::getById(const std::string& id) const
   if (it == _tasks.end())
     return DomainResult<Task>::err(DomainError::makeNotFound("Task not found"));
 
-  return DomainResult<Task>::ok(*it);
+  // ✅ Return copy instead of reference
+  return DomainResult<Task>::ok(Task(*it));
 }
 
-// ✏️ Update
+// ✏️ Update existing task
 DomainResult<Task> FakeTaskRepository::update(const Task& task)
 {
   std::scoped_lock lock(_mutex);
@@ -56,14 +66,14 @@ DomainResult<Task> FakeTaskRepository::update(const Task& task)
     if (t.id == task.id) {
       t = task;
       t.updatedAt = std::chrono::system_clock::now();
-      return DomainResult<Task>::ok(t);
+      return DomainResult<Task>::ok(Task(t)); // ✅ return copy
     }
   }
 
   return DomainResult<Task>::err(DomainError::makeNotFound("Cannot update non-existent task"));
 }
 
-// 🗑️ Remove
+// 🗑️ Remove by ID
 DomainResult<void> FakeTaskRepository::remove(const std::string& id)
 {
   std::scoped_lock lock(_mutex);
@@ -77,7 +87,7 @@ DomainResult<void> FakeTaskRepository::remove(const std::string& id)
   return DomainResult<void>::ok();
 }
 
-// 📋 List & Filter
+// 📋 List tasks with optional filters and pagination
 DomainResult<std::vector<Task>> FakeTaskRepository::list(std::optional<TaskStatus> status,
                                                          std::optional<TaskPriority> priority,
                                                          std::size_t limit,
@@ -99,17 +109,22 @@ DomainResult<std::vector<Task>> FakeTaskRepository::list(std::optional<TaskStatu
   if (offset >= result.size())
     return DomainResult<std::vector<Task>>::ok({});
 
-  std::size_t end = std::min(result.size(), offset + limit);
+  const std::size_t end = std::min(result.size(), offset + limit);
   std::vector<Task> page(result.begin() + offset, result.begin() + end);
 
   return DomainResult<std::vector<Task>>::ok(std::move(page));
 }
 
-// 🧹 Clear all
+// 🧹 Clear all stored tasks (safe & thread-safe)
 void FakeTaskRepository::clear()
 {
   std::scoped_lock lock(_mutex);
+
+  // ✅ ensure safe destruction of all elements
   _tasks.clear();
+
+  // ✅ release allocated memory to avoid residual capacity
+  _tasks.shrink_to_fit();
 }
 
-} // namespace tasqly::domain::core::v1
+} // namespace tasqly::p1::s1::domain::core

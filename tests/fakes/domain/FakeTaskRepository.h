@@ -26,13 +26,33 @@
 #include <optional>
 #include <vector>
 
-namespace tasqly::domain::core::v1 {
+namespace tasqly::p1::s1::domain::core {
 
 class FakeTaskRepository final : public ITaskRepository
 {
 public:
   FakeTaskRepository() = default;
   ~FakeTaskRepository() override = default;
+
+  // 🚫 Non-copyable (prevents shallow copy of _tasks/_mutex)
+  FakeTaskRepository(const FakeTaskRepository&) = delete;
+  FakeTaskRepository& operator=(const FakeTaskRepository&) = delete;
+
+  // ✅ Movable (safe transfer of ownership)
+  FakeTaskRepository(FakeTaskRepository&& other) noexcept
+  {
+    std::scoped_lock<std::mutex> lock(other._mutex);
+    _tasks = std::move(other._tasks);
+  }
+
+  FakeTaskRepository& operator=(FakeTaskRepository&& other) noexcept
+  {
+    if (this != &other) {
+      std::scoped_lock<std::mutex, std::mutex> lock(_mutex, other._mutex);
+      _tasks = std::move(other._tasks);
+    }
+    return *this;
+  }
 
   // 📝 Create new task
   DomainResult<Task> create(const Task& task) override;
@@ -60,4 +80,4 @@ private:
   std::vector<Task> _tasks;
 };
 
-} // namespace tasqly::domain::core::v1
+} // namespace tasqly::p1::s1::domain::core

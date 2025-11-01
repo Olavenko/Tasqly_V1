@@ -1,37 +1,40 @@
 /*
  * 🧱 File: test_P1_TaskMapperRepository_RoundTrip.cpp
  * --------------------------------------------------
- * 📌 Purpose   : Full integration test for TaskMapper + FakeTaskRepository
+ * 📌 Purpose   : Integration tests for TaskMapper + FakeTaskRepository (Phase 1)
  * 🧱 Layer     : Domain (Integration)
- * 🧪 Type      : Round-trip Integration Test (GoogleTest)
+ * 🧪 Type      : Round-trip & Error Integration Tests
  * 👤 Author    : Mohamed Ali
- * 🗓️ Created   : 2025-10-14
- * 🔖 Version   : 1.0 (Initial)
+ * 🗓️ Created   : 2025-10-21
+ * 🔖 Version   : 2.0 (Rewritten — Namespace Safe & Memory-Safe)
  * 🛡️ Stability : Stable
  *
  * 🧠 Description:
- *   Validates full cycle:
+ *   Verifies the integrity of task round-trip transformations:
  *     Domain Task → DTO → Repository (Create) → Repository (Read)
- *     → DTO again → Compare all values for consistency.
+ *     → Domain → DTO → Compare equality.
  *
  *   Ensures:
- *   - Mapper correctness inside repository context
- *   - Optional and time fields preserved accurately
- *   - DomainResult safety across all layers
+ *   - Mapper consistency across all conversions
+ *   - Repository value semantics (no dangling references)
+ *   - Proper DomainResult error behavior
  */
 
-#include "domain/core/entities/P1_Task.h"
-#include "domain/core/mappers/P1_TaskMapper.h"
-#include "tests/fakes/domain/FakeTaskRepository.h"
 #include <chrono>
 #include <gtest/gtest.h>
 #include <iostream>
 
-using namespace tasqly::domain::core::v1; // repository
+#include "domain/core/entities/P1_Task.h"
+#include "domain/core/errors/P1_DomainError.h"
+#include "domain/core/errors/P1_DomainResult.h"
+#include "domain/core/mappers/P1_TaskMapper.h"
+#include "tests/fakes/domain/FakeTaskRepository.h"
 
-// ----------------------------------------------------------------------------
+using namespace tasqly::p1::s1::domain::core;
+
+// ---------------------------------------------------------------------------
 // 🧩 Utility — Compare two TaskDto objects logically
-// ----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 static void expectDtoEqual(const TaskDto& a, const TaskDto& b)
 {
   EXPECT_EQ(a.id, b.id);
@@ -47,65 +50,65 @@ static void expectDtoEqual(const TaskDto& a, const TaskDto& b)
     EXPECT_EQ(a.deadline.value_or(""), b.deadline.value_or(""));
   }
 
-  EXPECT_EQ(a.createdAt.substr(0, 16), b.createdAt.substr(0, 16)); // ignore seconds
+  EXPECT_EQ(a.createdAt.substr(0, 16), b.createdAt.substr(0, 16));
   EXPECT_EQ(a.updatedAt.substr(0, 16), b.updatedAt.substr(0, 16));
 }
 
-// ----------------------------------------------------------------------------
-// 🧪 Test: Round-trip between TaskMapper + Repository
-// ----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// 🧪 Test Case 1 — Full round-trip through mapper + repository
+// ---------------------------------------------------------------------------
 TEST(TaskMapperRepositoryIntegration, FullRoundTrip)
 {
   FakeTaskRepository repo;
   repo.clear();
 
-  // 🧱 Step 1: Create Domain Entity
+  // Step 1: Create domain Task
   Task domainTask;
-  domainTask.id = "roundtrip-001";
-  domainTask.title = "RoundTrip Integration Test";
-  domainTask.notes = "Ensure mapper and repository coherence";
+  domainTask.id = "task-rt-001";
+  domainTask.title = "Mapper/Repo Integration Test";
+  domainTask.notes = "Round-trip full consistency validation";
   domainTask.status = TaskStatus::Doing;
   domainTask.priority = TaskPriority::High;
-  domainTask.deadline = std::chrono::system_clock::now() + std::chrono::hours(3);
+  domainTask.deadline = std::chrono::system_clock::now() + std::chrono::hours(6);
   domainTask.createdAt = std::chrono::system_clock::now();
   domainTask.updatedAt = domainTask.createdAt;
 
-  // 🧱 Step 2: Convert Domain → DTO
-  TaskDto originalDto = TaskMapper::toDto(domainTask);
+  // Step 2: Domain → DTO
+  TaskDto dtoOriginal = TaskMapper::toDto(domainTask);
 
-  // 🧱 Step 3: Convert DTO → Domain and store in repository
-  Task repoTask = TaskMapper::fromDto(originalDto);
-  auto createResult = repo.create(repoTask);
-  ASSERT_TRUE(createResult.isOk());
+  // Step 3: DTO → Domain → store
+  Task repoTask = TaskMapper::fromDto(dtoOriginal);
+  auto createRes = repo.create(repoTask);
+  ASSERT_TRUE(createRes.isOk()) << "Repository create() failed unexpectedly";
 
-  // 🧱 Step 4: Retrieve from repository
-  auto fetchResult = repo.getById("roundtrip-001");
-  ASSERT_TRUE(fetchResult.isOk());
-  Task fetchedTask = fetchResult.value();
+  // Step 4: Retrieve from repository
+  auto fetchRes = repo.getById(domainTask.id);
+  ASSERT_TRUE(fetchRes.isOk()) << "Repository getById() failed";
+  Task fetchedTask = fetchRes.value();
 
-  // 🧱 Step 5: Convert back to DTO
-  TaskDto fetchedDto = TaskMapper::toDto(fetchedTask);
+  // Step 5: Convert back to DTO
+  TaskDto dtoFetched = TaskMapper::toDto(fetchedTask);
 
-  // 🧱 Step 6: Compare input/output DTOs
-  expectDtoEqual(originalDto, fetchedDto);
+  // Step 6: Validate
+  expectDtoEqual(dtoOriginal, dtoFetched);
 
-  std::cout << "[RoundTrip ✅] Title: " << fetchedDto.title << "\n";
-  std::cout << "Status: " << fetchedDto.status << ", Priority: " << fetchedDto.priority << "\n";
-  std::cout << "CreatedAt: " << fetchedDto.createdAt << "\n";
-  std::cout << "UpdatedAt: " << fetchedDto.updatedAt << "\n";
+  std::cout << "[✅ RoundTrip] Title: " << dtoFetched.title << "\n";
+  std::cout << "Status: " << dtoFetched.status << ", Priority: " << dtoFetched.priority << "\n";
+  std::cout << "CreatedAt: " << dtoFetched.createdAt << "\n";
+  std::cout << "UpdatedAt: " << dtoFetched.updatedAt << "\n";
 }
 
-// ----------------------------------------------------------------------------
-// 🧪 Test: Round-trip with Empty Optionals
-// ----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// 🧪 Test Case 2 — Round-trip with empty optionals
+// ---------------------------------------------------------------------------
 TEST(TaskMapperRepositoryIntegration, RoundTripWithEmptyOptionals)
 {
   FakeTaskRepository repo;
   repo.clear();
 
   Task t;
-  t.id = "roundtrip-empty";
-  t.title = "Empty Optional Fields";
+  t.id = "task-rt-empty";
+  t.title = "Empty Optionals Test";
   t.status = TaskStatus::Todo;
   t.priority = TaskPriority::Normal;
   t.notes.reset();
@@ -113,41 +116,44 @@ TEST(TaskMapperRepositoryIntegration, RoundTripWithEmptyOptionals)
 
   TaskDto dtoIn = TaskMapper::toDto(t);
   Task stored = TaskMapper::fromDto(dtoIn);
-
   ASSERT_TRUE(repo.create(stored).isOk());
 
-  auto loaded = repo.getById("roundtrip-empty");
-  ASSERT_TRUE(loaded.isOk());
+  auto res = repo.getById("task-rt-empty");
+  ASSERT_TRUE(res.isOk());
+  Task loaded = res.value();
 
-  TaskDto dtoOut = TaskMapper::toDto(loaded.value());
+  TaskDto dtoOut = TaskMapper::toDto(loaded);
 
   EXPECT_FALSE(dtoOut.notes.has_value());
   EXPECT_FALSE(dtoOut.deadline.has_value());
-  EXPECT_EQ(dtoOut.title, "Empty Optional Fields");
+  EXPECT_EQ(dtoOut.title, "Empty Optionals Test");
 
-  std::cout << "[RoundTrip ✅] Empty optionals handled correctly.\n";
+  std::cout << "[✅ RoundTrip] Empty optionals handled safely.\n";
 }
 
-// ----------------------------------------------------------------------------
-// 🧪 Test: Repository returns DomainResult errors gracefully
-// ----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// 🧪 Test Case 3 — Repository error propagation
+// ---------------------------------------------------------------------------
 TEST(TaskMapperRepositoryIntegration, HandlesRepositoryErrors)
 {
   FakeTaskRepository repo;
   repo.clear();
 
   Task t;
-  t.id = "dup-roundtrip";
+  t.id = "dup-id-test";
   t.title = "First Insert";
-  ASSERT_TRUE(repo.create(t).isOk());
 
-  // Insert same ID again
-  auto dup = repo.create(t);
-  ASSERT_TRUE(dup.isErr());
-  EXPECT_EQ(dup.error().code, DomainErrorCode::Conflict);
+  ASSERT_TRUE(repo.create(t).isOk()) << "Initial insert failed";
 
-  // Try to fetch missing ID
-  auto missing = repo.getById("not-exist-123");
-  ASSERT_TRUE(missing.isErr());
-  EXPECT_EQ(missing.error().code, DomainErrorCode::NotFound);
+  // Insert duplicate ID → Conflict
+  auto dupRes = repo.create(t);
+  ASSERT_TRUE(dupRes.isErr());
+  EXPECT_EQ(dupRes.error().code, DomainErrorCode::Conflict);
+
+  // Missing ID → NotFound
+  auto missRes = repo.getById("nonexistent-id-999");
+  ASSERT_TRUE(missRes.isErr());
+  EXPECT_EQ(missRes.error().code, DomainErrorCode::NotFound);
+
+  std::cout << "[✅ RepositoryErrors] Conflict & NotFound handled correctly.\n";
 }

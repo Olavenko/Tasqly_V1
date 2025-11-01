@@ -20,7 +20,7 @@
 #include <chrono>
 #include <gtest/gtest.h>
 
-using namespace tasqly::domain::core::v1;
+using namespace tasqly::p1::s1::domain::core;
 
 // -----------------------------------------------------------------------------
 // 🧩 Utility helpers
