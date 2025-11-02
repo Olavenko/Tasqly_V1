@@ -123,42 +123,41 @@ jobs:
           
           Write-Host "PostgreSQL installed at $pgRoot"
 
-          # ------------------------------------------------------------
-          # 🔧 Initialize a clean PostgreSQL data directory
-          # ------------------------------------------------------------
-          
-          if (Test-Path $pgData) {
+        # ------------------------------------------------------------
+        # Initialize a clean PostgreSQL data directory
+        # ------------------------------------------------------------
+        if (Test-Path $pgData) {
             Write-Host "Removing existing PGDATA folder..."
             Remove-Item -Recurse -Force $pgData
-          }
-
-          Write-Host "Initializing database cluster at $pgData ..."
-          $pwFile = "$pgData\pw.txt"
-          New-Item -ItemType Directory -Force -Path $pgData | Out-Null
-          "themyth2060" | Out-File -FilePath $pwFile -Encoding ascii
-
-          & "$pgBin\initdb.exe" -D "$pgData" -U postgres --pwfile=$pwFile
-          if ($LASTEXITCODE -ne 0) {
-            throw "❌ initdb failed."
-          }
-
-          # ------------------------------------------------------------
-          # 🚀 Start PostgreSQL service manually
-          # ------------------------------------------------------------
-          Write-Host "Starting PostgreSQL..."
-          & "$pgBin\pg_ctl.exe" start -D "$pgData" -l "$pgData\logfile.log"
-          Start-Sleep -Seconds 10
-
-          # ------------------------------------------------------------
-          # 🧩 Create the test database
-          # ------------------------------------------------------------
-          Write-Host "Creating test database 'tasqly_test'..."
-          & "$pgBin\createdb.exe" -U postgres tasqly_test
-          if ($LASTEXITCODE -ne 0) {
+        }
+        
+        Write-Host "Initializing database cluster at $pgData ..."
+        New-Item -ItemType Directory -Force -Path $pgData | Out-Null
+        $pwFile = "$pgData\pw.txt"
+        "themyth2060" | Out-File -FilePath $pwFile -Encoding ascii
+        
+        & "$pgBin\initdb.exe" -D "$pgData" -U postgres --pwfile=$pwFile
+        if ($LASTEXITCODE -ne 0) {
+            throw "initdb failed."
+        }
+        
+        # ------------------------------------------------------------
+        # Start PostgreSQL service manually
+        # ------------------------------------------------------------
+        Write-Host "Starting PostgreSQL..."
+        & "$pgBin\pg_ctl.exe" start -D "$pgData" -l "$pgData\logfile.log"
+        Start-Sleep -Seconds 10
+        
+        # ------------------------------------------------------------
+        # Create the test database
+        # ------------------------------------------------------------
+        Write-Host "Creating test database 'tasqly_test'..."
+        & "$pgBin\createdb.exe" -U postgres tasqly_test
+        if ($LASTEXITCODE -ne 0) {
             throw "Failed to create test database."
-          }
-
-          Write-Host "PostgreSQL service started successfully and tasqly_test created."
+        }
+        
+        Write-Host "PostgreSQL service started successfully and tasqly_test created."
 
       - name: Verify PostgreSQL is running
         shell: powershell
@@ -285,30 +284,40 @@ jobs:
           echo "INCLUDE=$pgRoot\include" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "LIB=$pgRoot\lib" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
+          # ------------------------------------------------------------
+          # Initialize a clean PostgreSQL data directory
+          # ------------------------------------------------------------
           if (Test-Path $pgData) {
-            Write-Host "Removing existing data folder..."
-            Remove-Item -Recurse -Force $pgData
+              Write-Host "Removing existing data folder..."
+              Remove-Item -Recurse -Force $pgData
           }
-
-          # 📦 Initialize new PostgreSQL cluster
+          
           Write-Host "Initializing new cluster at $pgData ..."
           New-Item -ItemType Directory -Force -Path $pgData | Out-Null
           $pwFile = "$pgData\pw.txt"
-          New-Item -ItemType Directory -Force -Path $pgData | Out-Null
           "themyth2060" | Out-File -FilePath $pwFile -Encoding ascii
+          
           & "$pgBin\initdb.exe" -D "$pgData" -U postgres --pwfile=$pwFile
-          if ($LASTEXITCODE -ne 0) { throw "initdb failed." }
-
-          # 🚀 Start PostgreSQL service
+          if ($LASTEXITCODE -ne 0) {
+              throw "initdb failed."
+          }
+          
+          # ------------------------------------------------------------
+          # Start PostgreSQL service
+          # ------------------------------------------------------------
           Write-Host "Starting PostgreSQL..."
           & "$pgBin\pg_ctl.exe" start -D "$pgData" -l "$pgData\logfile.log"
           Start-Sleep -Seconds 10
-
-          # 🧩 Create the test database
-          Write-Host "Creating test database tasqly_test..."
+          
+          # ------------------------------------------------------------
+          # Create the test database
+          # ------------------------------------------------------------
+          Write-Host "Creating test database 'tasqly_test'..."
           & "$pgBin\createdb.exe" -U postgres tasqly_test
-          if ($LASTEXITCODE -ne 0) { throw "Failed to create test database." }
-
+          if ($LASTEXITCODE -ne 0) {
+              throw "Failed to create test database."
+          }
+          
           Write-Host "PostgreSQL service started successfully and tasqly_test created."
 
       - name: Verify PostgreSQL is running
@@ -404,12 +413,12 @@ jobs:
 
       - name: Wait for PostgreSQL
         run: |
-          echo "⏳ Waiting for PostgreSQL to be ready..."
+          echo "Waiting for PostgreSQL to be ready..."
           for i in {1..10}; do
             pg_isready -h localhost -p 5432 -U postgres && break
             echo "Waiting..."; sleep 2
           done
-          echo "✅ PostgreSQL is ready."
+          echo "PostgreSQL is ready."
 
       - name: Setup Qt 6.9.2
         uses: jurplel/install-qt-action@v3
