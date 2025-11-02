@@ -109,10 +109,10 @@ jobs:
       - name: Install and Initialize PostgreSQL Server (Windows)
         shell: powershell
         run: |
-          Write-Host "🚀 Installing PostgreSQL 17.2..."
-          choco install postgresql --version=17.2 --no-progress -y
+          Write-Host "🚀 Installing PostgreSQL 15..."
+          choco install postgresql15 --no-progress -y
           
-          $pgRoot = "C:\Program Files\PostgreSQL\17"
+          $pgRoot = "C:\Program Files\PostgreSQL\15"
           $pgBin = "$pgRoot\bin"
           $pgData = "C:\pgdata"
           
@@ -120,12 +120,13 @@ jobs:
           echo "PGDATA=$pgData" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "INCLUDE=$pgRoot\include" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "LIB=$pgRoot\lib" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
+          
           Write-Host "✅ PostgreSQL installed at $pgRoot"
 
           # ------------------------------------------------------------
           # 🔧 Initialize a clean PostgreSQL data directory
           # ------------------------------------------------------------
+          
           if (Test-Path $pgData) {
             Write-Host "🧹 Removing existing PGDATA folder..."
             Remove-Item -Recurse -Force $pgData
@@ -156,7 +157,7 @@ jobs:
             throw "❌ Failed to create test database."
           }
 
-          Write-Host "✅ PostgreSQL service started successfully and 'tasqly_test' created."
+          Write-Host "✅ PostgreSQL service started successfully and `'tasqly_test'` created."
 
       - name: Verify PostgreSQL is running
         shell: powershell
@@ -249,7 +250,7 @@ jobs:
         if: always()
         shell: powershell
         run: |
-          $pgBin = "C:\Program Files\PostgreSQL\17\bin"
+          $pgBin = "C:\Program Files\PostgreSQL\15\bin"
           & "$pgBin\pg_ctl.exe" stop -D "$env:PGDATA" -m fast
           Write-Host "🧹 PostgreSQL stopped and cleaned up."
 
@@ -270,10 +271,10 @@ jobs:
       - name: Install PostgreSQL Server (Windows)
         shell: powershell
         run: |
-          Write-Host "🚀 Installing PostgreSQL 17.2..."
-          choco install postgresql --version=17.2 --no-progress -y
+          Write-Host "🚀 Installing PostgreSQL 15..."
+          choco install postgresql15 --no-progress -y
           
-          $pgRoot = "C:\Program Files\PostgreSQL\17"
+          $pgRoot = "C:\Program Files\PostgreSQL\15"
           $pgBin  = "$pgRoot\bin"
           $pgData = "C:\pgdata"  
           
@@ -283,7 +284,6 @@ jobs:
           echo "INCLUDE=$pgRoot\include" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "LIB=$pgRoot\lib" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-          # 🧹 احذف أي بيانات قديمة
           if (Test-Path $pgData) {
             Write-Host "🧹 Removing existing data folder..."
             Remove-Item -Recurse -Force $pgData
@@ -307,13 +307,13 @@ jobs:
           & "$pgBin\createdb.exe" -U postgres tasqly_test
           if ($LASTEXITCODE -ne 0) { throw "❌ Failed to create test database." }
 
-          Write-Host "✅ PostgreSQL service started successfully and 'tasqly_test' created."
+          Write-Host "✅ PostgreSQL service started successfully and `'tasqly_test'` created."
 
       - name: Verify PostgreSQL is running
         shell: powershell
         run: |
           Start-Sleep -Seconds 5
-          $pgBin = "C:\Program Files\PostgreSQL\17\bin"
+          $pgBin = "C:\Program Files\PostgreSQL\15\bin"
           & "$pgBin\pg_isready.exe" -U postgres
           Write-Host "✅ PostgreSQL connection verified successfully."
           
@@ -356,7 +356,7 @@ jobs:
         if: always()
         shell: powershell
         run: |
-          $pgBin = "C:\Program Files\PostgreSQL\17\bin"
+          $pgBin = "C:\Program Files\PostgreSQL\15\bin"
           & "$pgBin\pg_ctl.exe" stop -D "$env:PGDATA" -m fast
           Write-Host "🧹 PostgreSQL stopped and cleaned up."
 
