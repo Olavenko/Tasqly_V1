@@ -4,13 +4,14 @@
 # 📌 Purpose   : Unified CI pipeline for Tasqly (Windows MSVC + MinGW + Linux)
 # 🧱 Layer     : CI/CD (GitHub Actions)
 # 👤 Author    : Tasqly AI Assistant
-# 🗓️ Updated   : 2025-09-30
+# 🗓️ Updated   : 2025-11-02
 #
 # 🧠 Description:
 # - Order of execution: format-check → MSVC → MinGW → Linux.
 # - MSVC: Debug build for tests + coverage, Release build for benchmarks.
 # - MinGW: Debug build + run tests.
 # - Linux (GCC + Clang): Debug build + run tests.
+# - PostgreSQL setup now fully isolated and clean per job.
 # - Reports (coverage + benchmarks) are generated on MSVC and uploaded as artifacts.
 #
 
@@ -104,76 +105,76 @@ jobs:
           python-version: '3.13'
 
       # ------------------------------------------------------------
-      # 🧩 Setup Local PostgreSQL Server for Integration Tests
+      # 🧩 Setup PostgreSQL 15 (isolated and clean per run)
       # ------------------------------------------------------------
-      - name: Install and Initialize PostgreSQL Server (Windows)
+      - name: Setup PostgreSQL 15 (MSVC isolated)
         shell: powershell
         run: |
-          Write-Host "Installing PostgreSQL 15..."
+          Write-Host "Installing PostgreSQL 15 (isolated run)..."
           choco install postgresql15 --no-progress -y
-          
+
           $pgRoot = "C:\Program Files\PostgreSQL\15"
-          $pgBin = "$pgRoot\bin"
-          $pgData = "C:\pgdata"
-          
+          $pgBin  = "$pgRoot\bin"
+          $runId  = $env:GITHUB_RUN_NUMBER
+          $pgData = "C:\pgdata_msvc_$runId"
+
+          # Export environment for later steps
           echo "PG_ROOT=$pgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "PGDATA=$pgData" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "INCLUDE=$pgRoot\include" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "LIB=$pgRoot\lib" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          
+          echo "PATH=$pgBin;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
           Write-Host "PostgreSQL installed at $pgRoot"
-      
-          # ------------------------------------------------------------
-          # Initialize a clean PostgreSQL data directory
-          # ------------------------------------------------------------
+          Write-Host "Using data directory: $pgData"
+
+          # Ensure no old PostgreSQL Windows service exists (prevent auto-start)
+          Write-Host "Stopping and removing any existing PostgreSQL service..."
+          $svc = Get-Service -Name postgresql* -ErrorAction SilentlyContinue
+          if ($svc) {
+              Stop-Service -Name $svc.Name -Force -ErrorAction SilentlyContinue
+              sc.exe delete $svc.Name | Out-Null
+          }
+
+          # Clean and create data directory
           if (Test-Path $pgData) {
-              Write-Host "Removing existing PGDATA folder..."
+              Write-Host "Removing old data folder..."
               Remove-Item -Recurse -Force $pgData
           }
-      
-          Write-Host "Initializing database cluster at $pgData ..."
           New-Item -ItemType Directory -Force -Path $pgData | Out-Null
+
+          # Initialize database cluster
+          Write-Host "Initializing PostgreSQL cluster..."
           $pwFile = "$pgData\pw.txt"
           "themyth2060" | Out-File -FilePath $pwFile -Encoding ascii
-      
           & "$pgBin\initdb.exe" -D "$pgData" -U postgres --pwfile=$pwFile
           if ($LASTEXITCODE -ne 0) {
               throw "initdb failed."
           }
-      
-          # ------------------------------------------------------------
-          # Start PostgreSQL service manually
-          # ------------------------------------------------------------
-          Write-Host "Starting PostgreSQL..."
+
+          # Start PostgreSQL manually
+          Write-Host "Starting PostgreSQL server..."
           & "$pgBin\pg_ctl.exe" start -D "$pgData" -l "$pgData\logfile.log"
           Start-Sleep -Seconds 10
-      
-          # ------------------------------------------------------------
-          # Create the test database
-          # ------------------------------------------------------------
+
+          # Verify connectivity
+          & "$pgBin\pg_isready.exe" -U postgres
+          if ($LASTEXITCODE -ne 0) {
+              throw "PostgreSQL did not start correctly."
+          }
+
+          # Create test database
           Write-Host "Creating test database 'tasqly_test'..."
           & "$pgBin\createdb.exe" -U postgres tasqly_test
           if ($LASTEXITCODE -ne 0) {
               throw "Failed to create test database."
           }
-      
-          Write-Host "PostgreSQL service started successfully and tasqly_test created."
-      
 
-      - name: Verify PostgreSQL is running
-        shell: powershell
-        run: |
-          $pgBin = "C:\Program Files\PostgreSQL\17\bin"
-          & "$pgBin\pg_isready.exe" -U postgres
-          Write-Host "PostgreSQL connection verified successfully."
+          Write-Host "PostgreSQL is ready for MSVC CI run."
 
       # ------------------------------------------------------------
       # 🧪 Build & Test — Debug (Coverage)
       # ------------------------------------------------------------
       - name: Configure Debug (MSVC Coverage)
         shell: powershell
-        env:
-          TASQLY_PG_ROOT: ${{ env.PG_ROOT }}
         run: |
           if (Test-Path build/msvc-tests-reports-debug) { Remove-Item -Recurse -Force build/msvc-tests-reports-debug }
           cmake --preset=msvc-tests-reports-debug -DENABLE_COVERAGE=ON -DTASQLY_TEST_PHASE=Phase1
@@ -185,7 +186,6 @@ jobs:
       - name: Run Tests (MSVC Debug + Coverage)
         shell: powershell
         run: ctest --test-dir build/msvc-tests-reports-debug --output-on-failure
-
       # ------------------------------------------------------------
       # 📊 Generate Coverage Reports
       # ------------------------------------------------------------
@@ -251,8 +251,11 @@ jobs:
         if: always()
         shell: powershell
         run: |
-          $pgBin = "C:\Program Files\PostgreSQL\15\bin"
-          & "$pgBin\pg_ctl.exe" stop -D "$env:PGDATA" -m fast
+          $pgBin = "${{ env.PG_ROOT }}\bin"
+          $pgData = "${{ env.PGDATA }}"
+          Write-Host "Stopping PostgreSQL server..."
+          & "$pgBin\pg_ctl.exe" stop -D "$pgData" -m fast
+          Remove-Item -Recurse -Force $pgData
           Write-Host "PostgreSQL stopped and cleaned up."
 
   # ------------------------------------------------------------
@@ -267,68 +270,53 @@ jobs:
         uses: actions/checkout@v4
       
       # ------------------------------------------------------------
-      # 🧩 Install and Run PostgreSQL Server for Integration Tests
+      # 🧩 PostgreSQL 15 isolated setup (MinGW)
       # ------------------------------------------------------------
-      - name: Install PostgreSQL Server (Windows)
+      - name: Setup PostgreSQL 15 (MinGW isolated)
         shell: powershell
         run: |
           Write-Host "Installing PostgreSQL 15..."
           choco install postgresql15 --no-progress -y
-          
+
           $pgRoot = "C:\Program Files\PostgreSQL\15"
           $pgBin  = "$pgRoot\bin"
-          $pgData = "C:\pgdata"  
-          
-          Write-Host "PostgreSQL installed at $pgRoot"
+          $runId  = $env:GITHUB_RUN_NUMBER
+          $pgData = "C:\pgdata_mingw_$runId"
+
           echo "PG_ROOT=$pgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "PGDATA=$pgData"  | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "INCLUDE=$pgRoot\include" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "LIB=$pgRoot\lib" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "PATH=$pgBin;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-          # ------------------------------------------------------------
-          # Initialize a clean PostgreSQL data directory
-          # ------------------------------------------------------------
+          Write-Host "Using isolated data directory: $pgData"
+
+          $svc = Get-Service -Name postgresql* -ErrorAction SilentlyContinue
+          if ($svc) {
+              Stop-Service -Name $svc.Name -Force -ErrorAction SilentlyContinue
+              sc.exe delete $svc.Name | Out-Null
+          }
+
           if (Test-Path $pgData) {
-              Write-Host "Removing existing data folder..."
               Remove-Item -Recurse -Force $pgData
           }
-          
-          Write-Host "Initializing new cluster at $pgData ..."
           New-Item -ItemType Directory -Force -Path $pgData | Out-Null
+
+          Write-Host "Initializing PostgreSQL cluster..."
           $pwFile = "$pgData\pw.txt"
           "themyth2060" | Out-File -FilePath $pwFile -Encoding ascii
-          
           & "$pgBin\initdb.exe" -D "$pgData" -U postgres --pwfile=$pwFile
-          if ($LASTEXITCODE -ne 0) {
-              throw "initdb failed."
-          }
-          
-          # ------------------------------------------------------------
-          # Start PostgreSQL service
-          # ------------------------------------------------------------
+          if ($LASTEXITCODE -ne 0) { throw "initdb failed." }
+
           Write-Host "Starting PostgreSQL..."
           & "$pgBin\pg_ctl.exe" start -D "$pgData" -l "$pgData\logfile.log"
           Start-Sleep -Seconds 10
-          
-          # ------------------------------------------------------------
-          # Create the test database
-          # ------------------------------------------------------------
+
           Write-Host "Creating test database 'tasqly_test'..."
           & "$pgBin\createdb.exe" -U postgres tasqly_test
-          if ($LASTEXITCODE -ne 0) {
-              throw "Failed to create test database."
-          }
-          
-          Write-Host "PostgreSQL service started successfully and tasqly_test created."
+          if ($LASTEXITCODE -ne 0) { throw "Failed to create test database." }
 
-      - name: Verify PostgreSQL is running
-        shell: powershell
-        run: |
-          Start-Sleep -Seconds 5
-          $pgBin = "C:\Program Files\PostgreSQL\15\bin"
           & "$pgBin\pg_isready.exe" -U postgres
-          Write-Host "PostgreSQL connection verified successfully."
-          
+          Write-Host "PostgreSQL service started successfully."
+
       # ------------------------------------------------------------
       # ⚙️ Build + Test with MSYS2 (MinGW)
       # ------------------------------------------------------------
@@ -360,7 +348,7 @@ jobs:
       - name: Run Tests (MinGW Debug)
         shell: msys2 {0}
         run: ctest --preset=test-mingw-debug --output-on-failure
-        
+
       # ------------------------------------------------------------
       # 🧹 Stop PostgreSQL after tests
       # ------------------------------------------------------------
@@ -368,8 +356,10 @@ jobs:
         if: always()
         shell: powershell
         run: |
-          $pgBin = "C:\Program Files\PostgreSQL\15\bin"
-          & "$pgBin\pg_ctl.exe" stop -D "$env:PGDATA" -m fast
+          $pgBin = "${{ env.PG_ROOT }}\bin"
+          $pgData = "${{ env.PGDATA }}"
+          & "$pgBin\pg_ctl.exe" stop -D "$pgData" -m fast
+          Remove-Item -Recurse -Force $pgData
           Write-Host "PostgreSQL stopped and cleaned up."
 
   # ------------------------------------------------------------
@@ -384,9 +374,6 @@ jobs:
       matrix:
         compiler: [gcc, clang]
 
-    # ------------------------------------------------------------
-    # 🧩 PostgreSQL Service Container
-    # ------------------------------------------------------------
     services:
       postgres:
         image: postgres:17
@@ -459,4 +446,3 @@ jobs:
           else
             ctest --preset=test-clang-debug --output-on-failure
           fi
-
