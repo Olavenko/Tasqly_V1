@@ -157,7 +157,7 @@ jobs:
             throw "❌ Failed to create test database."
           }
 
-          Write-Host "✅ PostgreSQL service started successfully and tasqly_test created."
+          Write-Host ("✅ PostgreSQL service started successfully and tasqly_test created.")
 
       - name: Verify PostgreSQL is running
         shell: powershell
@@ -307,7 +307,7 @@ jobs:
           & "$pgBin\createdb.exe" -U postgres tasqly_test
           if ($LASTEXITCODE -ne 0) { throw "❌ Failed to create test database." }
 
-          Write-Host "✅ PostgreSQL service started successfully and tasqly_test created."
+          Write-Host ("✅ PostgreSQL service started successfully and tasqly_test created.")
 
       - name: Verify PostgreSQL is running
         shell: powershell
