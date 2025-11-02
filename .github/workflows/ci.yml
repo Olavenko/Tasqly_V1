@@ -134,6 +134,7 @@ jobs:
 
           Write-Host "Initializing database cluster at $pgData ..."
           $pwFile = "$pgData\pw.txt"
+          New-Item -ItemType Directory -Force -Path $pgData | Out-Null
           "themyth2060" | Out-File -FilePath $pwFile -Encoding ascii
 
           & "$pgBin\initdb.exe" -D "$pgData" -U postgres --pwfile=$pwFile
@@ -293,6 +294,7 @@ jobs:
           Write-Host "Initializing new cluster at $pgData ..."
           New-Item -ItemType Directory -Force -Path $pgData | Out-Null
           $pwFile = "$pgData\pw.txt"
+          New-Item -ItemType Directory -Force -Path $pgData | Out-Null
           "themyth2060" | Out-File -FilePath $pwFile -Encoding ascii
           & "$pgBin\initdb.exe" -D "$pgData" -U postgres --pwfile=$pwFile
           if ($LASTEXITCODE -ne 0) { throw "initdb failed." }
