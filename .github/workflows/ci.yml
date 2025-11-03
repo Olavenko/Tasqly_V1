@@ -132,8 +132,29 @@ jobs:
               sc.exe delete $svc.Name | Out-Null
           }
 
-          if (Test-Path $pgData) { Remove-Item -Recurse -Force $pgData }
+          # Forcefully clean any existing pgdata directory
+          if (Test-Path $pgData) {
+              Write-Host "Cleaning old PostgreSQL data directory..."
+              try {
+                  Takeown /F $pgData /R /D Y | Out-Null
+                  icacls $pgData /grant "Users:F" /T | Out-Null
+                  Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $pgData
+                  Start-Sleep -Seconds 3
+              } catch {
+                  Write-Host "Warning: failed to fully remove $pgData, retrying..."
+                  Start-Sleep -Seconds 2
+                  Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $pgData
+              }
+          }
+          if (Test-Path $pgData) {
+              Write-Host "Retrying cleanup with cmd.exe..."
+              cmd /c "rmdir /s /q `"$pgData`""
+          }
+          if (Test-Path $pgData) {
+              throw "Failed to clean up PostgreSQL data directory: $pgData"
+          }
           New-Item -ItemType Directory -Force -Path $pgData | Out-Null
+
 
           Write-Host "Initializing PostgreSQL cluster..."
           $pwFile = "$pgData\pw.txt"
@@ -273,9 +294,29 @@ jobs:
           echo "PGDATA=$pgData" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "$pgBin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-          if (Test-Path $pgData) { Remove-Item -Recurse -Force $pgData }
+          # Forcefully clean any existing pgdata directory
+          if (Test-Path $pgData) {
+              Write-Host "Cleaning old PostgreSQL data directory..."
+              try {
+                  Takeown /F $pgData /R /D Y | Out-Null
+                  icacls $pgData /grant "Users:F" /T | Out-Null
+                  Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $pgData
+                  Start-Sleep -Seconds 3
+              } catch {
+                  Write-Host "Warning: failed to fully remove $pgData, retrying..."
+                  Start-Sleep -Seconds 2
+                  Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $pgData
+              }
+          }
+          if (Test-Path $pgData) {
+              Write-Host "Retrying cleanup with cmd.exe..."
+              cmd /c "rmdir /s /q `"$pgData`""
+          }
+          if (Test-Path $pgData) {
+              throw "Failed to clean up PostgreSQL data directory: $pgData"
+          }
           New-Item -ItemType Directory -Force -Path $pgData | Out-Null
-
+          
           Write-Host "Initializing fresh PostgreSQL cluster..."
           $pwFile = "$pgData\pw.txt"
           $pgPassword | Out-File -FilePath $pwFile -Encoding ascii
