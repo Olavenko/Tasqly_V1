@@ -87,6 +87,10 @@ jobs:
           }
           ninja --version
 
+
+      # ------------------------------------------------------------
+      # 🧩 Setup Qt 6.9.2 (MSVC)
+      # ------------------------------------------------------------
       - name: Setup Qt 6.9.2 (MSVC)
         uses: jurplel/install-qt-action@v3
         with:
@@ -96,11 +100,17 @@ jobs:
           arch: win64_msvc2022_64
           cache: false
 
+      # ------------------------------------------------------------
+      # 🧩 Setup Python 3.13
+      # ------------------------------------------------------------
       - name: Setup Python 3.13
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
 
+      # ------------------------------------------------------------
+      # 🧩 Install OpenCppCoverage
+      # ------------------------------------------------------------
       - name: Install OpenCppCoverage
         #if: false # 🚫 disabled temporarily
         shell: powershell
@@ -122,7 +132,9 @@ jobs:
           Write-Output "✅ OpenCppCoverage installed at: $exePath"
           echo (Split-Path $exePath) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
+      # ------------------------------------------------------------
       # --- Coverage (Debug) ---
+      # ------------------------------------------------------------
       - name: Configure Debug (MSVC Coverage)
         #if: false   # 🚫 disabled temporarily
         shell: powershell
@@ -153,7 +165,9 @@ jobs:
         run: |
           python scripts/coverage_report_updated.py reports/coverage/tests/coverage.xml all --archive Phase0
 
+      # ------------------------------------------------------------
       # --- Benchmarks (Release) ---
+      # ------------------------------------------------------------
       - name: Configure Release (MSVC Benchmarks)
         #if: false   # 🚫 disabled temporarily
         shell: powershell
@@ -175,7 +189,9 @@ jobs:
         run: |
           python scripts/run_benchmarks.py --phase Phase1 --compiler msvc --timeout 3600
 
+      # ------------------------------------------------------------
       # --- Upload Coverage Reports ---
+      # ------------------------------------------------------------
       - name: Upload Test Coverage Reports
         if: always() #always()
         uses: actions/upload-artifact@v4
@@ -186,7 +202,9 @@ jobs:
             reports/tests/**/*.html
             reports/tests/**/*.json
 
+      # ------------------------------------------------------------
       # --- Upload Benchmark Reports ---
+      # ------------------------------------------------------------
       - name: Upload Benchmark Performance Reports
         if: always() #always()
         uses: actions/upload-artifact@v4

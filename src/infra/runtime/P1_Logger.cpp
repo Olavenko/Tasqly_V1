@@ -5,7 +5,7 @@
  * 🧱 Layer     : Infrastructure (Runtime)
  * 👤 Author    : Mohamed Ali
  * 🗓️ Created   : 2025-10-21
- * 🔖 Version   : 1.0
+ * 🔖 Version   : 1.1 (Added capability checks)
  *
  * 🧠 Description:
  * Implements a pure C++ logging facility with console and optional file output.

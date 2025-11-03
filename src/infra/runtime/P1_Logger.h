@@ -6,7 +6,7 @@
  * 🧱 Layer     : Infrastructure (Runtime)
  * 👤 Author    : Mohamed Ali
  * 🗓️ Created   : 2025-10-21
- * 🔖 Version   : 1.0 (Initial)
+ * 🔖 Version   : 1.1 (Added level capability checks)
  * 🛡️ Stability : Stable
  *
  * 🧠 Description:
@@ -19,13 +19,14 @@
  *   - Console + optional file sink
  *   - Masking support (credentials, tokens)
  *   - Singleton instance (lazy-initialized)
+ *   - Capability checks for conditional logging
  *
  * 🔗 Depends On:
  *   - P1_Error (for structured error logging)
  *   - <fstream>, <mutex>, <chrono>, <iostream>
  *
  * ⚙️ Integration:
- *   Used by: P1_S2_TaskRepositoryFactory, P1_Notifier
+ *   Used by: P1_S2_TaskRepositoryFactory, P1_Notifier, PostgresTaskRepository
  */
 
 #include <fstream>
@@ -49,6 +50,12 @@ public:
   // 🔹 Configure output
   void setLogFile(const std::string& path);
   void setMinimumLevel(LogLevel level);
+
+  // 🔹 Capability checkers (new)
+  bool isTraceEnabled() const noexcept { return m_minLevel <= LogLevel::Trace; }
+  bool isInfoEnabled() const noexcept { return m_minLevel <= LogLevel::Info; }
+  bool isWarnEnabled() const noexcept { return m_minLevel <= LogLevel::Warn; }
+  bool isErrorEnabled() const noexcept { return m_minLevel <= LogLevel::Error; }
 
   // 🔹 Write logs (string-based)
   void trace(const std::string& msg);
