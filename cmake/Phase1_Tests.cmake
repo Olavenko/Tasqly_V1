@@ -4,13 +4,13 @@
 # 📌 Purpose : Integrate GoogleTest and define the Tasqly test target
 # 🧱 Layer   : Build System (Testing Infrastructure)
 # 👤 Author  : Mohamed Ali
-# 🗓️ Updated : 2025-09-18
+# 🗓️ Updated : 2025-11-03
 #
 # 🧠 Description:
 # - Downloads and configures GoogleTest (pinned version)
 # - Defines the test runner target `TasqlyTestsRunner`
 # - Links Qt + tasqly_core
-# - Auto-discovers and registers tests with CTest
+# - Includes all tests except PostgreSQL integrations on Windows CI
 # ---------------------------------------------------------------
 
 include(CTest)
@@ -23,43 +23,63 @@ add_executable(TasqlyTestsRunner
 
     #=========================================================
     # Phase[1]
-    # =========================================================
-    # 🛠️ integration Tests Domain — mappers [Phase1][Slice1]
+    #=========================================================
+    # 🛠️ Integration Tests — Domain (Mappers)
     tests/integration/domain/mappers/test_P1_TaskRepositoryIntegration.cpp
     tests/integration/domain/mappers/test_P1_TaskMapperRepository_RoundTrip.cpp
 
-    # 🧠 Integration Tests Infrastructure — Fallback Factory [Phase1][Slice2]
+    # 🧠 Integration Tests — Persistence Fallback Factory
     tests/integration/persistence/test_P1_S2_TaskRepositoryFactory.cpp
 
-    # 🧠 Integration Tests Infrastructure — Postgres Repository [Phase1][Slice2]
-    tests/integration/persistence/test_P1_S2_PostgresTaskRepository.cpp
-
-    # 🧠 Integration Tests migrations — Postgres SQL [Phase1][Slice2]
-    tests/integration/migrations/test_P1_S2_Migrations.cpp
-
-    # 🛠️ Unit Tests Domain — entities [Phase1][Slice1]
+    # 🛠️ Unit Tests — Domain Entities
     tests/unit/domain/entities/test_P1_DomainValidation.cpp
     tests/unit/domain/entities/test_P1_TaskPriority.cpp
     tests/unit/domain/entities/test_P1_TaskStatus.cpp
 
-    # 🛠️ Unit Tests Domain — errors [Phase1][Slice1]
+    # 🧠 Unit Tests — Domain Errors
     tests/unit/domain/errors/test_P1_DomainError.cpp
     tests/unit/domain/errors/test_P1_DomainResult.cpp
 
-    # 🛠️ Unit Tests Domain — mappers [Phase1][Slice1]
+    # 🧠 Unit Tests — Domain Mappers
     tests/unit/domain/mappers/test_P1_TaskMapper.cpp
 
-    # 🧠 Unit Tests Infrastructure — Repositories [Phase1][Slice2]
+    # 🧠 Unit Tests — Persistence (In-Memory Repository)
     tests/unit/persistence/test_P1_S2_InMemoryTaskRepository.cpp
 
-    # 🧪 Main Test Files
-    tests/integration/common/DatabaseIntegrationFixture.h
-    tests/integration/common/DatabaseIntegrationFixture.cpp
+    # 🧩 Shared Common
     tests/common/RuntimeDiagnostic.h
     tests/test_main.cpp
     tests/test_result.cpp
     tests/test_result_void.cpp
 )
+
+# ---------------------------------------------------------------
+# 🧩 Conditional PostgreSQL Integration
+# ---------------------------------------------------------------
+if (UNIX AND NOT WIN32)
+    # ✅ Linux CI or Linux local dev — include DB tests
+    message(STATUS "[Tests] Including PostgreSQL integration tests for Linux build.")
+    target_sources(TasqlyTestsRunner PRIVATE
+        tests/integration/common/DatabaseIntegrationFixture.cpp
+        tests/integration/common/DatabaseIntegrationFixture.h
+        tests/integration/migrations/test_P1_S2_Migrations.cpp
+        tests/integration/persistence/test_P1_S2_PostgresTaskRepository.cpp
+    )
+
+elseif (WIN32)
+    # ✅ On Windows: include only if NOT running in CI
+    if (NOT DEFINED ENV{CI})
+        message(STATUS "[Tests] Local Windows environment detected — including PostgreSQL integration tests.")
+        target_sources(TasqlyTestsRunner PRIVATE
+            tests/integration/common/DatabaseIntegrationFixture.cpp
+            tests/integration/common/DatabaseIntegrationFixture.h
+            tests/integration/migrations/test_P1_S2_Migrations.cpp
+            tests/integration/persistence/test_P1_S2_PostgresTaskRepository.cpp
+        )
+    else()
+        message(STATUS "[Tests] Skipping PostgreSQL integration tests on Windows CI environment.")
+    endif()
+endif()
 
 # ---------------------------------------------------------------
 # 🔗 Test Runner Dependencies
