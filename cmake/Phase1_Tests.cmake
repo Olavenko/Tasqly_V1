@@ -58,7 +58,7 @@ add_executable(TasqlyTestsRunner
 # ---------------------------------------------------------------
 if (UNIX AND NOT WIN32)
     # ✅ Linux CI or Linux local dev — include DB tests
-    message(STATUS "[Tests] Including PostgreSQL integration tests for Linux build.")
+    message(STATUS "[CMakeTests] Including PostgreSQL integration tests for Linux build.")
     target_sources(TasqlyTestsRunner PRIVATE
         tests/integration/common/DatabaseIntegrationFixture.cpp
         tests/integration/common/DatabaseIntegrationFixture.h
@@ -69,7 +69,7 @@ if (UNIX AND NOT WIN32)
 elseif (WIN32)
     # ✅ On Windows: include only if NOT running in CI
     if (NOT DEFINED ENV{CI})
-        message(STATUS "[Tests] Local Windows environment detected — including PostgreSQL integration tests.")
+        message(STATUS "[CMakeTests] Local Windows environment detected — including PostgreSQL integration tests.")
         target_sources(TasqlyTestsRunner PRIVATE
             tests/integration/common/DatabaseIntegrationFixture.cpp
             tests/integration/common/DatabaseIntegrationFixture.h
@@ -77,7 +77,7 @@ elseif (WIN32)
             tests/integration/persistence/test_P1_S2_PostgresTaskRepository.cpp
         )
     else()
-        message(STATUS "[Tests] Skipping PostgreSQL integration tests on Windows CI environment.")
+        message(STATUS "[CMakeTests] Skipping PostgreSQL integration tests on Windows CI environment.")
     endif()
 endif()
 

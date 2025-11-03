@@ -67,7 +67,7 @@ jobs:
   # 🪟 Windows — MSVC 2022 (coverage + benchmarks)
   # ------------------------------------------------------------
   windows-msvc:
-    name: Windows • MSVC 2022 • Build + Unit Tests + Benchmarks
+    name: Windows • MSVC 2022 • Build + Test + Reports
     runs-on: windows-2022
     needs: secrets-scan
     steps:
@@ -101,51 +101,73 @@ jobs:
         with:
           python-version: '3.13'
 
-      # ------------------------------------------------------------
-      # 🧪 Build & Test — Debug (Coverage)
-      # ------------------------------------------------------------
+      - name: Install OpenCppCoverage
+        #if: false # 🚫 disabled temporarily
+        shell: powershell
+        run: |
+          choco install opencppcoverage --no-progress -y
+          $exePath = (Get-Command OpenCppCoverage.exe -ErrorAction SilentlyContinue).Source
+          if (-not $exePath) {
+            $searchDirs = @(
+              "C:\\ProgramData\\chocolatey\\bin",
+              "C:\\Program Files\\OpenCppCoverage"
+            )
+            $exePath = $searchDirs |
+              ForEach-Object { Get-ChildItem -Path $_ -Filter "OpenCppCoverage*.exe" -Recurse -ErrorAction SilentlyContinue } |
+              Select-Object -First 1 -ExpandProperty FullName
+          }
+          if (-not $exePath) {
+            throw "OpenCppCoverage executable not found after installation."
+          }
+          Write-Output "✅ OpenCppCoverage installed at: $exePath"
+          echo (Split-Path $exePath) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      # --- Coverage (Debug) ---
       - name: Configure Debug (MSVC Coverage)
+        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: |
           if (Test-Path build/msvc-tests-reports-debug) { Remove-Item -Recurse -Force build/msvc-tests-reports-debug }
           cmake --preset=msvc-tests-reports-debug -DENABLE_COVERAGE=ON -DTASQLY_TEST_PHASE=Phase1
 
       - name: Build Debug (MSVC Coverage)
+        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: cmake --build --preset=build-msvc-tests-reports-debug --target coverage_tests --parallel
 
       - name: Run Tests (MSVC Debug + Coverage)
+        #if: false   # 🚫 disabled temporarily
         shell: powershell
-        run: ctest --test-dir build/msvc-tests-reports-debug --output-on-failure -E "PostgresTaskRepoTest"
+        run: ctest --test-dir build/msvc-tests-reports-debug --output-on-failure
 
-      # ------------------------------------------------------------
-      # 📊 Generate Coverage Reports
-      # ------------------------------------------------------------
       - name: Install Python dependencies for coverage report
+        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: |
           pip install --upgrade pip
           pip install plotly pandas
 
       - name: Generate Coverage Reports
+        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: |
           python scripts/coverage_report_updated.py reports/coverage/tests/coverage.xml all --archive Phase0
 
-      # ------------------------------------------------------------
-      # ⚙️ Benchmarks — Release Build
-      # ------------------------------------------------------------
+      # --- Benchmarks (Release) ---
       - name: Configure Release (MSVC Benchmarks)
+        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: |
           if (Test-Path build/msvc-benchmarks-release) { Remove-Item -Recurse -Force build/msvc-benchmarks-release }
           cmake --preset=msvc-benchmarks-release -DTASQLY_BENCHMARK_PHASE=Phase1
 
       - name: Build Release (MSVC Benchmarks)
+        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: cmake --build --preset=build-msvc-benchmarks-release --parallel
 
       - name: Run Benchmarks
+        #if: false   # 🚫 disabled temporarily
         shell: powershell
         env:
           QT_QPA_PLATFORM: offscreen
@@ -153,11 +175,9 @@ jobs:
         run: |
           python scripts/run_benchmarks.py --phase Phase1 --compiler msvc --timeout 3600
 
-      # ------------------------------------------------------------
-      # 📤 Upload Reports
-      # ------------------------------------------------------------
+      # --- Upload Coverage Reports ---
       - name: Upload Test Coverage Reports
-        if: always()
+        if: always() #always()
         uses: actions/upload-artifact@v4
         with:
           name: Tests-Coverage-Report-MSVC
@@ -166,11 +186,12 @@ jobs:
             reports/tests/**/*.html
             reports/tests/**/*.json
 
+      # --- Upload Benchmark Reports ---
       - name: Upload Benchmark Performance Reports
-        if: always()
+        if: always() #always()
         uses: actions/upload-artifact@v4
         with:
-          name: Benchmarks-Reports-MSVC
+          name: benchmarks-Reports-MSVC
           path: |
             reports/benchmarks/**/*.md
             reports/benchmarks/**/*.html
@@ -214,7 +235,7 @@ jobs:
 
       - name: Run Tests (MinGW Debug)
         shell: msys2 {0}
-        run: ctest --preset=test-mingw-debug --output-on-failure -E "PostgresTaskRepoTest"
+        run: ctest --preset=test-mingw-debug --output-on-failure
 
   # ------------------------------------------------------------
   # 🐧 Linux (GCC + Clang, Debug only, PostgreSQL integration)
