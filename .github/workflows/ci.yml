@@ -312,7 +312,7 @@ jobs:
             cmake --build --preset=build-clang-debug --parallel
           fi
 
-      # ✅ Only run DB-related tests here
+      # ✅ Run ALL tests (unit + integration + postgres)
       - name: Run PostgreSQL Integration Tests (${{ matrix.compiler }})
         env:
           PGHOST: localhost
@@ -323,9 +323,9 @@ jobs:
         run: |
           echo "Running PostgreSQL Integration Tests..."
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
-            ctest --preset=test-gcc-debug --output-on-failure -R "PostgresTaskRepoTest"
+            ctest --preset=test-gcc-debug --output-on-failure 
           else
-            ctest --preset=test-clang-debug --output-on-failure -R "PostgresTaskRepoTest"
+            ctest --preset=test-clang-debug --output-on-failure
           fi
 
       # ------------------------------------------------------------
@@ -340,24 +340,3 @@ jobs:
             build/${{ matrix.compiler }}-debug/Testing/**/*.log
             build/${{ matrix.compiler }}-debug/Testing/**/*.xml
             build/${{ matrix.compiler }}-debug/Testing/**/*.txt
-
-  # ------------------------------------------------------------
-  # ✅ Workflow Summary
-  # ------------------------------------------------------------
-  summary:
-    name: Summary • CI Results
-    runs-on: ubuntu-latest
-    needs: [windows-msvc, windows-mingw, linux]
-    if: always()
-    steps:
-      - name: Print Summary
-        run: |
-          echo "=========================================================="
-          echo "✅ Tasqly CI Summary"
-          echo "----------------------------------------------------------"
-          echo "• Windows MSVC   : Unit + Benchmarks ✅"
-          echo "• Windows MinGW  : Unit Tests ✅"
-          echo "• Linux          : Integration (PostgreSQL) ✅"
-          echo "----------------------------------------------------------"
-          echo "All jobs completed. Review artifacts for detailed logs."
-          echo "=========================================================="
