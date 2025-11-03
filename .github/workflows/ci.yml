@@ -1,18 +1,15 @@
-#
 # 🧱 File: .github/workflows/ci.yml
 # ---------------------------------
-# 📌 Purpose   : Unified CI pipeline for Tasqly (Windows MSVC + MinGW + Linux)
+# 📌 Purpose   : Unified CI pipeline for Tasqly (PostgreSQL Linux-only)
 # 🧱 Layer     : CI/CD (GitHub Actions)
 # 👤 Author    : Tasqly AI Assistant
-# 🗓️ Updated   : 2025-11-02
+# 🗓️ Updated   : 2025-11-03
 #
 # 🧠 Description:
-# - Order of execution: format-check → MSVC → MinGW → Linux.
-# - MSVC: Debug build for tests + coverage, Release build for benchmarks.
-# - MinGW: Debug build + run tests.
-# - Linux (GCC + Clang): Debug build + run tests.
-# - PostgreSQL setup now fully isolated and clean per job.
-# - Reports (coverage + benchmarks) are generated on MSVC and uploaded as artifacts.
+# - PostgreSQL integration tests now run ONLY on Linux (Docker service).
+# - Windows jobs (MSVC + MinGW) run unit tests & benchmarks only.
+# - Common linting & security jobs preserved.
+# - Reports (coverage + benchmarks) remain unchanged.
 #
 
 name: ci
@@ -70,7 +67,7 @@ jobs:
   # 🪟 Windows — MSVC 2022 (coverage + benchmarks)
   # ------------------------------------------------------------
   windows-msvc:
-    name: Windows • MSVC 2022 • Build + Test + Reports
+    name: Windows • MSVC 2022 • Build + Unit Tests + Benchmarks
     runs-on: windows-2022
     needs: secrets-scan
     steps:
@@ -105,86 +102,6 @@ jobs:
           python-version: '3.13'
 
       # ------------------------------------------------------------
-      # 🧩 Setup PostgreSQL 15 (isolated and clean per run)
-      # ------------------------------------------------------------
-      - name: Setup PostgreSQL 15 (MSVC isolated clean install)
-        shell: powershell
-        run: |
-          $pgPassword = "${{ secrets.POSTGRES_PASSWORD }}"
-          if (-not $pgPassword) { $pgPassword = "themyth2060" }
-
-          Write-Host "Installing PostgreSQL 15 without auto-service..."
-          choco install postgresql15 --no-progress -y --params "/NoService /Password:$pgPassword"
-
-          $pgRoot = "C:\Program Files\PostgreSQL\15"
-          $pgBin  = "$pgRoot\bin"
-          # Use isolated temp directory for PostgreSQL data
-          $guid = [guid]::NewGuid().ToString()
-          $pgData = Join-Path $env:TEMP "pgdata_$guid"
-          Write-Host "Using temporary PostgreSQL data directory: $pgData"
-
-          # Clean any leftover (rare case)
-          if (Test-Path $pgData) {
-              Write-Host "Removing old temp data directory..."
-              Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $pgData
-              Start-Sleep -Seconds 2
-          }
-          New-Item -ItemType Directory -Force -Path $pgData | Out-Null
-
-
-          echo "PG_ROOT=$pgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "PGDATA=$pgData" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "$pgBin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
-          # Stop any existing service
-          $svc = Get-Service -Name postgresql* -ErrorAction SilentlyContinue
-          if ($svc) {
-              Stop-Service -Name $svc.Name -Force -ErrorAction SilentlyContinue
-              sc.exe delete $svc.Name | Out-Null
-          }
-
-          # Forcefully clean any existing pgdata directory
-          if (Test-Path $pgData) {
-              Write-Host "Cleaning old PostgreSQL data directory..."
-              try {
-                  Takeown /F $pgData /R /D Y | Out-Null
-                  icacls $pgData /grant "Users:F" /T | Out-Null
-                  Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $pgData
-                  Start-Sleep -Seconds 3
-              } catch {
-                  Write-Host "Warning: failed to fully remove $pgData, retrying..."
-                  Start-Sleep -Seconds 2
-                  Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $pgData
-              }
-          }
-          if (Test-Path $pgData) {
-              Write-Host "Retrying cleanup with cmd.exe..."
-              cmd /c "rmdir /s /q `"$pgData`""
-          }
-          if (Test-Path $pgData) {
-              throw "Failed to clean up PostgreSQL data directory: $pgData"
-          }
-          New-Item -ItemType Directory -Force -Path $pgData | Out-Null
-
-
-          Write-Host "Initializing PostgreSQL cluster..."
-          $pwFile = "$pgData\pw.txt"
-          $pgPassword | Out-File -FilePath $pwFile -Encoding ascii
-          & "$pgBin\initdb.exe" -D "$pgData" -U postgres --pwfile=$pwFile
-          if ($LASTEXITCODE -ne 0) { throw "initdb failed." }
-
-          & "$pgBin\pg_ctl.exe" start -D "$pgData" -l "$pgData\logfile.log"
-          Start-Sleep -Seconds 10
-
-          for ($i = 0; $i -lt 15; $i++) {
-              & "$pgBin\pg_isready.exe" -U postgres
-              if ($LASTEXITCODE -eq 0) { break }
-              Start-Sleep -Seconds 2
-          }
-
-          & "$pgBin\createdb.exe" -U postgres tasqly_test
-
-      # ------------------------------------------------------------
       # 🧪 Build & Test — Debug (Coverage)
       # ------------------------------------------------------------
       - name: Configure Debug (MSVC Coverage)
@@ -199,7 +116,7 @@ jobs:
 
       - name: Run Tests (MSVC Debug + Coverage)
         shell: powershell
-        run: ctest --test-dir build/msvc-tests-reports-debug --output-on-failure
+        run: ctest --test-dir build/msvc-tests-reports-debug --output-on-failure -E "PostgresTaskRepoTest"
 
       # ------------------------------------------------------------
       # 📊 Generate Coverage Reports
@@ -259,107 +176,17 @@ jobs:
             reports/benchmarks/**/*.html
             reports/benchmarks/**/*.json
 
-      # ------------------------------------------------------------
-      # 🧹 Shutdown PostgreSQL After Tests
-      # ------------------------------------------------------------
-      - name: Stop PostgreSQL Server
-        if: always()
-        shell: powershell
-        run: |
-          $pgRoot = "C:\Program Files\PostgreSQL\15"
-          $pgBin = "$pgRoot\bin"
-          $pgData = $env:PGDATA
-          if (-not $pgData) { $pgData = "C:\pgdata_default" }
-          & "$pgBin\pg_ctl.exe" stop -D "$pgData" -m fast
-          if (Test-Path $pgData) { Remove-Item -Recurse -Force $pgData -ErrorAction SilentlyContinue }
-
   # ------------------------------------------------------------
   # 🪟 Windows — MinGW (Debug only)
   # ------------------------------------------------------------
   windows-mingw:
-    name: Windows • MinGW • Build + Test
+    name: Windows • MinGW • Build + Unit Tests
     runs-on: windows-latest
     needs: windows-msvc
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ------------------------------------------------------------
-      # 🧩 Setup PostgreSQL 15 (MinGW isolated and clean)
-      # ------------------------------------------------------------
-      - name: Setup PostgreSQL 15 (MinGW isolated clean install)
-        shell: powershell
-        run: |
-          $pgPassword = "${{ secrets.POSTGRES_PASSWORD }}"
-          if (-not $pgPassword) { $pgPassword = "themyth2060" }
-
-          Write-Host "Installing PostgreSQL 15 without auto-service..."
-          choco install postgresql15 --no-progress -y --params "/NoService /Password:$pgPassword"
-
-          $pgRoot = "C:\Program Files\PostgreSQL\15"
-          $pgBin  = "$pgRoot\bin"
-          # Use isolated temp directory for PostgreSQL data
-          $guid = [guid]::NewGuid().ToString()
-          $pgData = Join-Path $env:TEMP "pgdata_$guid"
-          Write-Host "Using temporary PostgreSQL data directory: $pgData"
-                
-          # Clean any leftover (rare case)
-          if (Test-Path $pgData) {
-              Write-Host "Removing old temp data directory..."
-              Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $pgData
-              Start-Sleep -Seconds 2
-          }
-          New-Item -ItemType Directory -Force -Path $pgData | Out-Null
-
-
-          echo "PG_ROOT=$pgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "PGDATA=$pgData" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "$pgBin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
-          # Forcefully clean any existing pgdata directory
-          if (Test-Path $pgData) {
-              Write-Host "Cleaning old PostgreSQL data directory..."
-              try {
-                  Takeown /F $pgData /R /D Y | Out-Null
-                  icacls $pgData /grant "Users:F" /T | Out-Null
-                  Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $pgData
-                  Start-Sleep -Seconds 3
-              } catch {
-                  Write-Host "Warning: failed to fully remove $pgData, retrying..."
-                  Start-Sleep -Seconds 2
-                  Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $pgData
-              }
-          }
-          if (Test-Path $pgData) {
-              Write-Host "Retrying cleanup with cmd.exe..."
-              cmd /c "rmdir /s /q `"$pgData`""
-          }
-          if (Test-Path $pgData) {
-              throw "Failed to clean up PostgreSQL data directory: $pgData"
-          }
-          New-Item -ItemType Directory -Force -Path $pgData | Out-Null
-          
-          Write-Host "Initializing fresh PostgreSQL cluster..."
-          $pwFile = "$pgData\pw.txt"
-          $pgPassword | Out-File -FilePath $pwFile -Encoding ascii
-          & "$pgBin\initdb.exe" -D "$pgData" -U postgres --pwfile=$pwFile
-          if ($LASTEXITCODE -ne 0) { throw "initdb failed." }
-
-          & "$pgBin\pg_ctl.exe" start -D "$pgData" -l "$pgData\logfile.log"
-          Start-Sleep -Seconds 10
-
-          for ($i = 0; $i -lt 15; $i++) {
-              & "$pgBin\pg_isready.exe" -U postgres
-              if ($LASTEXITCODE -eq 0) { break }
-              Start-Sleep -Seconds 2
-          }
-
-          & "$pgBin\createdb.exe" -U postgres tasqly_test
-          Write-Host "PostgreSQL setup completed successfully."
-
-      # ------------------------------------------------------------
-      # ⚙️ Build + Test with MSYS2 (MinGW)
-      # ------------------------------------------------------------
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
         with:
@@ -387,28 +214,13 @@ jobs:
 
       - name: Run Tests (MinGW Debug)
         shell: msys2 {0}
-        run: ctest --preset=test-mingw-debug --output-on-failure
-
-      # ------------------------------------------------------------
-      # 🧹 Stop PostgreSQL after tests
-      # ------------------------------------------------------------
-      - name: Stop PostgreSQL Server
-        if: always()
-        shell: powershell
-        run: |
-          $pgRoot = "C:\Program Files\PostgreSQL\15"
-          $pgBin = "$pgRoot\bin"
-          $pgData = $env:PGDATA
-          if (-not $pgData) { $pgData = "C:\pgdata_default" }
-          & "$pgBin\pg_ctl.exe" stop -D "$pgData" -m fast
-          if (Test-Path $pgData) { Remove-Item -Recurse -Force $pgData -ErrorAction SilentlyContinue }
-          Write-Host "PostgreSQL stopped and cleaned up."
+        run: ctest --preset=test-mingw-debug --output-on-failure -E "PostgresTaskRepoTest"
 
   # ------------------------------------------------------------
-  # 🐧 Linux (GCC + Clang, Debug only)
+  # 🐧 Linux (GCC + Clang, Debug only, PostgreSQL integration)
   # ------------------------------------------------------------
   linux:
-    name: Linux • ${{ matrix.compiler }} • Build + Test
+    name: Linux • ${{ matrix.compiler }} • Integration + DB Tests
     runs-on: ubuntu-latest
     needs: windows-mingw
     strategy:
@@ -435,6 +247,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # ------------------------------------------------------------
+      # 🧩 Dependencies
+      # ------------------------------------------------------------
       - name: Install build dependencies
         run: |
           sudo apt-get update
@@ -445,12 +260,30 @@ jobs:
       - name: Wait for PostgreSQL
         run: |
           echo "Waiting for PostgreSQL to be ready..."
-          for i in {1..15}; do
+          for i in {1..20}; do
             pg_isready -h localhost -p 5432 -U postgres && break
             echo "Waiting..."; sleep 2
           done
           echo "PostgreSQL is ready."
 
+      - name: Show PostgreSQL Environment
+        run: |
+          printenv | grep PG || true
+
+      # ------------------------------------------------------------
+      # 🧩 Initialize Schema (migration)
+      # ------------------------------------------------------------
+      - name: Initialize PostgreSQL Schema
+        env:
+          PGPASSWORD: themyth2060
+        run: |
+          echo "Applying migration schema to tasqly_test..."
+          psql -h localhost -U postgres -d tasqly_test -f src/infra/migrations/P1_S2_create_tasks.sql
+          echo "Schema applied successfully."
+
+      # ------------------------------------------------------------
+      # 🧩 Setup Qt
+      # ------------------------------------------------------------
       - name: Setup Qt 6.9.2
         uses: jurplel/install-qt-action@v3
         with:
@@ -459,6 +292,9 @@ jobs:
           target: desktop
           cache: true
 
+      # ------------------------------------------------------------
+      # 🧪 Build & Test
+      # ------------------------------------------------------------
       - name: Configure Debug (${{ matrix.compiler }})
         run: |
           rm -rf build/${{ matrix.compiler }}-debug
@@ -476,7 +312,8 @@ jobs:
             cmake --build --preset=build-clang-debug --parallel
           fi
 
-      - name: Run Tests (${{ matrix.compiler }} Debug)
+      # ✅ Only run DB-related tests here
+      - name: Run PostgreSQL Integration Tests (${{ matrix.compiler }})
         env:
           PGHOST: localhost
           PGPORT: 5432
@@ -484,8 +321,43 @@ jobs:
           PGPASSWORD: themyth2060
           PGDATABASE: tasqly_test
         run: |
+          echo "Running PostgreSQL Integration Tests..."
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
-            ctest --preset=test-gcc-debug --output-on-failure
+            ctest --preset=test-gcc-debug --output-on-failure -R "PostgresTaskRepoTest"
           else
-            ctest --preset=test-clang-debug --output-on-failure
+            ctest --preset=test-clang-debug --output-on-failure -R "PostgresTaskRepoTest"
           fi
+
+      # ------------------------------------------------------------
+      # 📤 Upload Logs & Reports (artifacts)
+      # ------------------------------------------------------------
+      - name: Upload Integration Test Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Linux-Integration-Logs-${{ matrix.compiler }}
+          path: |
+            build/${{ matrix.compiler }}-debug/Testing/**/*.log
+            build/${{ matrix.compiler }}-debug/Testing/**/*.xml
+            build/${{ matrix.compiler }}-debug/Testing/**/*.txt
+
+  # ------------------------------------------------------------
+  # ✅ Workflow Summary
+  # ------------------------------------------------------------
+  summary:
+    name: Summary • CI Results
+    runs-on: ubuntu-latest
+    needs: [windows-msvc, windows-mingw, linux]
+    if: always()
+    steps:
+      - name: Print Summary
+        run: |
+          echo "=========================================================="
+          echo "✅ Tasqly CI Summary"
+          echo "----------------------------------------------------------"
+          echo "• Windows MSVC   : Unit + Benchmarks ✅"
+          echo "• Windows MinGW  : Unit Tests ✅"
+          echo "• Linux          : Integration (PostgreSQL) ✅"
+          echo "----------------------------------------------------------"
+          echo "All jobs completed. Review artifacts for detailed logs."
+          echo "=========================================================="

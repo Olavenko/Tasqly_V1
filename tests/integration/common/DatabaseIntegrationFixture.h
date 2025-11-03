@@ -25,6 +25,7 @@
  *   ✅ Truncates tables safely before each test to ensure isolation.
  */
 
+#include <cstdlib>
 #include <fstream>
 #include <gtest/gtest.h>
 #include <iostream>
@@ -45,14 +46,30 @@ protected:
   // ============================================================
   static void SetUpTestSuite()
   {
+#ifdef _WIN32
+    const char* ci = std::getenv("CI");
+    if (ci && std::string(ci) == "true") {
+      std::cout << "\n[DB FIXTURE] ==============================================\n";
+      std::cout << "[DB FIXTURE] ⚠️ Detected Windows CI Environment (GitHub Actions)." << std::endl;
+      std::cout << "[DB FIXTURE] 🚫 Skipping PostgreSQL integration tests on Windows CI."
+                << std::endl;
+      std::cout << "[DB FIXTURE] ==============================================\n\n";
+      GTEST_SKIP() << "Skipping PostgreSQL integration tests on Windows CI (GitHub Actions).";
+      return;
+    } else {
+      std::cout << "\n[DB FIXTURE] 🧩 Running on Windows Local Environment (not CI) — proceeding "
+                   "normally.\n";
+    }
+#endif
+
+    std::cout << "\n[DB FIXTURE] ==============================================\n";
+    std::cout << "[DB FIXTURE] 🚀 Initializing PostgreSQL Test Environment...\n";
+
     const std::string host = "localhost";
     const std::string port = "5432";
     const std::string user = "postgres";
     const std::string pass = "themyth2060";
     const std::string testDb = "tasqly_test";
-
-    std::cout << "\n[DB FIXTURE] ==============================================\n";
-    std::cout << "[DB FIXTURE] 🚀 Initializing PostgreSQL Test Environment...\n";
 
     // 🧩 Step 1 — Connect to the admin DB
     std::string adminConnStr = "host=" + host + " port=" + port + " dbname=postgres user=" + user

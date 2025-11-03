@@ -40,6 +40,7 @@ cmake --build --preset=build-mingw-debug --parallel
 ctest --preset=test-mingw-debug --output-on-failure ## to run all tests
 ctest --preset=test-mingw-debug -R AddAndRetrieveTask -VV ## to run single test in file
 ctest --preset=test-mingw-debug -R ApplyAndRollbackMigrations -VV ## to run all file tests
+build\mingw-debug\TasqlyTestsRunner.exe --gtest_filter=PostgresTaskRepoTest.* --gtest_output=console # to read all console msg
 ```
 
 ### 2. Benchmarks build (performance benchmarks, always Release mode)
@@ -78,6 +79,7 @@ cmake --build --preset=build-msvc-debug --parallel
 ctest --preset=test-msvc-debug --output-on-failure ## to run all tests
 ctest --preset=test-msvc-debug -R AppContextTest -VV ## to run single test in file
 ctest --preset=test-msvc-debug -R TaskMapperIntegration -VV ## to run all file tests
+build\mingw-debug\TasqlyTestsRunner.exe --gtest_filter=PostgresTaskRepoTest.* --gtest_output=console # to read all console msg
 ```
 
 ### 2. Reports build (tests + coverage reports)
