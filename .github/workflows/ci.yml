@@ -118,8 +118,19 @@ jobs:
 
           $pgRoot = "C:\Program Files\PostgreSQL\15"
           $pgBin  = "$pgRoot\bin"
-          $runId  = $env:GITHUB_RUN_NUMBER
-          $pgData = "C:\pgdata_msvc_$runId"
+          # Use isolated temp directory for PostgreSQL data
+          $guid = [guid]::NewGuid().ToString()
+          $pgData = Join-Path $env:TEMP "pgdata_$guid"
+          Write-Host "Using temporary PostgreSQL data directory: $pgData"
+
+          # Clean any leftover (rare case)
+          if (Test-Path $pgData) {
+              Write-Host "Removing old temp data directory..."
+              Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $pgData
+              Start-Sleep -Seconds 2
+          }
+          New-Item -ItemType Directory -Force -Path $pgData | Out-Null
+
 
           echo "PG_ROOT=$pgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "PGDATA=$pgData" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
@@ -287,8 +298,19 @@ jobs:
 
           $pgRoot = "C:\Program Files\PostgreSQL\15"
           $pgBin  = "$pgRoot\bin"
-          $runId  = $env:GITHUB_RUN_NUMBER
-          $pgData = "C:\pgdata_mingw_$runId"
+          # Use isolated temp directory for PostgreSQL data
+          $guid = [guid]::NewGuid().ToString()
+          $pgData = Join-Path $env:TEMP "pgdata_$guid"
+          Write-Host "Using temporary PostgreSQL data directory: $pgData"
+                
+          # Clean any leftover (rare case)
+          if (Test-Path $pgData) {
+              Write-Host "Removing old temp data directory..."
+              Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $pgData
+              Start-Sleep -Seconds 2
+          }
+          New-Item -ItemType Directory -Force -Path $pgData | Out-Null
+
 
           echo "PG_ROOT=$pgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "PGDATA=$pgData" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
