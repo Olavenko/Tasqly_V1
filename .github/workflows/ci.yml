@@ -239,6 +239,30 @@ jobs:
             mingw-w64-x86_64-qt6-declarative
             mingw-w64-x86_64-qt6-shadertools
 
+      # ------------------------------------------------------------
+      # 🧱 Fix MSYS2 mirrors and install PostgreSQL client (for MinGW)
+      # ------------------------------------------------------------
+      - name: Fix MSYS2 mirrors and install PostgreSQL client
+        shell: msys2 {0}
+        run: |
+          echo "Fixing MSYS2 mirrors..."
+          echo "Server = https://repo.msys2.org/mingw/x86_64" > /etc/pacman.d/mirrorlist.mingw64
+
+          echo "Reinitializing keyring..."
+          pacman-key --init
+          pacman-key --populate msys2
+          pacman -Sy --noconfirm msys2-keyring
+
+          echo "⬆Updating system packages..."
+          pacman -Syu --noconfirm
+
+          echo "Installing PostgreSQL client (libpq for MinGW)..."
+          pacman -S --noconfirm mingw-w64-x86_64-postgresql
+
+          echo "PostgreSQL client installed. Checking files..."
+          ls -l /mingw64/lib | grep pq || true
+          ls -l /mingw64/include | grep pq || true
+
       - name: Configure Debug (MinGW)
         shell: msys2 {0}
         run: |

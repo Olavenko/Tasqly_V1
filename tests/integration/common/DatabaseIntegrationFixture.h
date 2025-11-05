@@ -46,7 +46,20 @@ protected:
   // ============================================================
   static void SetUpTestSuite()
   {
-    const char* ci = std::getenv("CI");
+    std::string ciValue;
+#ifdef _MSC_VER
+  char* ciBuf = nullptr;
+  size_t ciLen = 0;
+  if (_dupenv_s(&ciBuf, &ciLen, "CI") == 0 && ciBuf != nullptr) {
+    ciValue = ciBuf;
+    free(ciBuf);
+  }
+#else
+  if (const char* ciEnv = std::getenv("CI")) {
+    ciValue = ciEnv;
+  }
+#endif
+const char* ci = ciValue.empty() ? nullptr : ciValue.c_str();
     const std::string host = "localhost";
     const std::string port = "5432";
     const std::string user = "postgres";
