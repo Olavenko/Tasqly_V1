@@ -21,7 +21,7 @@
 #include "domain/core/entities/P1_Task.h"
 #include <benchmark/benchmark.h>
 
-using namespace tasqly::domain::core::v1;
+using namespace tasqly::p1::s1::domain::core;
 namespace tasqly::p1::s1::benchmarks::domain::entity {
 
 // 🧪 Benchmark: Task construction

@@ -20,7 +20,7 @@
 #include "domain/core/entities/P1_DomainValidation.h"
 #include <benchmark/benchmark.h>
 
-using namespace tasqly::domain::core::v1;
+using namespace tasqly::p1::s1::domain::core;
 namespace tasqly::p1::s1::benchmarks::domain::validation {
 
 // 🧪 Benchmark: Validate 1000 titles (short, valid)

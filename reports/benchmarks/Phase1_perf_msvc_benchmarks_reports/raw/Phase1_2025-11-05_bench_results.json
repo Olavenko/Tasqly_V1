@@ -1,0 +1,209 @@
+{
+  "context": {
+    "date": "2025-11-05T11:24:28+02:00",
+    "host_name": "DYANKO",
+    "executable": "C:\\Users\\Olavenko\\Desktop\\TasqlyQt\\Tasqly_V1\\build\\msvc-benchmarks-release\\TasqlyBenchmarksRunner.exe",
+    "num_cpus": 8,
+    "mhz_per_cpu": 3600,
+    "caches": [
+      {
+        "type": "Data",
+        "level": 1,
+        "size": 32768,
+        "num_sharing": 1
+      },
+      {
+        "type": "Instruction",
+        "level": 1,
+        "size": 32768,
+        "num_sharing": 1
+      },
+      {
+        "type": "Unified",
+        "level": 2,
+        "size": 262144,
+        "num_sharing": 1
+      },
+      {
+        "type": "Unified",
+        "level": 3,
+        "size": 12582912,
+        "num_sharing": 8
+      }
+    ],
+    "load_avg": [],
+    "library_version": "v1.9.0",
+    "library_build_type": "release",
+    "json_schema_version": 1
+  },
+  "benchmarks": [
+    {
+      "name": "BM_ValidateTitle_Valid_1000",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_ValidateTitle_Valid_1000",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 100000,
+      "real_time": 5.2846009999939261e+00,
+      "cpu_time": 5.3125000000000000e+00,
+      "time_unit": "us"
+    },
+    {
+      "name": "BM_ValidateTitle_Empty_1000",
+      "family_index": 1,
+      "per_family_instance_index": 0,
+      "run_name": "BM_ValidateTitle_Empty_1000",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 10000,
+      "real_time": 5.1715340000009746e+01,
+      "cpu_time": 5.1562500000000000e+01,
+      "time_unit": "us"
+    },
+    {
+      "name": "BM_ValidateTitle_Long_1000",
+      "family_index": 2,
+      "per_family_instance_index": 0,
+      "run_name": "BM_ValidateTitle_Long_1000",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 11200,
+      "real_time": 5.1698535714308484e+01,
+      "cpu_time": 5.1618303571428569e+01,
+      "time_unit": "us"
+    },
+    {
+      "name": "BM_ValidateDeadline_Future_1000",
+      "family_index": 3,
+      "per_family_instance_index": 0,
+      "run_name": "BM_ValidateDeadline_Future_1000",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 28000,
+      "real_time": 2.4364224999999355e+01,
+      "cpu_time": 2.3995535714285715e+01,
+      "time_unit": "us"
+    },
+    {
+      "name": "BM_ValidateDeadline_Past_1000",
+      "family_index": 4,
+      "per_family_instance_index": 0,
+      "run_name": "BM_ValidateDeadline_Past_1000",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 8960,
+      "real_time": 7.4923649553580518e+01,
+      "cpu_time": 7.3242187500000000e+01,
+      "time_unit": "us"
+    },
+    {
+      "name": "BM_Task_Construct",
+      "family_index": 5,
+      "per_family_instance_index": 0,
+      "run_name": "BM_Task_Construct",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 1947826,
+      "real_time": 3.6980012588379046e-01,
+      "cpu_time": 3.7702289629566499e-01,
+      "time_unit": "us"
+    },
+    {
+      "name": "BM_Task_Copy",
+      "family_index": 6,
+      "per_family_instance_index": 0,
+      "run_name": "BM_Task_Copy",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 11200000,
+      "real_time": 6.3508830357120266e-02,
+      "cpu_time": 6.4174107142857137e-02,
+      "time_unit": "us"
+    },
+    {
+      "name": "BM_Task_Move",
+      "family_index": 7,
+      "per_family_instance_index": 0,
+      "run_name": "BM_Task_Move",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 1866667,
+      "real_time": 3.7346312973843498e-01,
+      "cpu_time": 3.6830350566008829e-01,
+      "time_unit": "us"
+    },
+    {
+      "name": "BM_GenerateUuid_1000",
+      "family_index": 8,
+      "per_family_instance_index": 0,
+      "run_name": "BM_GenerateUuid_1000",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 2133,
+      "real_time": 3.4352958274705475e-01,
+      "cpu_time": 3.2231598687294888e-01,
+      "time_unit": "ms"
+    },
+    {
+      "name": "BM_TaskMapper_ToDto_1000",
+      "family_index": 9,
+      "per_family_instance_index": 0,
+      "run_name": "BM_TaskMapper_ToDto_1000",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 90,
+      "real_time": 8.2223277777706656e+00,
+      "cpu_time": 8.1597222222222214e+00,
+      "time_unit": "ms"
+    },
+    {
+      "name": "BM_TaskMapper_FromDto_1000",
+      "family_index": 10,
+      "per_family_instance_index": 0,
+      "run_name": "BM_TaskMapper_FromDto_1000",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 1000,
+      "real_time": 5.3379780000068422e-01,
+      "cpu_time": 5.3125000000000000e-01,
+      "time_unit": "ms"
+    },
+    {
+      "name": "BM_TaskMapper_TimeHelpers_10000",
+      "family_index": 11,
+      "per_family_instance_index": 0,
+      "run_name": "BM_TaskMapper_TimeHelpers_10000",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 17,
+      "real_time": 4.0837188235266638e+01,
+      "cpu_time": 4.1360294117647058e+01,
+      "time_unit": "ms"
+    }
+  ]
+}
