@@ -45,6 +45,10 @@ add_executable(TasqlyTestsRunner
 
     # 🧠 Unit Tests — Persistence (In-Memory Repository)
     tests/unit/persistence/test_P1_S2_InMemoryTaskRepository.cpp
+    tests/integration/common/DatabaseIntegrationFixture.cpp
+    tests/integration/common/DatabaseIntegrationFixture.h
+    tests/integration/migrations/test_P1_S2_Migrations.cpp
+    tests/integration/persistence/test_P1_S2_PostgresTaskRepository.cpp
 
     # 🧩 Shared Common
     tests/common/RuntimeDiagnostic.h
@@ -52,34 +56,6 @@ add_executable(TasqlyTestsRunner
     tests/test_result.cpp
     tests/test_result_void.cpp
 )
-
-# ---------------------------------------------------------------
-# 🧩 Conditional PostgreSQL Integration
-# ---------------------------------------------------------------
-if (UNIX AND NOT WIN32)
-    # ✅ Linux CI or Linux local dev — include DB tests
-    message(STATUS "[CMakeTests] Including PostgreSQL integration tests for Linux build.")
-    target_sources(TasqlyTestsRunner PRIVATE
-        tests/integration/common/DatabaseIntegrationFixture.cpp
-        tests/integration/common/DatabaseIntegrationFixture.h
-        tests/integration/migrations/test_P1_S2_Migrations.cpp
-        tests/integration/persistence/test_P1_S2_PostgresTaskRepository.cpp
-    )
-
-elseif (WIN32)
-    # ✅ On Windows: include only if NOT running in CI
-    if (NOT DEFINED ENV{CI})
-        message(STATUS "[CMakeTests] Local Windows environment detected — including PostgreSQL integration tests.")
-        target_sources(TasqlyTestsRunner PRIVATE
-            tests/integration/common/DatabaseIntegrationFixture.cpp
-            tests/integration/common/DatabaseIntegrationFixture.h
-            tests/integration/migrations/test_P1_S2_Migrations.cpp
-            tests/integration/persistence/test_P1_S2_PostgresTaskRepository.cpp
-        )
-    else()
-        message(STATUS "[CMakeTests] Skipping PostgreSQL integration tests on Windows CI environment.")
-    endif()
-endif()
 
 # ---------------------------------------------------------------
 # 🔗 Test Runner Dependencies
