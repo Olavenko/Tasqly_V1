@@ -57,12 +57,52 @@ protected:
   // ============================================================
   static void SetUpTestSuite()
   {
+    std::string ciValue;
+    #ifdef _MSC_VER
+      char* ciBuf = nullptr;
+      size_t ciLen = 0;
+      if (_dupenv_s(&ciBuf, &ciLen, "CI") == 0 && ciBuf != nullptr) {
+        ciValue = ciBuf;
+        free(ciBuf);
+      }
+    #else
+      if (const char* ciEnv = std::getenv("CI")) {
+        ciValue = ciEnv;
+      }
+    #endif
+    const char* ci = ciValue.empty() ? nullptr : ciValue.c_str();
     const std::string host = "localhost";
     const std::string port = "5432";
     const std::string user = "postgres";
     const std::string pass = "themyth2060";
     const std::string testDb = "tasqly_test";
 
+    #ifdef _WIN32
+    if (ci && std::string(ci) == "true") {
+      std::cout << "\n[DB FIXTURE]️ Detected Windows CI Environment.\n";
+      std::cout << "[DB FIXTURE] Skipping PostgreSQL integration tests on Windows CI.\n";
+      GTEST_SKIP() << "Skipping PostgreSQL integration tests on Windows CI (GitHub Actions).";
+      return;
+    } else {
+      std::cout << "\n[DB FIXTURE] Running on Windows Local Environment. trying to connect to "
+                   "PostgreSQL.\n";
+
+      std::string adminConnStr = "host=" + host + " port=" + port + " dbname=postgres user=" + user
+                                 + " password=" + pass;
+      PGconn* testConn = PQconnectdb(adminConnStr.c_str());
+
+      if (PQstatus(testConn) != CONNECTION_OK) {
+        std::cout << "[DB FIXTURE] No local PostgreSQL server detected. skipping integration "
+                     "tests.\n";
+        PQfinish(testConn);
+        GTEST_SKIP() << "PostgreSQL not running locally. Skipping integration tests.";
+        return;
+      } else {
+        std::cout << "[DB FIXTURE] Local PostgreSQL detected. proceeding with integration tests.\n";
+        PQfinish(testConn);
+      }
+    }
+#endif
 
     std::cout << "\n[DB FIXTURE] ==============================================\n";
     std::cout << "[DB FIXTURE] Initializing PostgreSQL Test Environment...\n";
