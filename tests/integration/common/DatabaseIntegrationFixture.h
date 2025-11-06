@@ -41,6 +41,17 @@ protected:
   static PGconn* adminConn;
   static PGconn* conn;
 
+// ------------------------------------------------------------
+// 🧱 Skip if PostgreSQL not compiled in (from CMake define)
+// ------------------------------------------------------------
+#ifdef TASQLY_SKIP_DB_TESTS
+  static void SetUpTestSuite()
+  {
+    std::cout << "\n[DB FIXTURE] PostgreSQL not available (TASQLY_SKIP_DB_TESTS defined).\n";
+    GTEST_SKIP() << "Skipping PostgreSQL integration tests (no DB support in this build).";
+  }
+#else
+
   // ============================================================
   // 🧱 Global Setup (runs ONCE before all test suites)
   // ============================================================
@@ -201,6 +212,7 @@ const char* ci = ciValue.empty() ? nullptr : ciValue.c_str();
         << " Migration failed: " << PQerrorMessage(connection);
     PQclear(res);
   }
+#endif // TASQLY_SKIP_DB_TESTS
 };
 
 } // namespace tasqly::testing::infra

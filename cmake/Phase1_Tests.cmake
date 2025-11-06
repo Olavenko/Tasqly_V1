@@ -17,10 +17,9 @@ include(CTest)
 enable_testing()
 
 # ---------------------------------------------------------------
-# 🏗️ Test Runner Target
+# 🏗️ Test Runner Target (Dynamic PostgreSQL Detection)
 # ---------------------------------------------------------------
-add_executable(TasqlyTestsRunner
-
+set(_test_sources
     #=========================================================
     # Phase[1]
     #=========================================================
@@ -45,10 +44,6 @@ add_executable(TasqlyTestsRunner
 
     # 🧠 Unit Tests — Persistence (In-Memory Repository)
     tests/unit/persistence/test_P1_S2_InMemoryTaskRepository.cpp
-    tests/integration/common/DatabaseIntegrationFixture.cpp
-    tests/integration/common/DatabaseIntegrationFixture.h
-    tests/integration/migrations/test_P1_S2_Migrations.cpp
-    tests/integration/persistence/test_P1_S2_PostgresTaskRepository.cpp
 
     # 🧩 Shared Common
     tests/common/RuntimeDiagnostic.h
@@ -56,6 +51,34 @@ add_executable(TasqlyTestsRunner
     tests/test_result.cpp
     tests/test_result_void.cpp
 )
+
+# ---------------------------------------------------------------
+# 🐘 Conditional PostgreSQL Integration Tests
+# ---------------------------------------------------------------
+if (TASQLY_PG_AVAILABLE)
+    message(STATUS "[Tests] PostgreSQL detected — including DB integration tests")
+    list(APPEND _test_sources
+        tests/integration/common/DatabaseIntegrationFixture.cpp
+        tests/integration/common/DatabaseIntegrationFixture.h
+        tests/integration/migrations/test_P1_S2_Migrations.cpp
+        tests/integration/persistence/test_P1_S2_PostgresTaskRepository.cpp
+    )
+else()
+    message(WARNING "[Tests] PostgreSQL not available — skipping DB integration tests")
+endif()
+
+# ---------------------------------------------------------------
+# 🧱 Create Test Runner Target
+# ---------------------------------------------------------------
+add_executable(TasqlyTestsRunner ${_test_sources})
+
+# ---------------------------------------------------------------
+# 🧩 Define conditional compile-time flag for DB skipping
+# ---------------------------------------------------------------
+if (NOT TASQLY_PG_AVAILABLE)
+    message(WARNING "[Tests] PostgreSQL unavailable — defining TASQLY_SKIP_DB_TESTS for conditional compilation.")
+    target_compile_definitions(TasqlyTestsRunner PRIVATE TASQLY_SKIP_DB_TESTS)
+endif()
 
 # ---------------------------------------------------------------
 # 🔗 Test Runner Dependencies

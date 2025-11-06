@@ -188,25 +188,41 @@ if(TASQLY_BUILD_REPORTS)
 endif()
 
 # ---------------------------------------------------------------
-# 🧩 PostgreSQL Integration (Windows + Linux)
+# 🧩 PostgreSQL Integration (Cross-Platform Smart Detection)
 # ---------------------------------------------------------------
-# Ensures PostgreSQL headers and libraries are available for C++ code.
-# This enables inclusion of <libpq-fe.h> and linking with libpq.
-if (WIN32)
-    # ⚙️ Default install path (from Chocolatey)
-    set(PostgreSQL_ROOT "C:/Program Files/PostgreSQL/17")
+# Purpose:
+#   - Detect PostgreSQL client library and headers (libpq).
+#   - Define TASQLY_PG_AVAILABLE for tests and other modules.
+#   - Avoid breaking build on CI Windows when PostgreSQL is missing.
+# ---------------------------------------------------------------
 
-    # 🧩 Add include and lib directories
-    include_directories("${PostgreSQL_ROOT}/include")
-    link_directories("${PostgreSQL_ROOT}/lib")
+# Try to find PostgreSQL quietly (doesn't break build if missing)
+find_package(PostgreSQL QUIET)
 
-    message(STATUS "[PostgreSQL] Using PostgreSQL from: ${PostgreSQL_ROOT}")
-elseif (UNIX)
-    # Linux systems use libpq-dev from apt
-    find_package(PostgreSQL REQUIRED)
+if (PostgreSQL_FOUND)
+    set(TASQLY_PG_AVAILABLE TRUE)
     include_directories(${PostgreSQL_INCLUDE_DIRS})
     link_directories(${PostgreSQL_LIBRARY_DIRS})
-    message(STATUS "[PostgreSQL] Using system PostgreSQL: ${PostgreSQL_VERSION_STRING}")
+    message(STATUS "[PostgreSQL] Found PostgreSQL version ${PostgreSQL_VERSION_STRING}")
+    message(STATUS "[PostgreSQL] Include dir: ${PostgreSQL_INCLUDE_DIRS}")
+    message(STATUS "[PostgreSQL] Library dir: ${PostgreSQL_LIBRARY_DIRS}")
+
+elseif (WIN32)
+    # Manual fallback for local Windows dev environment
+    set(_pg_root "C:/Program Files/PostgreSQL/17")
+    if (EXISTS "${_pg_root}/include/libpq-fe.h")
+        set(TASQLY_PG_AVAILABLE TRUE)
+        include_directories("${_pg_root}/include")
+        link_directories("${_pg_root}/lib")
+        message(STATUS "[PostgreSQL] Fallback applied: using ${_pg_root}")
+    else()
+        set(TASQLY_PG_AVAILABLE FALSE)
+        message(WARNING "[PostgreSQL] Not found — skipping DB integration on Windows.")
+    endif()
+
+else()
+    set(TASQLY_PG_AVAILABLE FALSE)
+    message(WARNING "[PostgreSQL] Not found on this system — DB integration disabled.")
 endif()
 
 #=====================================================================
