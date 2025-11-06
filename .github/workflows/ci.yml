@@ -261,8 +261,12 @@ jobs:
       # ------------------------------------------------------------
       - name: Run Tests (MinGW Debug)
         shell: msys2 {0}
-        run: ctest --preset=test-mingw-debug --output-on-failure
-
+        run: |
+          export PATH="/mingw64/bin:$PATH"
+          echo "PATH updated with /mingw64/bin"
+          ldd build/mingw-debug/TasqlyTestsRunner.exe || true
+          ctest --preset=test-mingw-debug --output-on-failure
+      
 
   # ------------------------------------------------------------
   # 🐧 Linux (GCC + Clang, Debug only, PostgreSQL integration)
