@@ -255,6 +255,18 @@ jobs:
       - name: Build Debug (MinGW)
         shell: msys2 {0}
         run: cmake --build --preset=build-mingw-debug --parallel
+
+      # ------------------------------------------------------------
+      # 🐘 Ensure PostgreSQL Client (libpq.dll)
+      # ------------------------------------------------------------
+      - name: Ensure PostgreSQL Client (for MinGW)
+        shell: msys2 {0}
+        run: |
+          echo "Ensuring PostgreSQL client (libpq.dll) is available..."
+          pacman -S --noconfirm mingw-w64-x86_64-postgresql
+          ls /mingw64/bin | grep libpq || echo "libpq.dll still missing!"
+          echo "PostgreSQL client ensured."
+
   
       # ------------------------------------------------------------
       # 🧪 Run Tests (MinGW Debug)
