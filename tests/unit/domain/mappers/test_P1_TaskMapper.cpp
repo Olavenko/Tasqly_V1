@@ -159,3 +159,108 @@ TEST(TaskMapperTest, FromDto_InvalidISOHandled)
     EXPECT_EQ(t.priority, TaskPriority::Normal);
   });
 }
+
+// -----------------------------------------------------------------------------
+// 🧪 Test 6: Handles Short ISO8601 String
+// -----------------------------------------------------------------------------
+TEST(TaskMapperTest, FromDto_ShortISOString)
+{
+  TaskDto dto;
+  dto.id = "iso-short";
+  dto.title = "Short ISO Test";
+  dto.status = "Todo";
+  dto.priority = "Low";
+  dto.createdAt = "2025-10-14"; // Too short (< 20 chars)
+  dto.updatedAt = "2025-10-14"; // Too short
+
+  // Should handle gracefully and return epoch time
+  EXPECT_NO_THROW({
+    Task t = TaskMapper::fromDto(dto);
+    EXPECT_EQ(t.id, "iso-short");
+    EXPECT_EQ(t.status, TaskStatus::Todo);
+    EXPECT_EQ(t.priority, TaskPriority::Low);
+  });
+}
+
+// -----------------------------------------------------------------------------
+// 🧪 Test 7: Handles Empty Optional Notes
+// -----------------------------------------------------------------------------
+TEST(TaskMapperTest, ToDto_EmptyOptionalNotes)
+{
+  Task task;
+  task.id = "empty-notes";
+  task.title = "Empty Notes Test";
+  task.notes = std::make_optional<std::string>(""); // Empty string
+  task.status = TaskStatus::Todo;
+  task.priority = TaskPriority::Normal;
+  task.createdAt = std::chrono::system_clock::now();
+  task.updatedAt = task.createdAt;
+
+  TaskDto dto = TaskMapper::toDto(task);
+  
+  // Empty string should reset optional
+  EXPECT_FALSE(dto.notes.has_value());
+}
+
+// -----------------------------------------------------------------------------
+// 🧪 Test 8: Handles All Status Values
+// -----------------------------------------------------------------------------
+TEST(TaskMapperTest, FromDto_AllStatusValues)
+{
+  std::vector<std::string> statusStrings = {"Todo", "Doing", "Done"};
+  std::vector<TaskStatus> expectedStatuses = {TaskStatus::Todo, TaskStatus::Doing, TaskStatus::Done};
+  
+  for (size_t i = 0; i < statusStrings.size(); ++i) {
+    TaskDto dto;
+    dto.id = "status-test-" + std::to_string(i);
+    dto.title = "Status Test";
+    dto.status = statusStrings[i];
+    dto.priority = "Normal";
+    dto.createdAt = "2025-10-14T12:00:00Z";
+    dto.updatedAt = "2025-10-14T12:00:00Z";
+    
+    Task t = TaskMapper::fromDto(dto);
+    EXPECT_EQ(t.status, expectedStatuses[i]) << "Status should match for " << statusStrings[i];
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 🧪 Test 9: Handles All Priority Values
+// -----------------------------------------------------------------------------
+TEST(TaskMapperTest, FromDto_AllPriorityValues)
+{
+  std::vector<std::string> priorityStrings = {"Low", "Normal", "High"};
+  std::vector<TaskPriority> expectedPriorities = {TaskPriority::Low, TaskPriority::Normal, TaskPriority::High};
+  
+  for (size_t i = 0; i < priorityStrings.size(); ++i) {
+    TaskDto dto;
+    dto.id = "priority-test-" + std::to_string(i);
+    dto.title = "Priority Test";
+    dto.status = "Todo";
+    dto.priority = priorityStrings[i];
+    dto.createdAt = "2025-10-14T12:00:00Z";
+    dto.updatedAt = "2025-10-14T12:00:00Z";
+    
+    Task t = TaskMapper::fromDto(dto);
+    EXPECT_EQ(t.priority, expectedPriorities[i]) << "Priority should match for " << priorityStrings[i];
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 🧪 Test 10: Handles Invalid Status/Priority (Defaults)
+// -----------------------------------------------------------------------------
+TEST(TaskMapperTest, FromDto_InvalidStatusPriorityDefaults)
+{
+  TaskDto dto;
+  dto.id = "invalid-enum";
+  dto.title = "Invalid Enum Test";
+  dto.status = "InvalidStatus"; // Not in table
+  dto.priority = "InvalidPriority"; // Not in table
+  dto.createdAt = "2025-10-14T12:00:00Z";
+  dto.updatedAt = "2025-10-14T12:00:00Z";
+  
+  Task t = TaskMapper::fromDto(dto);
+  // Should default to Todo and Normal
+  EXPECT_EQ(t.status, TaskStatus::Todo);
+  EXPECT_EQ(t.priority, TaskPriority::Normal);
+}

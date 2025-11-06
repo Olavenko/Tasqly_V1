@@ -58,6 +58,7 @@ std::shared_ptr<void> P1_S2_TaskRepositoryFactory::createRepository()
 
     if (pgRepo->isConnected()) {
       m_usingFallback = false;
+      m_currentMode = ""; // Clear to use m_usingFallback logic in currentMode()
       logger.info("[Factory] ✅ Using PostgreSQL Task Repository.");
       notifier.toast("✅ Connected to PostgreSQL database");
       return std::static_pointer_cast<void>(pgRepo);
@@ -84,6 +85,7 @@ std::shared_ptr<void> P1_S2_TaskRepositoryFactory::createRepository()
   // 🔹 Step 3: Fallback to InMemory
   try {
     m_usingFallback = true;
+    m_currentMode = ""; // Clear to use m_usingFallback logic in currentMode()
     auto memRepo = std::make_shared<P1_S2_InMemoryTaskRepository>();
 
     if (settings.getBool("features.inmemory.seed", false)) {

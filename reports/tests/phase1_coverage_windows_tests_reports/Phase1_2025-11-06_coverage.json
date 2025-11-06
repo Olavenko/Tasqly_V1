@@ -1,6 +1,6 @@
 {
   "meta": {
-    "timestamp": "2025-11-03 15:53",
+    "timestamp": "2025-11-06 23:37",
     "phase": "Phase1",
     "commit": "local",
     "branch": "main",
@@ -65,8 +65,8 @@
     },
     {
       "file": "P1_TaskMapper.cpp",
-      "coverage": 86.07594936708861,
-      "covered": 68,
+      "coverage": 88.60759493670885,
+      "covered": 70,
       "total": 79
     },
     {
@@ -83,9 +83,9 @@
     },
     {
       "file": "P1_S2_TaskRepositoryFactory.cpp",
-      "coverage": 71.11111111111111,
-      "covered": 32,
-      "total": 45
+      "coverage": 85.1063829787234,
+      "covered": 40,
+      "total": 47
     },
     {
       "file": "P1_S2_TaskRepositoryFactory.h",
@@ -95,8 +95,8 @@
     },
     {
       "file": "P1_S2_InMemoryTaskRepository.cpp",
-      "coverage": 81.35593220338984,
-      "covered": 48,
+      "coverage": 98.30508474576271,
+      "covered": 58,
       "total": 59
     },
     {
@@ -107,8 +107,8 @@
     },
     {
       "file": "P1_AppSettings.cpp",
-      "coverage": 56.52173913043478,
-      "covered": 39,
+      "coverage": 85.5072463768116,
+      "covered": 59,
       "total": 69
     },
     {
@@ -119,20 +119,20 @@
     },
     {
       "file": "P1_Error.cpp",
-      "coverage": 20.0,
-      "covered": 10,
+      "coverage": 100.0,
+      "covered": 50,
       "total": 50
     },
     {
       "file": "P1_Error.h",
-      "coverage": 38.095238095238095,
-      "covered": 8,
-      "total": 21
+      "coverage": 100.0,
+      "covered": 32,
+      "total": 32
     },
     {
       "file": "P1_Logger.cpp",
-      "coverage": 76.92307692307693,
-      "covered": 50,
+      "coverage": 96.92307692307692,
+      "covered": 63,
       "total": 65
     },
     {
@@ -143,8 +143,8 @@
     },
     {
       "file": "P1_Notifier.cpp",
-      "coverage": 56.36363636363636,
-      "covered": 31,
+      "coverage": 100.0,
+      "covered": 55,
       "total": 55
     }
   ]

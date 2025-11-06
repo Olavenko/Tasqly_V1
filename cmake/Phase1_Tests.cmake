@@ -45,6 +45,16 @@ set(_test_sources
     # 🧠 Unit Tests — Persistence (In-Memory Repository)
     tests/unit/persistence/test_P1_S2_InMemoryTaskRepository.cpp
 
+    # 🧠 Unit Tests — Persistence (Postgres Repository - Error Handling)
+    tests/unit/persistence/test_P1_S2_PostgresTaskRepository.cpp
+
+    # 🧩 Unit Tests — Runtime (Phase 1)
+    tests/unit/runtime/test_P1_Error.cpp
+    tests/unit/runtime/test_P1_Notifier.cpp
+    tests/unit/runtime/test_P1_AppSettings.cpp
+    tests/unit/runtime/test_P1_Logger.cpp
+    tests/unit/runtime/test_P1_S2_TaskRepositoryFactory.cpp
+
     # 🧩 Shared Common
     tests/common/RuntimeDiagnostic.h
     tests/test_main.cpp
