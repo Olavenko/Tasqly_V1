@@ -129,25 +129,8 @@ jobs:
           if (-not $exePath) {
             throw "OpenCppCoverage executable not found after installation."
           }
-          Write-Output "✅ OpenCppCoverage installed at: $exePath"
+          Write-Output " OpenCppCoverage installed at: $exePath"
           echo (Split-Path $exePath) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
-      # ------------------------------------------------------------
-      # 🐘 Install PostgreSQL Client (MSVC)
-      # ------------------------------------------------------------
-      - name: Install PostgreSQL Client (MSVC)
-        shell: powershell
-        run: |
-          Write-Host "Installing PostgreSQL client (headers + libpq.lib) for MSVC..."
-          choco install postgresql15 --no-progress -y
-          $pgPath = "C:\\Program Files\\PostgreSQL\\15"
-          if (-not (Test-Path "$pgPath\\include\\libpq-fe.h")) {
-            Write-Host "PostgreSQL headers not found at $pgPath"
-            exit 1
-          }
-          Write-Host "PostgreSQL client installed successfully at: $pgPath"
-          echo "PGROOT=$pgPath" >> $env:GITHUB_ENV
-
 
       # ------------------------------------------------------------
       # --- Coverage (Debug) ---
@@ -157,12 +140,7 @@ jobs:
         shell: powershell
         run: |
           if (Test-Path build/msvc-tests-reports-debug) { Remove-Item -Recurse -Force build/msvc-tests-reports-debug }
-          cmake --preset=msvc-tests-reports-debug `
-            "-DENABLE_COVERAGE=ON" `
-            "-DTASQLY_TEST_PHASE=Phase1" `
-            "-DTASQLY_PG_INCLUDE_DIRS=$env:PGROOT\include" `
-            "-DTASQLY_PG_LIBRARIES=$env:PGROOT\lib\libpq.lib"
-
+          cmake --preset=msvc-tests-reports-debug -DENABLE_COVERAGE=ON -DTASQLY_TEST_PHASE=Phase1
 
       - name: Build Debug (MSVC Coverage)
         #if: false   # 🚫 disabled temporarily
@@ -260,20 +238,6 @@ jobs:
             mingw-w64-x86_64-qt6-base
             mingw-w64-x86_64-qt6-declarative
             mingw-w64-x86_64-qt6-shadertools
-  
-      # ------------------------------------------------------------
-      # 🐘 Install PostgreSQL Client (for MinGW)
-      # ------------------------------------------------------------
-      - name: Install PostgreSQL Client (for MinGW)
-        shell: msys2 {0}
-        run: |
-          echo "Updating MSYS2 and installing PostgreSQL client..."
-          pacman -Syu --noconfirm
-          pacman -S --noconfirm mingw-w64-x86_64-postgresql
-          echo "PostgreSQL client installed."
-          ls /mingw64/include | grep libpq-fe.h || echo "libpq-fe.h not found!"
-          ls /mingw64/lib | grep pq || echo "libpq libraries not found!"
-  
       # ------------------------------------------------------------
       # 🧱 Configure Project (MinGW)
       # ------------------------------------------------------------
@@ -283,10 +247,7 @@ jobs:
           export PATH="/mingw64/bin:$PATH"
           echo "QT_PREFIX=/mingw64" >> $GITHUB_ENV
           rm -rf build/mingw-debug
-          cmake --preset=mingw-debug \
-            -DTASQLY_TEST_PHASE=Phase1 \
-            -DTASQLY_PG_INCLUDE_DIRS=/mingw64/include \
-            -DTASQLY_PG_LIBRARIES=/mingw64/lib/libpq.dll.a
+          cmake --preset=mingw-debug -DTASQLY_TEST_PHASE=Phase1
   
       # ------------------------------------------------------------
       # 🏗️ Build Project (MinGW)

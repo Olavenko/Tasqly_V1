@@ -71,10 +71,11 @@ TEST_F(MigrationIntegrationTest, ApplyAndRollbackMigrations)
   ASSERT_FALSE(dropSql.empty()) << "Missing drop migration file!";
 
   // 🧩 Step 1 — Ensure clean state
-  PQexec(conn, dropSql.c_str());
+  PGresult* res = PQexec(conn, dropSql.c_str());
+  if (res) PQclear(res);
 
   // 🧩 Step 2 — Apply migration
-  PGresult* res = PQexec(conn, createSql.c_str());
+  res = PQexec(conn, createSql.c_str());
   ASSERT_EQ(PQresultStatus(res), PGRES_COMMAND_OK)
       << "Migration apply failed: " << PQerrorMessage(conn);
   PQclear(res);
