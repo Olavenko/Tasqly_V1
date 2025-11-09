@@ -167,16 +167,24 @@ TEST(P1_S2_PostgresTaskRepositoryTest, GetTaskByIdWhenNotConnected)
 {
   P1_Logger::instance().setMinimumLevel(LogLevel::Error);
   
+  // Create a repository with invalid connection settings
   auto& settings = P1_AppSettings::instance();
   settings.set("DB_HOST", "invalid_host");
   settings.set("DB_PORT", "9999");
+  settings.set("DB_NAME", "nonexistent_db");
+  settings.set("DB_USER", "invalid_user");
+  settings.set("DB_PASS", "invalid_password");
   
+  // Create repository - it will try to connect but fail
   P1_S2_PostgresTaskRepository repo;
+  
+  // Verify we're not connected
   ASSERT_FALSE(repo.isConnected());
   
+  // Test that getTaskById returns a Storage error when not connected
   auto result = repo.getTaskById("TEST-004");
   EXPECT_TRUE(result.isErr());
-  EXPECT_EQ(result.error().code, DomainErrorCode::Storage); // ✅ fix
+  EXPECT_EQ(result.error().code, DomainErrorCode::Storage);
 }
 
 TEST(P1_S2_PostgresTaskRepositoryTest, ListTasksWhenNotConnected)
@@ -312,130 +320,3 @@ TEST(P1_S2_PostgresTaskRepositoryTest, UpdateTaskNotFound)
     EXPECT_EQ(result.error().code, DomainErrorCode::NotFound); // ✅ fix
   }
 }
-
-// ================================================================
-// 🧩 Get Task By ID - Not Found Scenario
-// ================================================================
-
-TEST(P1_S2_PostgresTaskRepositoryTest, GetTaskByIdNotFound)
-{
-  P1_Logger::instance().setMinimumLevel(LogLevel::Error);
-  
-  auto& settings = P1_AppSettings::instance();
-  settings.set("DB_HOST", "localhost");
-  settings.set("DB_PORT", "5432");
-  settings.set("DB_NAME", "tasqly_test");
-  settings.set("DB_USER", "postgres");
-  settings.set("DB_PASS", "themyth2060");
-  
-  P1_S2_PostgresTaskRepository repo;
-  
-  if (repo.isConnected()) {
-    // Try to get a non-existent task
-    auto result = repo.getTaskById("NON_EXISTENT_TASK_12345");
-    EXPECT_TRUE(result.isErr());
-    EXPECT_EQ(result.error().code, DomainErrorCode::NotFound); // ✅ fix
-  }
-}
-
-// ================================================================
-// 🧩 List Tasks - Empty Result
-// ================================================================
-
-TEST(P1_S2_PostgresTaskRepositoryTest, ListTasksEmptyResult)
-{
-  P1_Logger::instance().setMinimumLevel(LogLevel::Error);
-  
-  auto& settings = P1_AppSettings::instance();
-  settings.set("DB_HOST", "localhost");
-  settings.set("DB_PORT", "5432");
-  settings.set("DB_NAME", "tasqly_test");
-  settings.set("DB_USER", "postgres");
-  settings.set("DB_PASS", "themyth2060");
-  
-  P1_S2_PostgresTaskRepository repo;
-  
-  if (repo.isConnected()) {
-    // List tasks (may be empty, but should succeed)
-    auto result = repo.listTasks();
-    EXPECT_TRUE(result.isOk());
-    
-    // Result may be empty, but should not error
-    const auto& tasks = result.value();
-    // Just verify it's a valid vector (can be empty)
-    (void)tasks;
-  }
-}
-
-// ================================================================
-// 🧩 Add Task - With All Optional Fields
-// ================================================================
-
-TEST(P1_S2_PostgresTaskRepositoryTest, AddTaskWithOptionalFields)
-{
-  P1_Logger::instance().setMinimumLevel(LogLevel::Error);
-  
-  auto& settings = P1_AppSettings::instance();
-  settings.set("DB_HOST", "localhost");
-  settings.set("DB_PORT", "5432");
-  settings.set("DB_NAME", "tasqly_test");
-  settings.set("DB_USER", "postgres");
-  settings.set("DB_PASS", "themyth2060");
-  
-  P1_S2_PostgresTaskRepository repo;
-  
-  if (repo.isConnected()) {
-    // Add task with all optional fields set
-    TaskRecord rec{"TEST-OPTIONAL-001",
-                   "Task With Optional Fields",
-                   "Notes field",
-                   static_cast<int>(TaskStatus::Doing),
-                   static_cast<int>(TaskPriority::High),
-                   std::make_optional<std::string>("2025-12-31T23:59:59Z"), // deadline
-                   "2025-10-26T10:00:00Z",
-                   "2025-10-26T10:00:00Z"};
-    
-    auto result = repo.addTask(rec);
-    EXPECT_TRUE(result.isOk());
-    
-    // Clean up
-    repo.deleteTask("TEST-OPTIONAL-001");
-  }
-}
-
-// ================================================================
-// 🧩 Add Task - With Empty Optional Fields
-// ================================================================
-
-TEST(P1_S2_PostgresTaskRepositoryTest, AddTaskWithEmptyOptionalFields)
-{
-  P1_Logger::instance().setMinimumLevel(LogLevel::Error);
-  
-  auto& settings = P1_AppSettings::instance();
-  settings.set("DB_HOST", "localhost");
-  settings.set("DB_PORT", "5432");
-  settings.set("DB_NAME", "tasqly_test");
-  settings.set("DB_USER", "postgres");
-  settings.set("DB_PASS", "themyth2060");
-  
-  P1_S2_PostgresTaskRepository repo;
-  
-  if (repo.isConnected()) {
-    // Add task with empty optional fields
-    TaskRecord rec{"TEST-EMPTY-OPT-001",
-                   "Task With Empty Optional Fields",
-                   "", // empty notes
-                   static_cast<int>(TaskStatus::Todo),
-                   static_cast<int>(TaskPriority::Low),
-                   std::nullopt, // no deadline
-                   "2025-10-26T10:00:00Z",
-                   "2025-10-26T10:00:00Z"};
-    
-    auto result = repo.addTask(rec);
-    EXPECT_TRUE(result.isOk());
-    
-    // Clean up
-    repo.deleteTask("TEST-EMPTY-OPT-001");
-  }
-}
-

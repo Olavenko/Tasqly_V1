@@ -206,73 +206,102 @@ bool P1_S2_PostgresTaskRepository::isConnected() const noexcept
   return m_connected && m_conn != nullptr;
 }
 
-// 🧱 Add task (NULL-safe + no dangling pointers)
+// 🧱 Add task (NULL-safe + proper null binding)
 DomainResult<void> P1_S2_PostgresTaskRepository::addTask(const TaskRecord& t)
 {
-  if (!isConnected())
+  if (!isConnected()) {
     return DomainResult<void>::err(
-        P1_Error::makeDbInit("Not connected to PostgreSQL").toDomainError());
+        DomainError::makeStorage("Not connected to PostgreSQL"));
+  }
 
-  // 🧩 SQL command
-  std::string sql
-      = "INSERT INTO tasks (id, title, notes, status, priority, deadline, created_at, updated_at) "
-        "VALUES ($1, $2, $3, $4, $5, $6, $7, $8)";
+  std::string sql =
+      "INSERT INTO tasks (id, title, notes, status, priority, deadline, created_at, updated_at) "
+      "VALUES ($1, $2, $3, $4, $5, $6, $7, $8)";
 
-  // 🧩 Keep local storage for domain → string conversions (text-based enums)
-  // 📝 Convert enum values to textual DB representation ("Todo", "Normal", etc.)
   std::string statusStr = toString(static_cast<TaskStatus>(t.status));
   std::string priorityStr = toString(static_cast<TaskPriority>(t.priority));
 
-  // 🧩 Build parameter array (NULL-safe)
-  const char* values[] = {t.id.c_str(),
-                          t.title.c_str(),
-                          t.notes.empty() ? nullptr : t.notes.c_str(),
-                          statusStr.c_str(),
-                          priorityStr.c_str(),
-                          t.deadline.has_value() ? t.deadline->c_str() : nullptr,
-                          t.createdAt.c_str(),
-                          t.updatedAt.c_str()};
+  // 🧩 Handle optional fields
+  // For notes: treat empty string as NULL in the database
+  const char* notesValue = t.notes.empty() ? nullptr : t.notes.c_str();
+  // For deadline: treat nullopt or empty string as NULL
+  const char* deadlineValue = (t.deadline.has_value() && !t.deadline->empty()) 
+      ? t.deadline->c_str() 
+      : nullptr;
 
-  logQuery(sql, {t.id, t.title});
+  // Prepare parameter values array
+  const char* values[] = {
+      t.id.c_str(),
+      t.title.c_str(),
+      notesValue,
+      statusStr.c_str(),
+      priorityStr.c_str(),
+      deadlineValue,
+      t.createdAt.c_str(),
+      t.updatedAt.c_str()
+  };
 
-  // 🧩 Execute query safely
+  // Set null indicators for each parameter (1 = NULL, 0 = not NULL)
+  int isNull[] = {
+      0, // id (required, not null)
+      0, // title (required, not null)
+      (notesValue == nullptr) ? 1 : 0, // notes (optional)
+      0, // status (required, not null)
+      0, // priority (required, not null)
+      (deadlineValue == nullptr) ? 1 : 0, // deadline (optional)
+      0, // created_at (required, not null)
+      0  // updated_at (required, not null)
+  };
+
+  // Log the query with parameters (but mask sensitive data)
+  std::vector<std::string> logParams = {t.id, t.title, 
+      notesValue ? "[NOTES]" : "NULL", 
+      statusStr, priorityStr,
+      deadlineValue ? "[DEADLINE]" : "NULL"};
+  logQuery(sql, logParams);
+
+  // 🧩 Execute query safely with parameter binding and null indicators
   PGresult* res = PQexecParams(m_conn,
                                sql.c_str(),
-                               static_cast<int>(std::size(values)),
-                               nullptr, // param types
-                               values,
-                               nullptr, // param lengths
-                               nullptr, // param formats
-                               0        // text mode
-  );
+                               static_cast<int>(std::size(values)), // number of parameters
+                               nullptr, // let the backend infer parameter types
+                               values,  // parameter values
+                               nullptr, // parameter lengths (not needed for text format)
+                               isNull,  // parameter null indicators
+                               0);      // all parameters are in text format
 
   if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-    lastError_ = P1_Error::makeDbInit(PQerrorMessage(m_conn));
+    std::string errorMsg = PQerrorMessage(m_conn);
     PQclear(res);
-    return DomainResult<void>::err(lastError_.toDomainError());
+    
+    // Check if the error is due to a duplicate key violation (PostgreSQL error code 23505)
+    if (errorMsg.find("23505") != std::string::npos) {
+      return DomainResult<void>::err(
+          DomainError::makeConflict("Task with ID " + t.id + " already exists"));
+    }
+    
+    return DomainResult<void>::err(
+        DomainError::makeStorage("Failed to add task: " + errorMsg));
   }
 
   PQclear(res);
   return DomainResult<void>::ok();
 }
 
-// 🧱 Update task (NULL-safe + no dangling pointers)
+// 🧱 Update task (detect not found + safe cleanup)
 DomainResult<void> P1_S2_PostgresTaskRepository::updateTask(const TaskRecord& t)
 {
   if (!isConnected())
     return DomainResult<void>::err(
         P1_Error::makeDbInit("Not connected to PostgreSQL").toDomainError());
 
-  // 🧩 SQL command
-  std::string sql = "UPDATE tasks "
-                    "SET title=$2, notes=$3, status=$4, priority=$5, deadline=$6, updated_at=$7 "
-                    "WHERE id=$1";
+  std::string sql
+      = "UPDATE tasks SET title=$2, notes=$3, status=$4, priority=$5, deadline=$6, updated_at=$7 "
+        "WHERE id=$1";
 
-  // 🧩 Keep local storage for domain → string conversions (text-based enums)
   std::string statusStr = toString(static_cast<TaskStatus>(t.status));
   std::string priorityStr = toString(static_cast<TaskPriority>(t.priority));
 
-  // 🧩 Build NULL-safe parameters array
   const char* values[] = {t.id.c_str(),
                           t.title.c_str(),
                           t.notes.empty() ? nullptr : t.notes.c_str(),
@@ -280,6 +309,8 @@ DomainResult<void> P1_S2_PostgresTaskRepository::updateTask(const TaskRecord& t)
                           priorityStr.c_str(),
                           t.deadline.has_value() ? t.deadline->c_str() : nullptr,
                           t.updatedAt.c_str()};
+
+  int isNull[] = {0, 0, t.notes.empty() ? 1 : 0, 0, 0, t.deadline.has_value() ? 0 : 1, 0};
 
   logQuery(sql, {t.id, t.title});
 
@@ -289,35 +320,68 @@ DomainResult<void> P1_S2_PostgresTaskRepository::updateTask(const TaskRecord& t)
                                nullptr,
                                values,
                                nullptr,
-                               nullptr,
+                               isNull,
                                0);
 
-  if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-    lastError_ = P1_Error::makeDbInit(PQerrorMessage(m_conn));
+  ExecStatusType status = PQresultStatus(res);
+
+  // 🧩 Normal successful update or empty tuple set
+  if (status == PGRES_COMMAND_OK || status == PGRES_TUPLES_OK) {
+    std::string affectedStr = PQcmdTuples(res);
+    int affected = 0;
+
+    if (!affectedStr.empty()) {
+      try {
+        affected = std::stoi(affectedStr);
+      } catch (...) {
+        affected = 0;
+      }
+    }
+
     PQclear(res);
-    return DomainResult<void>::err(lastError_.toDomainError());
+
+    if (affected == 0) {
+      // ✅ No rows affected → NotFound
+      return DomainResult<void>::err(DomainError::makeNotFound("Task not found: " + t.id));
+    }
+
+    // ✅ Successfully updated
+    return DomainResult<void>::ok();
   }
 
-  // 🧩 Ensure at least one row was updated (detect non-existing ID)
-  std::string affectedStr = PQcmdTuples(res);
-  int affected = affectedStr.empty() ? 0 : std::stoi(affectedStr);
-
-  if (affected == 0) {
-    PQclear(res);
-    DomainError err = DomainError::makeNotFound("Task not found: " + t.id);
-    return DomainResult<void>::err(err);
-  }
+  // Get the error message and convert to lowercase for case-insensitive comparison
+  std::string errMsg = PQerrorMessage(m_conn);
+  std::string lowerErr = errMsg;
+  std::transform(lowerErr.begin(), lowerErr.end(), lowerErr.begin(), ::tolower);
 
   PQclear(res);
-  return DomainResult<void>::ok();
+
+  // Check for various database-specific "not found" messages
+  if (lowerErr.find("no data found") != std::string::npos
+      || lowerErr.find("no rows") != std::string::npos
+      || lowerErr.find("not found") != std::string::npos
+      || lowerErr.find("does not exist") != std::string::npos
+      || lowerErr.find("could not find") != std::string::npos) {
+    // Log the not found case
+    P1_Logger::instance().info("[DB] Task not found during update: " + t.id);
+    return DomainResult<void>::err(DomainError::makeNotFound("Task not found: " + t.id));
+  }
+
+  // Log the actual error for debugging
+  P1_Logger::instance().error("[DB] Update task failed: " + errMsg);
+  
+  // Return a storage error with the original message
+  lastError_ = P1_Error::makeDbInit(errMsg);
+  return DomainResult<void>::err(lastError_.toDomainError());
 }
 
 // 🧱 Delete task (NULL-safe, unified with PQexecParams)
 DomainResult<void> P1_S2_PostgresTaskRepository::deleteTask(const std::string& id)
 {
-  if (!isConnected())
+  if (!isConnected()) {
     return DomainResult<void>::err(
-        P1_Error::makeDbInit("Not connected to PostgreSQL").toDomainError());
+        DomainError::makeStorage("Not connected to PostgreSQL"));
+  }
 
   // 🧩 SQL command
   std::string sql = "DELETE FROM tasks WHERE id=$1";
@@ -335,29 +399,39 @@ DomainResult<void> P1_S2_PostgresTaskRepository::deleteTask(const std::string& i
                                values,  // parameter values
                                nullptr, // param lengths
                                nullptr, // param formats
-                               0        // text mode
-  );
+                               0);      // text mode
 
   if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-    lastError_ = P1_Error::makeDbInit(PQerrorMessage(m_conn));
+    std::string errorMsg = PQerrorMessage(m_conn);
     PQclear(res);
-    return DomainResult<void>::err(lastError_.toDomainError());
+    return DomainResult<void>::err(
+        DomainError::makeStorage("Failed to delete task: " + errorMsg));
   }
 
+  // Check if any rows were affected
+  char* rowsAffected = PQcmdTuples(res);
+  int numRows = rowsAffected ? std::stoi(rowsAffected) : 0;
   PQclear(res);
+
+  if (numRows == 0) {
+    return DomainResult<void>::err(
+        DomainError::makeNotFound("Task with ID " + id + " not found"));
+  }
+
   return DomainResult<void>::ok();
 }
 
-// 🧱 Get task by ID (final version - type-safe with DTO conversion)
+// 🧱 Get task by ID (return NotFound if not found or disconnected)
 DomainResult<TaskRecord> P1_S2_PostgresTaskRepository::getTaskById(const std::string& id)
 {
   using namespace tasqly::p1::s1::domain::core;
-  P1_Logger::instance().info("[TEST] getTaskById() called with id=" + id);
 
-  if (!isConnected())
-    return DomainResult<TaskRecord>::err(DomainError::makeStorage("Not connected to PostgreSQL"));
+  // Check connection state
+  if (!isConnected()) {
+    return DomainResult<TaskRecord>::err(
+        DomainError::makeStorage("Not connected to PostgreSQL"));
+  }
 
-  // 🧩 SQL query
   std::string sql = "SELECT id, title, notes, status, priority, deadline, created_at, updated_at "
                     "FROM tasks WHERE id=$1";
 
@@ -367,52 +441,26 @@ DomainResult<TaskRecord> P1_S2_PostgresTaskRepository::getTaskById(const std::st
   PGresult* res = PQexecParams(m_conn, sql.c_str(), 1, nullptr, values, nullptr, nullptr, 0);
 
   if (PQresultStatus(res) != PGRES_TUPLES_OK) {
-    std::string msg = "PostgreSQL SELECT failed: ";
-    msg += PQerrorMessage(m_conn);
     PQclear(res);
-    return DomainResult<TaskRecord>::err(DomainError::makeStorage(msg));
+    return DomainResult<TaskRecord>::err(
+        DomainError::makeStorage("PostgreSQL SELECT failed"));
   }
 
   if (PQntuples(res) == 0) {
     PQclear(res);
-    return DomainResult<TaskRecord>::err(DomainError::makeNotFound("Task not found: " + id));
+    return DomainResult<TaskRecord>::err(
+        DomainError::makeNotFound("Task with ID " + id + " not found"));
   }
 
-  // 🧱 Map DB row to TaskRecord safely
   TaskRecord record;
   record.id = PQgetvalue(res, 0, 0);
   record.title = PQgetvalue(res, 0, 1);
-
-  // Optional notes
   record.notes = PQgetisnull(res, 0, 2) ? std::string() : std::string(PQgetvalue(res, 0, 2));
-
-  // ✅ Parse status & priority safely (string → enum → int)
-  std::string statusStr = PQgetvalue(res, 0, 3);
-  std::string priorityStr = PQgetvalue(res, 0, 4);
-
-  auto statusOpt = taskStatusFromString(statusStr);
-  if (!statusOpt) {
-    PQclear(res);
-    return DomainResult<TaskRecord>::err(
-        DomainError::makeValidation("Invalid task status value: " + statusStr));
-  }
-  record.status = static_cast<int>(*statusOpt);
-
-  auto priorityOpt = taskPriorityFromString(priorityStr);
-  if (!priorityOpt) {
-    PQclear(res);
-    return DomainResult<TaskRecord>::err(
-        DomainError::makeValidation("Invalid task priority value: " + priorityStr));
-  }
-  record.priority = static_cast<int>(*priorityOpt);
-
-  // Optional deadline
-  if (!PQgetisnull(res, 0, 5))
-    record.deadline = std::make_optional<std::string>(PQgetvalue(res, 0, 5));
-  else
-    record.deadline = std::nullopt;
-
-  // Timestamps
+  record.status = static_cast<int>(*taskStatusFromString(PQgetvalue(res, 0, 3)));
+  record.priority = static_cast<int>(*taskPriorityFromString(PQgetvalue(res, 0, 4)));
+  record.deadline = PQgetisnull(res, 0, 5)
+                        ? std::nullopt
+                        : std::make_optional<std::string>(PQgetvalue(res, 0, 5));
   record.createdAt = PQgetvalue(res, 0, 6);
   record.updatedAt = PQgetvalue(res, 0, 7);
 
@@ -420,74 +468,50 @@ DomainResult<TaskRecord> P1_S2_PostgresTaskRepository::getTaskById(const std::st
   return DomainResult<TaskRecord>::ok(record);
 }
 
-// 🧱 List all tasks (final version - type-safe and NULL-safe)
+// 🧱 List all tasks (return ok({}) if table empty)
 DomainResult<std::vector<TaskRecord>> P1_S2_PostgresTaskRepository::listTasks()
 {
   using namespace tasqly::p1::s1::domain::core;
 
-  if (!isConnected())
+  // Check connection state
+  if (!isConnected()) {
     return DomainResult<std::vector<TaskRecord>>::err(
         DomainError::makeStorage("Not connected to PostgreSQL"));
+  }
 
-  // 🧩 SQL query
-  std::string sql = "SELECT id, title, notes, status, priority, deadline, created_at, updated_at "
-                    "FROM tasks ORDER BY created_at DESC";
+  std::string sql =
+      "SELECT id, title, notes, status, priority, deadline, created_at, updated_at "
+      "FROM tasks ORDER BY created_at DESC";
 
   logQuery(sql, {});
-
   PGresult* res = PQexecParams(m_conn, sql.c_str(), 0, nullptr, nullptr, nullptr, nullptr, 0);
 
   if (PQresultStatus(res) != PGRES_TUPLES_OK) {
-    std::string msg = "PostgreSQL LIST failed: ";
-    msg += PQerrorMessage(m_conn);
     PQclear(res);
-    return DomainResult<std::vector<TaskRecord>>::err(DomainError::makeStorage(msg));
+    return DomainResult<std::vector<TaskRecord>>::err(
+        DomainError::makeStorage("PostgreSQL LIST failed"));
+  }
+
+  int rows = PQntuples(res);
+  if (rows == 0) {
+    PQclear(res);
+    return DomainResult<std::vector<TaskRecord>>::ok({});
   }
 
   std::vector<TaskRecord> tasks;
-  int rows = PQntuples(res);
   tasks.reserve(rows);
-
   for (int i = 0; i < rows; ++i) {
     TaskRecord r;
-
-    // Core fields
     r.id = PQgetvalue(res, i, 0);
     r.title = PQgetvalue(res, i, 1);
-
-    // Optional notes
     r.notes = PQgetisnull(res, i, 2) ? std::string() : std::string(PQgetvalue(res, i, 2));
-
-    // ✅ Parse status safely
-    std::string statusStr = PQgetvalue(res, i, 3);
-    auto statusOpt = taskStatusFromString(statusStr);
-    if (!statusOpt) {
-      PQclear(res);
-      return DomainResult<std::vector<TaskRecord>>::err(DomainError::makeValidation(
-          "Invalid task status value in row " + std::to_string(i) + ": " + statusStr));
-    }
-    r.status = static_cast<int>(*statusOpt);
-
-    // ✅ Parse priority safely
-    std::string priorityStr = PQgetvalue(res, i, 4);
-    auto priorityOpt = taskPriorityFromString(priorityStr);
-    if (!priorityOpt) {
-      PQclear(res);
-      return DomainResult<std::vector<TaskRecord>>::err(DomainError::makeValidation(
-          "Invalid task priority value in row " + std::to_string(i) + ": " + priorityStr));
-    }
-    r.priority = static_cast<int>(*priorityOpt);
-
-    // Optional deadline
-    if (!PQgetisnull(res, i, 5))
-      r.deadline = std::make_optional<std::string>(PQgetvalue(res, i, 5));
-    else
-      r.deadline = std::nullopt;
-
-    // Timestamps
+    r.status = static_cast<int>(*taskStatusFromString(PQgetvalue(res, i, 3)));
+    r.priority = static_cast<int>(*taskPriorityFromString(PQgetvalue(res, i, 4)));
+    r.deadline = PQgetisnull(res, i, 5)
+                     ? std::nullopt
+                     : std::make_optional<std::string>(PQgetvalue(res, i, 5));
     r.createdAt = PQgetvalue(res, i, 6);
     r.updatedAt = PQgetvalue(res, i, 7);
-
     tasks.push_back(std::move(r));
   }
 

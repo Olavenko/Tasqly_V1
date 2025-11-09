@@ -38,7 +38,7 @@ cmake --build --preset=build-mingw-debug --parallel
 
 # Run unit tests
 ctest --preset=test-mingw-debug --output-on-failure ## to run all tests
-ctest --preset=test-mingw-debug -R AddAndRetrieveTask -VV ## to run single test in file
+ctest --preset=test-mingw-debug -R UpdateTaskNotFound -VV ## to run single test in file
 ctest --preset=test-mingw-debug -R ApplyAndRollbackMigrations -VV ## to run all file tests
 build\mingw-debug\TasqlyTestsRunner.exe --gtest_filter=PostgresTaskRepoTest.* --gtest_output=console # to read all console msg
 ```
