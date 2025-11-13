@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
+r"""
 ===============================================================================
   Coverage Report Generator (Tests Only, Enhanced Clean Version)
 ===============================================================================
@@ -22,9 +22,9 @@
    - Comments are in English for clarity.
 
   Usage examples:
-    py -3.13 coverage_report_updated.py reports/coverage/tests/coverage.xml all --archive Phase0
-    py -3.13 coverage_report_updated.py reports/coverage/tests/coverage.xml markdown
-    py -3.13 coverage_report_updated.py reports/coverage/tests/coverage.xml json
+    py -3.13 scripts\coverage_report_updated.py reports\coverage\tests\coverage.xml all --archive Phase1
+    py -3.13 scripts\coverage_report_updated.py reports\coverage\tests\coverage.xml markdown
+    py -3.13 scripts\coverage_report_updated.py reports\coverage\tests\coverage.xml json
 ===============================================================================
 """
 
@@ -250,17 +250,79 @@ def export_markdown(results, out_file, meta, prev_json_path=None):
 # JSON exporter
 # -------------------------
 
-def export_json(results, out_file, meta):
+def export_json(results, out_file, meta, prev_json_path=None):
+    """Export full JSON report with same analytical depth as Markdown."""
+    prev_map = {}
+    if prev_json_path and os.path.exists(prev_json_path):
+        try:
+            with open(prev_json_path, "r", encoding="utf-8") as f:
+                old = json.load(f)
+                for entry in old.get("files", []):
+                    prev_map[os.path.basename(entry.get("file", ""))] = float(entry.get("coverage", 0.0))
+        except Exception:
+            prev_map = {}
+
+    total_files = len(results)
+    total_covered = sum(c for _, _, c, _ in results)
+    total_lines = sum(t for _, _, _, t in results)
+    total_uncovered = total_lines - total_covered
+    avg_coverage = (sum(r for _, r, _, _ in results) / total_files * 100) if total_files else 0.0
+    files_below_80 = sum(1 for _, r, _, _ in results if r * 100 < 80)
+
+    # Detailed per-file data (sorted worst → best)
+    files_data = []
+    sorted_results = sorted(results, key=lambda x: x[1])
+    for idx, (fname, rate, covered, total) in enumerate(sorted_results, 1):
+        pct = rate * 100
+        uncovered = total - covered
+        if pct >= 80:
+            level = "High"
+        elif pct >= 50:
+            level = "Medium"
+        elif pct > 0:
+            level = "Low"
+        else:
+            level = "None"
+
+        prev_cov = prev_map.get(os.path.basename(fname))
+        delta = pct - prev_cov if prev_cov is not None else 0.0
+
+        files_data.append({
+            "rank": idx,
+            "file": os.path.basename(fname),
+            "coverage": round(pct, 2),
+            "covered": covered,
+            "uncovered": uncovered,
+            "total": total,
+            "level": level,
+            "change": round(delta, 1)
+        })
+
     data = {
         "meta": meta,
-        "files": [
-            {"file": fn, "coverage": rate * 100, "covered": covered, "total": total}
-            for fn, rate, covered, total in results
-        ]
+        "phase_summary": {
+            "Generated": meta["timestamp"],
+            "Commit": meta["commit"],
+            "Branch": meta["branch"],
+            "Job": meta["job"],
+            "Phase": meta.get("phase", "-"),
+            "OS": meta["os"],
+            "Compiler": meta["compiler"]
+        },
+        "coverage_summary": {
+            "Total Files": total_files,
+            "Avg Coverage": f"{avg_coverage:.2f}%",
+            "Covered Lines": total_covered,
+            "Uncovered Lines": total_uncovered,
+            "Files < 80%": files_below_80
+        },
+        "files": files_data
     }
+
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
-    print(f"[OK] JSON report saved: {out_file}")
+
+    print(f"[OK] Enhanced JSON report generated: {out_file}")
 
 # -------------------------
 # Dashboard exporter

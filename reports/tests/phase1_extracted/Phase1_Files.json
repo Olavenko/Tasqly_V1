@@ -1,0 +1,81 @@
+{
+    "metadata": {
+        "phase": "Phase1",
+        "slice": null,
+        "snapshot": "Project_Tree_Phase1_Slice2_20251110_142102.json",
+        "snapshot_time": "2025-11-10 14:21:02",
+        "generated_time": "2025-11-11 14:07:03"
+    },
+    "counts": {
+        "src": 30,
+        "tests": 25,
+        "benchmarks": 3,
+        "total": 58
+    },
+    "files": {
+        "src": [
+            "src/domain/core/contracts/P1_ITaskRepository.h",
+            "src/domain/core/entities/P1_DomainValidation.cpp",
+            "src/domain/core/entities/P1_DomainValidation.h",
+            "src/domain/core/entities/P1_Task.h",
+            "src/domain/core/entities/P1_TaskPriority.h",
+            "src/domain/core/entities/P1_TaskStatus.h",
+            "src/domain/core/errors/P1_DomainError.h",
+            "src/domain/core/errors/P1_DomainResult.h",
+            "src/domain/core/mappers/P1_TaskDto.h",
+            "src/domain/core/mappers/P1_TaskMapper.cpp",
+            "src/domain/core/mappers/P1_TaskMapper.h",
+            "src/infra/db/P1_S2_PostgresTaskRepository.cpp",
+            "src/infra/db/P1_S2_PostgresTaskRepository.h",
+            "src/infra/db/migrations/P1_S2_migration_0001_tasks.sql",
+            "src/infra/db/migrations/P1_S2_migration_rollback_0001_tasks.sql",
+            "src/infra/factories/P1_S2_TaskRepositoryFactory.cpp",
+            "src/infra/factories/P1_S2_TaskRepositoryFactory.h",
+            "src/infra/migrations/P1_S2_create_tasks.sql",
+            "src/infra/migrations/P1_S2_drop_tasks.sql",
+            "src/infra/persistence/P1_S2_InMemoryTaskRepository.cpp",
+            "src/infra/persistence/P1_S2_InMemoryTaskRepository.h",
+            "src/infra/runtime/P1_AppSettings.cpp",
+            "src/infra/runtime/P1_AppSettings.h",
+            "src/infra/runtime/P1_Error.cpp",
+            "src/infra/runtime/P1_Error.h",
+            "src/infra/runtime/P1_LogLevel.h",
+            "src/infra/runtime/P1_Logger.cpp",
+            "src/infra/runtime/P1_Logger.h",
+            "src/infra/runtime/P1_Notifier.cpp",
+            "src/infra/runtime/P1_Notifier.h"
+        ],
+        "tests": [
+            "tests/common/RuntimeDiagnostic.h",
+            "tests/fakes/domain/FakeTaskRepository.cpp",
+            "tests/fakes/domain/FakeTaskRepository.h",
+            "tests/integration/common/DatabaseIntegrationFixture.cpp",
+            "tests/integration/common/DatabaseIntegrationFixture.h",
+            "tests/integration/domain/mappers/test_P1_TaskMapperRepository_RoundTrip.cpp",
+            "tests/integration/domain/mappers/test_P1_TaskRepositoryIntegration.cpp",
+            "tests/integration/factories/test_P1_S2_TaskRepositoryFactory.cpp",
+            "tests/integration/migrations/test_P1_S2_Migrations.cpp",
+            "tests/integration/persistence/test_P1_S2_PostgresTaskRepository.cpp",
+            "tests/integration/persistence/test_P1_S2_TaskRepositoryFactory.cpp",
+            "tests/unit/domain/entities/test_P1_DomainValidation.cpp",
+            "tests/unit/domain/entities/test_P1_TaskPriority.cpp",
+            "tests/unit/domain/entities/test_P1_TaskStatus.cpp",
+            "tests/unit/domain/errors/test_P1_DomainError.cpp",
+            "tests/unit/domain/errors/test_P1_DomainResult.cpp",
+            "tests/unit/domain/mappers/test_P1_TaskMapper.cpp",
+            "tests/unit/domain/mappers/test_P1_TaskMapper_Single.cpp",
+            "tests/unit/persistence/test_P1_S2_InMemoryTaskRepository.cpp",
+            "tests/unit/persistence/test_P1_S2_PostgresTaskRepository.cpp",
+            "tests/unit/runtime/test_P1_AppSettings.cpp",
+            "tests/unit/runtime/test_P1_Error.cpp",
+            "tests/unit/runtime/test_P1_Logger.cpp",
+            "tests/unit/runtime/test_P1_Notifier.cpp",
+            "tests/unit/runtime/test_P1_S2_TaskRepositoryFactory.cpp"
+        ],
+        "benchmarks": [
+            "benchmarks/unit/domain/P1_S1_Bench_DomainValidation.cpp",
+            "benchmarks/unit/domain/P1_S1_Bench_TaskEntity.cpp",
+            "benchmarks/unit/domain/P1_S1_Bench_TaskMapper.cpp"
+        ]
+    }
+}

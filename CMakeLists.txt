@@ -104,6 +104,9 @@ function(tasqly_apply_debug_sanitizers tgt)
     endif()
 endfunction()
 
+# In your top-level CMakeLists.txt, BEFORE any find_package(Qt6 ...) call
+set(QT_FORCE_CMP0156_TO_VALUE NEW CACHE STRING "Force Qt to use NEW behavior for CMP0156")
+
 # ---------------------------------------------------------------
 # 🎨 Qt Quick Integration
 # ---------------------------------------------------------------

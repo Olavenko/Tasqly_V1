@@ -1,0 +1,2149 @@
+{
+    "summary": {
+        "analyzed_files": 9,
+        "uncovered_lines_analyzed": 117,
+        "high_risk_lines": 7,
+        "average_score": 32.66,
+        "most_common_complexity": "DB call + Branching + Error handling + Logging"
+    },
+    "entries": [
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 156,
+            "func": "PostgreSQL",
+            "score": 68,
+            "risk": "High",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "db-call",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Integration",
+            "line_text": "std::vector<const char*> values;"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 157,
+            "func": "PostgreSQL",
+            "score": 68,
+            "risk": "High",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "db-call",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Integration",
+            "line_text": "values.reserve(params.size());"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 158,
+            "func": "PostgreSQL",
+            "score": 68,
+            "risk": "High",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "db-call",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Integration",
+            "line_text": "for (const auto& p : params)"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 159,
+            "func": "PostgreSQL",
+            "score": 68,
+            "risk": "High",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "db-call",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Integration",
+            "line_text": "values.push_back(p.c_str());"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 162,
+            "func": "PostgreSQL",
+            "score": 68,
+            "risk": "High",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "db-call",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Integration",
+            "line_text": "logQuery(sql, params);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 165,
+            "func": "PostgreSQL",
+            "score": 68,
+            "risk": "High",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "db-call",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Integration",
+            "line_text": "PGresult* res = PQexecParams(m_conn,"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 175,
+            "func": "PostgreSQL",
+            "score": 68,
+            "risk": "High",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "db-call",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Integration",
+            "line_text": "auto status = PQresultStatus(res);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 132,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "{"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 134,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "if (!m_conn) {"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 135,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "P1_Error err = P1_Error::makeDbInit(\"[Postgres] No active connection\");"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 136,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "P1_Logger::instance().error(err);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 137,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "lastError_ = err;"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 138,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "return false;"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 139,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "}"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 142,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "if (PQstatus(m_conn) != CONNECTION_OK) {"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 143,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "P1_Logger::instance().warn(\"[DB] Lost connection detected — attempting reset...\");"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 144,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "PQreset(m_conn);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 146,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "if (PQstatus(m_conn) != CONNECTION_OK) {"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 147,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "P1_Error err = P1_Error::makeTimeout(\"[Postgres] Connection reset failed: \""
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 149,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "P1_Logger::instance().error(err);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 150,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "lastError_ = err;"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 151,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "return false;"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 152,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "}"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 153,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "}"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 176,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "if (status != PGRES_COMMAND_OK && status != PGRES_TUPLES_OK) {"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 178,
+            "func": "PostgreSQL",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "P1_Error err = handlePgError(\"executeQuery\");"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 353,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "std::string errMsg = PQerrorMessage(m_conn);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 354,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "std::string lowerErr = errMsg;"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 355,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "std::transform(lowerErr.begin(), lowerErr.end(), lowerErr.begin(), ::tolower);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 357,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "PQclear(res);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 360,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "if (lowerErr.find(\"no data found\") != std::string::npos"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 366,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "P1_Logger::instance().info(\"[DB] Task not found during update: \" + t.id);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 367,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "return DomainResult<void>::err(DomainError::makeNotFound(\"Task not found: \" + t.id));"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 371,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "logging",
+                "todo"
+            ],
+            "suggestion": "Address TODO / add targeted test",
+            "type": "Unit",
+            "line_text": "P1_Logger::instance().error(\"[DB] Update task failed: \" + errMsg);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 374,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "logging",
+                "todo"
+            ],
+            "suggestion": "Address TODO / add targeted test",
+            "type": "Unit",
+            "line_text": "lastError_ = P1_Error::makeDbInit(errMsg);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 375,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "logging",
+                "todo"
+            ],
+            "suggestion": "Address TODO / add targeted test",
+            "type": "Unit",
+            "line_text": "return DomainResult<void>::err(lastError_.toDomainError());"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 376,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "logging",
+                "todo"
+            ],
+            "suggestion": "Address TODO / add targeted test",
+            "type": "Unit",
+            "line_text": "}"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 524,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "{"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 525,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "std::string msg = (m_conn ? PQerrorMessage(m_conn) : \"Unknown PostgreSQL error\");"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 526,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "std::string lowerMsg = msg;"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 527,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "std::transform(lowerMsg.begin(), lowerMsg.end(), lowerMsg.begin(), ::tolower);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 529,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "P1_Error err;"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 531,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "if (lowerMsg.find(\"authentication\") != std::string::npos"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 536,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "|| lowerMsg.find(\"canceling\") != std::string::npos) {"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 539,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "|| lowerMsg.find(\"could not connect\") != std::string::npos) {"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 542,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "|| lowerMsg.find(\"unique constraint\") != std::string::npos) {"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 545,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "|| lowerMsg.find(\"invalid input syntax\") != std::string::npos) {"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 552,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "P1_Logger::instance().error(\"[DB][\" + context + \"] \" + msg);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 554,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "lastError_ = err;"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 555,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "return err;"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 556,
+            "func": "if",
+            "score": 43,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "}"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 279,
+            "func": "PostgreSQL",
+            "score": 40,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "return DomainResult<void>::err("
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 405,
+            "func": "if",
+            "score": 40,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "std::string errorMsg = PQerrorMessage(m_conn);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 406,
+            "func": "if",
+            "score": 40,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "PQclear(res);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 407,
+            "func": "if",
+            "score": 40,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "return DomainResult<void>::err("
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 409,
+            "func": "if",
+            "score": 40,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "}"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 444,
+            "func": "task",
+            "score": 40,
+            "risk": "Medium",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "PQclear(res);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 445,
+            "func": "task",
+            "score": 40,
+            "risk": "Medium",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "return DomainResult<TaskRecord>::err("
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 490,
+            "func": "task",
+            "score": 40,
+            "risk": "Medium",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "PQclear(res);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 491,
+            "func": "task",
+            "score": 40,
+            "risk": "Medium",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "return DomainResult<std::vector<TaskRecord>>::err("
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 181,
+            "func": "PostgreSQL",
+            "score": 33,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "logging"
+            ],
+            "suggestion": "Simulate failing condition; expect error result",
+            "type": "Unit",
+            "line_text": "P1_Logger::instance().error(\"[DB][executeQuery] SQL failed: \" + sql"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 184,
+            "func": "PostgreSQL",
+            "score": 33,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "logging"
+            ],
+            "suggestion": "Simulate failing condition; expect error result",
+            "type": "Unit",
+            "line_text": "PQclear(res);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 185,
+            "func": "PostgreSQL",
+            "score": 33,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "logging"
+            ],
+            "suggestion": "Simulate failing condition; expect error result",
+            "type": "Unit",
+            "line_text": "lastError_ = err;"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 186,
+            "func": "PostgreSQL",
+            "score": 33,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "logging"
+            ],
+            "suggestion": "Simulate failing condition; expect error result",
+            "type": "Unit",
+            "line_text": "return false;"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 187,
+            "func": "PostgreSQL",
+            "score": 33,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "logging"
+            ],
+            "suggestion": "Simulate failing condition; expect error result",
+            "type": "Unit",
+            "line_text": "}"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 189,
+            "func": "PostgreSQL",
+            "score": 33,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "logging"
+            ],
+            "suggestion": "Simulate failing condition; expect error result",
+            "type": "Unit",
+            "line_text": "PQclear(res);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 190,
+            "func": "PostgreSQL",
+            "score": 33,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "logging"
+            ],
+            "suggestion": "Simulate failing condition; expect error result",
+            "type": "Unit",
+            "line_text": "return true;"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 191,
+            "func": "PostgreSQL",
+            "score": 33,
+            "risk": "Medium",
+            "complexity": "DB call + Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "logging"
+            ],
+            "suggestion": "Simulate failing condition; expect error result",
+            "type": "Unit",
+            "line_text": "}"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 337,
+            "func": "PostgreSQL",
+            "score": 15,
+            "risk": "Low",
+            "complexity": "Error handling",
+            "confidence": "High",
+            "tags": [
+                "catch"
+            ],
+            "suggestion": "Trigger exception and verify recovery/fallback",
+            "type": "Unit",
+            "line_text": "affected = 0;"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 338,
+            "func": "PostgreSQL",
+            "score": 15,
+            "risk": "Low",
+            "complexity": "Error handling",
+            "confidence": "High",
+            "tags": [
+                "catch"
+            ],
+            "suggestion": "Trigger exception and verify recovery/fallback",
+            "type": "Unit",
+            "line_text": "}"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 99,
+            "func": "PostgreSQL",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "DB call + Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "err = P1_Error::makeTimeout(errMsg);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 100,
+            "func": "PostgreSQL",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "DB call + Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "} else {"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 497,
+            "func": "task",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "PQclear(res);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 498,
+            "func": "task",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "return DomainResult<std::vector<TaskRecord>>::ok({});"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 534,
+            "func": "if",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "err = P1_Error::makeAuth(\"[Postgres][\" + context + \"] \" + msg);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 535,
+            "func": "if",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "} else if (lowerMsg.find(\"timeout\") != std::string::npos"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 537,
+            "func": "if",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "err = P1_Error::makeTimeout(\"[Postgres][\" + context + \"] \" + msg);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 538,
+            "func": "if",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "} else if (lowerMsg.find(\"connection refused\") != std::string::npos"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 540,
+            "func": "if",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "DB call + Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "err = P1_Error::makeDbInit(\"[Postgres][\" + context + \"] Connection failed: \" + msg);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 541,
+            "func": "if",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "DB call + Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "} else if (lowerMsg.find(\"duplicate key\") != std::string::npos"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 543,
+            "func": "if",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "DB call + Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "err = P1_Error::makeDbInit(\"[Postgres][\" + context + \"] Duplicate entry: \" + msg);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 544,
+            "func": "if",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "DB call + Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "} else if (lowerMsg.find(\"syntax error\") != std::string::npos"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 546,
+            "func": "if",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "DB call + Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "err = P1_Error::makeConfig(\"[Postgres][\" + context"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 548,
+            "func": "if",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "DB call + Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "} else {"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 549,
+            "func": "if",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "DB call + Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "err = P1_Error::makeDbInit(\"[Postgres][\" + context + \"] \" + msg);"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 550,
+            "func": "if",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "DB call + Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "}"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 588,
+            "func": "task",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "value = value.substr(0, MAX_LEN - 3) + \"...\";"
+        },
+        {
+            "rank": 1,
+            "file": "P1_S2_PostgresTaskRepository.cpp",
+            "full_path": "src\\infra\\db\\P1_S2_PostgresTaskRepository.cpp",
+            "line": 589,
+            "func": "task",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "}"
+        },
+        {
+            "rank": 2,
+            "file": "P1_S2_TaskRepositoryFactory.cpp",
+            "full_path": "src\\infra\\factories\\P1_S2_TaskRepositoryFactory.cpp",
+            "line": 101,
+            "func": "if",
+            "score": 48,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "catch",
+                "logging"
+            ],
+            "suggestion": "Trigger exception and verify recovery/fallback",
+            "type": "Unit",
+            "line_text": "logger.error(std::string(\"[Factory] InMemory repository init failed: \") + ex.what());"
+        },
+        {
+            "rank": 2,
+            "file": "P1_S2_TaskRepositoryFactory.cpp",
+            "full_path": "src\\infra\\factories\\P1_S2_TaskRepositoryFactory.cpp",
+            "line": 102,
+            "func": "if",
+            "score": 48,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "catch",
+                "logging"
+            ],
+            "suggestion": "Trigger exception and verify recovery/fallback",
+            "type": "Unit",
+            "line_text": "notifier.toast(\"❌ Fatal: No repository could be initialized.\");"
+        },
+        {
+            "rank": 2,
+            "file": "P1_S2_TaskRepositoryFactory.cpp",
+            "full_path": "src\\infra\\factories\\P1_S2_TaskRepositoryFactory.cpp",
+            "line": 103,
+            "func": "if",
+            "score": 48,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "catch",
+                "logging"
+            ],
+            "suggestion": "Trigger exception and verify recovery/fallback",
+            "type": "Unit",
+            "line_text": "return nullptr;"
+        },
+        {
+            "rank": 2,
+            "file": "P1_S2_TaskRepositoryFactory.cpp",
+            "full_path": "src\\infra\\factories\\P1_S2_TaskRepositoryFactory.cpp",
+            "line": 104,
+            "func": "if",
+            "score": 48,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "catch",
+                "logging"
+            ],
+            "suggestion": "Trigger exception and verify recovery/fallback",
+            "type": "Unit",
+            "line_text": "}"
+        },
+        {
+            "rank": 2,
+            "file": "P1_S2_TaskRepositoryFactory.cpp",
+            "full_path": "src\\infra\\factories\\P1_S2_TaskRepositoryFactory.cpp",
+            "line": 69,
+            "func": "if",
+            "score": 18,
+            "risk": "Low",
+            "complexity": "Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "catch",
+                "logging"
+            ],
+            "suggestion": "Trigger exception and verify recovery/fallback",
+            "type": "Unit",
+            "line_text": "logger.error(std::string(\"[Factory] PostgreSQL init exception: \") + ex.what());"
+        },
+        {
+            "rank": 2,
+            "file": "P1_S2_TaskRepositoryFactory.cpp",
+            "full_path": "src\\infra\\factories\\P1_S2_TaskRepositoryFactory.cpp",
+            "line": 70,
+            "func": "if",
+            "score": 18,
+            "risk": "Low",
+            "complexity": "Error handling + Logging",
+            "confidence": "High",
+            "tags": [
+                "catch",
+                "logging"
+            ],
+            "suggestion": "Trigger exception and verify recovery/fallback",
+            "type": "Unit",
+            "line_text": "}"
+        },
+        {
+            "rank": 3,
+            "file": "P1_AppSettings.cpp",
+            "full_path": "src\\infra\\runtime\\P1_AppSettings.cpp",
+            "line": 68,
+            "func": "if",
+            "score": 13,
+            "risk": "Low",
+            "complexity": "Branching + Logging",
+            "confidence": "High",
+            "tags": [
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "m_cache[key] = value;"
+        },
+        {
+            "rank": 3,
+            "file": "P1_AppSettings.cpp",
+            "full_path": "src\\infra\\runtime\\P1_AppSettings.cpp",
+            "line": 71,
+            "func": "if",
+            "score": 13,
+            "risk": "Low",
+            "complexity": "Branching + Logging",
+            "confidence": "High",
+            "tags": [
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "P1_Logger::instance().info(\"[AppSettings] Read \" + key + \"=\" + value);"
+        },
+        {
+            "rank": 3,
+            "file": "P1_AppSettings.cpp",
+            "full_path": "src\\infra\\runtime\\P1_AppSettings.cpp",
+            "line": 73,
+            "func": "if",
+            "score": 13,
+            "risk": "Low",
+            "complexity": "Branching + Logging",
+            "confidence": "High",
+            "tags": [
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "return value;"
+        },
+        {
+            "rank": 3,
+            "file": "P1_AppSettings.cpp",
+            "full_path": "src\\infra\\runtime\\P1_AppSettings.cpp",
+            "line": 132,
+            "func": "if",
+            "score": 13,
+            "risk": "Low",
+            "complexity": "Branching + Logging",
+            "confidence": "High",
+            "tags": [
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "P1_Logger::instance().info(\"[AppSettings] No cached settings.\");"
+        },
+        {
+            "rank": 3,
+            "file": "P1_AppSettings.cpp",
+            "full_path": "src\\infra\\runtime\\P1_AppSettings.cpp",
+            "line": 133,
+            "func": "if",
+            "score": 13,
+            "risk": "Low",
+            "complexity": "Branching + Logging",
+            "confidence": "High",
+            "tags": [
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "return;"
+        },
+        {
+            "rank": 3,
+            "file": "P1_AppSettings.cpp",
+            "full_path": "src\\infra\\runtime\\P1_AppSettings.cpp",
+            "line": 54,
+            "func": "if",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "value = buffer;"
+        },
+        {
+            "rank": 3,
+            "file": "P1_AppSettings.cpp",
+            "full_path": "src\\infra\\runtime\\P1_AppSettings.cpp",
+            "line": 55,
+            "func": "if",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "free(buffer);"
+        },
+        {
+            "rank": 4,
+            "file": "P1_TaskMapper.cpp",
+            "full_path": "src\\domain\\core\\mappers\\P1_TaskMapper.cpp",
+            "line": 45,
+            "func": "string",
+            "score": 25,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "catch",
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "std::time_t t = std::chrono::system_clock::to_time_t(tp);"
+        },
+        {
+            "rank": 4,
+            "file": "P1_TaskMapper.cpp",
+            "full_path": "src\\domain\\core\\mappers\\P1_TaskMapper.cpp",
+            "line": 46,
+            "func": "string",
+            "score": 25,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "catch",
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "std::tm tm{};"
+        },
+        {
+            "rank": 4,
+            "file": "P1_TaskMapper.cpp",
+            "full_path": "src\\domain\\core\\mappers\\P1_TaskMapper.cpp",
+            "line": 48,
+            "func": "string",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "gmtime_s(&tm, &t);"
+        },
+        {
+            "rank": 4,
+            "file": "P1_TaskMapper.cpp",
+            "full_path": "src\\domain\\core\\mappers\\P1_TaskMapper.cpp",
+            "line": 52,
+            "func": "string",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "char buf[32] = {};"
+        },
+        {
+            "rank": 4,
+            "file": "P1_TaskMapper.cpp",
+            "full_path": "src\\domain\\core\\mappers\\P1_TaskMapper.cpp",
+            "line": 53,
+            "func": "string",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "if (std::strftime(buf, sizeof(buf), \"%Y-%m-%dT%H:%M:%SZ\", &tm))"
+        },
+        {
+            "rank": 4,
+            "file": "P1_TaskMapper.cpp",
+            "full_path": "src\\domain\\core\\mappers\\P1_TaskMapper.cpp",
+            "line": 54,
+            "func": "string",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "return std::string(buf);"
+        },
+        {
+            "rank": 4,
+            "file": "P1_TaskMapper.cpp",
+            "full_path": "src\\domain\\core\\mappers\\P1_TaskMapper.cpp",
+            "line": 55,
+            "func": "string",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "return \"1970-01-01T00:00:00Z\";"
+        },
+        {
+            "rank": 4,
+            "file": "P1_TaskMapper.cpp",
+            "full_path": "src\\domain\\core\\mappers\\P1_TaskMapper.cpp",
+            "line": 56,
+            "func": "string",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "}"
+        },
+        {
+            "rank": 5,
+            "file": "P1_TaskPriority.h",
+            "full_path": "src\\domain\\core\\entities\\P1_TaskPriority.h",
+            "line": 46,
+            "func": "toString",
+            "score": 15,
+            "risk": "Low",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "default-branch"
+            ],
+            "suggestion": "Cover default path with unexpected input",
+            "type": "Unit",
+            "line_text": "return \"Unknown\";"
+        },
+        {
+            "rank": 6,
+            "file": "P1_TaskStatus.h",
+            "full_path": "src\\domain\\core\\entities\\P1_TaskStatus.h",
+            "line": 52,
+            "func": "toString",
+            "score": 25,
+            "risk": "Medium",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "default-branch",
+                "todo"
+            ],
+            "suggestion": "Address TODO / add targeted test",
+            "type": "Unit",
+            "line_text": "return \"Unknown\";"
+        },
+        {
+            "rank": 7,
+            "file": "Result.h",
+            "full_path": "src\\domain\\core\\Result.h",
+            "line": 114,
+            "func": "ok",
+            "score": 40,
+            "risk": "Medium",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "return Result<U>::err(std::get<1>(_data));"
+        },
+        {
+            "rank": 7,
+            "file": "Result.h",
+            "full_path": "src\\domain\\core\\Result.h",
+            "line": 124,
+            "func": "ok",
+            "score": 40,
+            "risk": "Medium",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "return *this; // copy elision"
+        },
+        {
+            "rank": 7,
+            "file": "Result.h",
+            "full_path": "src\\domain\\core\\Result.h",
+            "line": 98,
+            "func": "ok",
+            "score": 10,
+            "risk": "Low",
+            "complexity": "Branching",
+            "confidence": "High",
+            "tags": [
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "return std::get<0>(_data);"
+        },
+        {
+            "rank": 8,
+            "file": "P1_Logger.cpp",
+            "full_path": "src\\infra\\runtime\\P1_Logger.cpp",
+            "line": 52,
+            "func": "if",
+            "score": 13,
+            "risk": "Low",
+            "complexity": "Branching + Logging",
+            "confidence": "High",
+            "tags": [
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "std::cerr << \"[LOGGER] Failed to open log file: \" << path << std::endl;"
+        },
+        {
+            "rank": 8,
+            "file": "P1_Logger.cpp",
+            "full_path": "src\\infra\\runtime\\P1_Logger.cpp",
+            "line": 53,
+            "func": "if",
+            "score": 13,
+            "risk": "Low",
+            "complexity": "Branching + Logging",
+            "confidence": "High",
+            "tags": [
+                "branching",
+                "logging"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "} else {"
+        },
+        {
+            "rank": 9,
+            "file": "P1_S2_InMemoryTaskRepository.cpp",
+            "full_path": "src\\infra\\persistence\\P1_S2_InMemoryTaskRepository.cpp",
+            "line": 28,
+            "func": "if",
+            "score": 40,
+            "risk": "Medium",
+            "complexity": "Branching + Error handling",
+            "confidence": "High",
+            "tags": [
+                "error-handling",
+                "branching"
+            ],
+            "suggestion": "Cover both sides of the conditional",
+            "type": "Unit",
+            "line_text": "return DomainResult<Task>::err(DomainError::makeConflict(\"Task with same ID already exists\"));"
+        }
+    ]
+}
