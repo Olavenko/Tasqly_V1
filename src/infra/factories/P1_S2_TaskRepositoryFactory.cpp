@@ -1,116 +1,107 @@
 /*
  * 🧱 File: P1_S2_TaskRepositoryFactory.cpp
- * ---------------------------------------
- * 📌 Purpose   : Implementation of runtime repository selector (Postgres → InMemory fallback)
- * 🧱 Layer     : Infrastructure (Factory)
- * 👤 Author    : Mohamed Ali
- * 🗓️ Created   : 2025-10-21
- * 🔖 Version   : 1.1
- * 🛡️ Stability : Stable
- *
- * 🧠 Description:
- * Initializes the appropriate repository implementation based on environment configuration
- * and runtime connectivity. If PostgreSQL initialization fails, and the fallback feature flag
- * is enabled (`features.db.fallback_inmemory`), the factory seamlessly switches to the
- * InMemory repository and sends a user notification.
- *
- * 🔗 Related:
- *   - P1_S2_PostgresTaskRepository
- *   - P1_S2_InMemoryTaskRepository
- *   - P1_Logger, P1_Notifier, P1_AppSettings
+ * ----------------------------------------
+ * 📌 Purpose   : Factory for creating the new DB-backed task repository.
+ * 🧱 Layer     : Infrastructure → Factories
+ * 🎯 Slice     : Phase 1 — Slice 2.5
  */
 
-#include "infra/factories/P1_S2_TaskRepositoryFactory.h"
-#include "infra/db/P1_S2_PostgresTaskRepository.h"
-#include "infra/persistence/P1_S2_InMemoryTaskRepository.h"
+#include "P1_S2_TaskRepositoryFactory.h"
+
+// Runtime
 #include "infra/runtime/P1_AppSettings.h"
 #include "infra/runtime/P1_Logger.h"
 #include "infra/runtime/P1_Notifier.h"
 
-#include <exception>
-#include <memory>
+// DB
+#include "infra/db/P1_S2_PostgresConnection.h"
 
-using namespace tasqly::p1::infra::runtime;
-using namespace tasqly::p1::infra::db;
-using namespace tasqly::p1::infra::persistence;
+// Repositories
+#include "infra/persistence/P1_S2_DbTaskRepository.h"
+#include "infra/persistence/P1_S2_InMemoryTaskRepository.h"
 
-namespace tasqly::p1::infra::factories {
+using tasqly::p1::infra::runtime::P1_AppSettings;
+using tasqly::p1::infra::runtime::P1_Logger;
+using tasqly::p1::infra::runtime::P1_Notifier;
 
-// ⚙️ Singleton accessor
+using tasqly::p1::infra::persistence::P1_S2_InMemoryTaskRepository;
+using tasqly::p1::s2::infra::db::P1_S2_PostgresConnection;
+using tasqly::p1::s2::infra::persistence::P1_S2_DbTaskRepository;
+
+using tasqly::p1::s1::domain::core::ITaskRepository;
+
+namespace tasqly::p1::s2::infra::factories {
+
+// ---------------------------------------------------------
+// Singleton
+// ---------------------------------------------------------
 P1_S2_TaskRepositoryFactory& P1_S2_TaskRepositoryFactory::instance()
 {
-  static P1_S2_TaskRepositoryFactory factory;
-  return factory;
+  static P1_S2_TaskRepositoryFactory inst;
+  return inst;
 }
 
-// 🧱 Create repository — main entry point
-std::shared_ptr<void> P1_S2_TaskRepositoryFactory::createRepository()
+// ---------------------------------------------------------
+// create()
+// ---------------------------------------------------------
+std::shared_ptr<ITaskRepository> P1_S2_TaskRepositoryFactory::create()
 {
+  auto& settings = P1_AppSettings::instance();
   auto& logger = P1_Logger::instance();
   auto& notifier = P1_Notifier::instance();
-  auto& settings = P1_AppSettings::instance();
 
-  logger.info("[Factory] Starting repository initialization...");
+  const bool fallbackEnable = settings.getBool("features.db.fallback_inmemory", true);
+  const std::string connStr = settings.getString("db.connection_string")
+                                  .value_or("host=127.0.0.1 port=5432 dbname=tasqly user=postgres");
 
-  // 🔹 Step 1: Try PostgreSQL
+  logger.info("TaskRepositoryFactory: initializing…");
+
+  // -----------------------------------------------------
+  // Try PostgreSQL
+  // -----------------------------------------------------
   try {
-    auto pgRepo = std::make_shared<P1_S2_PostgresTaskRepository>();
+    logger.info("Trying PostgreSQL…");
 
-    if (pgRepo->isConnected()) {
+    auto pg = std::make_shared<P1_S2_PostgresConnection>(connStr, &logger);
+
+    if (pg->isValid()) {
+      logger.info("TaskRepositoryFactory: using PostgreSQL backend");
+
+      m_currentMode = "PostgreSQL";
       m_usingFallback = false;
-      m_currentMode = ""; // Clear to use m_usingFallback logic in currentMode()
-      logger.info("[Factory] ✅ Using PostgreSQL Task Repository.");
-      notifier.toast("✅ Connected to PostgreSQL database");
-      return std::static_pointer_cast<void>(pgRepo);
+
+      return std::make_shared<P1_S2_DbTaskRepository>(pg.get(), &logger);
     }
 
-    logger.warn("[Factory] PostgreSQL connection not established at startup.");
-  } catch (const std::exception& ex) {
-    logger.error(std::string("[Factory] PostgreSQL init exception: ") + ex.what());
-  }
+    logger.error("PostgreSQL connection invalid");
 
-  // 🔹 Step 2: Check if fallback is allowed
-  const bool allowFallback = settings.getBool("features.db.fallback_inmemory", true);
-  if (!allowFallback) {
-    logger.error("[Factory] ❌ PostgreSQL connection failed and fallback is disabled.");
-    notifier.toast("❌ Database connection failed and fallback is disabled.");
-
-    // 🧩 Reflect offline state for diagnostics and tests
-    m_usingFallback = false;
-    m_currentMode = "Offline (No Repository)";
-
-    return nullptr;
-  }
-
-  // 🔹 Step 3: Fallback to InMemory
-  try {
-    m_usingFallback = true;
-    m_currentMode = ""; // Clear to use m_usingFallback logic in currentMode()
-    auto memRepo = std::make_shared<P1_S2_InMemoryTaskRepository>();
-
-    if (settings.getBool("features.inmemory.seed", false)) {
-      memRepo->seedDemoData();
-      logger.info("[Factory] 🌱 InMemory repository seeded for development parity.");
+    if (!fallbackEnable) {
+      notifier.error("❌ PostgreSQL failed — fallback disabled");
+      throw std::runtime_error("PostgreSQL failed with no fallback");
     }
 
-    logger.warn("[Factory] ⚠️ Switched to InMemory repository (fallback active).");
-    notifier.toast("⚠️ Switched to InMemory repository (DB unavailable)");
-    return std::static_pointer_cast<void>(memRepo);
-
   } catch (const std::exception& ex) {
-    logger.error(std::string("[Factory] InMemory repository init failed: ") + ex.what());
-    notifier.toast("❌ Fatal: No repository could be initialized.");
-    return nullptr;
+    logger.error("PostgreSQL exception: " + std::string(ex.what()));
   }
+
+  // -----------------------------------------------------
+  // Fallback → InMemory
+  // -----------------------------------------------------
+  logger.warn("TaskRepositoryFactory: Using InMemory fallback");
+  notifier.toast("⚠️ Falling back to InMemory repository");
+
+  m_currentMode = "InMemory";
+  m_usingFallback = true;
+
+  return std::make_shared<P1_S2_InMemoryTaskRepository>();
 }
 
-// 🧩 Diagnostics — report current mode
-std::string P1_S2_TaskRepositoryFactory::currentMode() const
+// ---------------------------------------------------------
+// Diagnostics
+// ---------------------------------------------------------
+std::string P1_S2_TaskRepositoryFactory::mode() const
 {
-  if (m_currentMode == "Offline (No Repository)")
-    return m_currentMode;
-
-  return m_usingFallback ? "InMemory (Fallback)" : "PostgreSQL (Primary)";
+  return m_currentMode;
 }
 
-} // namespace tasqly::p1::infra::factories
+} // namespace tasqly::p1::s2::infra::factories

@@ -1,53 +1,53 @@
 #pragma once
+
 /*
  * 🧱 File: P1_S2_TaskRepositoryFactory.h
- * ---------------------------------------
- * 📌 Purpose   : Factory to create task repository (Postgres or InMemory fallback)
- * 🧱 Layer     : Infrastructure (Factory)
- * 👤 Author    : Mohamed Ali
- * 🗓️ Created   : 2025-10-21
- * 🔖 Version   : 1.0 (Initial)
- * 🛡️ Stability : Stable
- *
- * 🧠 Description:
- * Creates a runtime repository instance depending on environment configuration.
- *  - Primary: PostgreSQL repository (production)
- *  - Fallback: InMemory repository (development/testing)
- *
- * 🔗 Depends On:
- *   - P1_S2_PostgresTaskRepository
- *   - P1_S2_InMemoryTaskRepository
- *   - P1_Logger / P1_Notifier / P1_AppSettings
+ * --------------------------------------
+ * Factory for creating a TaskRepository using:
+ *   - PostgreSQL backend
+ *   - InMemory fallback
  */
 
 #include <memory>
 #include <string>
 
-namespace tasqly::p1::infra::factories {
+namespace tasqly::p1::s1::domain::core {
+class ITaskRepository;
+}
 
-class P1_S2_TaskRepositoryFactory final
+namespace tasqly::p1::s2::infra::db {
+class IDbConnection;
+class P1_S2_PostgresConnection;
+} // namespace tasqly::p1::s2::infra::db
+
+namespace tasqly::p1::infra::persistence {
+class P1_S2_InMemoryTaskRepository;
+}
+
+namespace tasqly::p1::infra::runtime {
+class P1_Logger;
+class P1_AppSettings;
+class P1_Notifier;
+} // namespace tasqly::p1::infra::runtime
+
+namespace tasqly::p1::s2::infra::factories {
+
+class P1_S2_TaskRepositoryFactory
 {
 public:
-  // ⚙️ Singleton accessor
   static P1_S2_TaskRepositoryFactory& instance();
 
-  // 🧩 Create repository (Postgres → fallback InMemory)
-  std::shared_ptr<void> createRepository();
+  std::shared_ptr<tasqly::p1::s1::domain::core::ITaskRepository> create();
 
-  // 🧠 Diagnostics: current mode (for logs/UI)
-  std::string currentMode() const;
+  std::string mode() const;
 
 private:
-  // 🧱 Internal lifecycle
   P1_S2_TaskRepositoryFactory() = default;
   ~P1_S2_TaskRepositoryFactory() = default;
 
-  std::shared_ptr<void> createPostgresRepo();
-  std::shared_ptr<void> createInMemoryRepo();
-
 private:
   bool m_usingFallback = false;
-  std::string m_currentMode = "PostgreSQL (Primary)";
+  std::string m_currentMode = "Uninitialized";
 };
 
-} // namespace tasqly::p1::infra::factories
+} // namespace tasqly::p1::s2::infra::factories

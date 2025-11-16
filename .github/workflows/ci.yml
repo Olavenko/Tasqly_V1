@@ -354,7 +354,7 @@ jobs:
           version: 6.9.2
           host: linux
           target: desktop
-          cache: true
+          cache: false
 
       # ------------------------------------------------------------
       # 🧪 Build & Test
@@ -391,16 +391,3 @@ jobs:
           else
             ctest --preset=test-clang-debug --output-on-failure
           fi
-
-      # ------------------------------------------------------------
-      # 📤 Upload Logs & Reports (artifacts)
-      # ------------------------------------------------------------
-      - name: Upload Integration Test Logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: Linux-Integration-Logs-${{ matrix.compiler }}
-          path: |
-            build/${{ matrix.compiler }}-debug/Testing/**/*.log
-            build/${{ matrix.compiler }}-debug/Testing/**/*.xml
-            build/${{ matrix.compiler }}-debug/Testing/**/*.txt

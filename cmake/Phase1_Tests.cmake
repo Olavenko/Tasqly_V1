@@ -21,42 +21,55 @@ enable_testing()
 # ---------------------------------------------------------------
 set(_test_sources
     #=========================================================
-    # Phase[1]
+    # Phase[1] — Domain Layer
     #=========================================================
-    # 🛠️ Integration Tests — Domain (Mappers)
-    tests/integration/domain/mappers/test_P1_TaskRepositoryIntegration.cpp
-    tests/integration/domain/mappers/test_P1_TaskMapperRepository_RoundTrip.cpp
 
-    # 🧠 Integration Tests — Persistence Fallback Factory
-    tests/integration/persistence/test_P1_S2_TaskRepositoryFactory.cpp
-
-    # 🛠️ Unit Tests — Domain Entities
+    ## 🧱 Domain Entities — Unit Tests
     tests/unit/domain/entities/test_P1_DomainValidation.cpp
     tests/unit/domain/entities/test_P1_TaskPriority.cpp
     tests/unit/domain/entities/test_P1_TaskStatus.cpp
 
-    # 🧠 Unit Tests — Domain Errors
+    ## ⚠️ Domain Errors — Unit Tests
     tests/unit/domain/errors/test_P1_DomainError.cpp
     tests/unit/domain/errors/test_P1_DomainResult.cpp
 
-    # 🧠 Unit Tests — Domain Mappers
+    ## 🔄 Domain Mappers — Unit Tests
     tests/unit/domain/mappers/test_P1_TaskMapper.cpp
 
-    # 🧠 Unit Tests — Persistence (In-Memory Repository)
+
+    #=========================================================
+    # Phase[1] — Persistence Layer
+    #=========================================================
+
+    ## 🗂 In-Memory Repository — Unit Tests
     tests/unit/persistence/test_P1_S2_InMemoryTaskRepository.cpp
 
-    # 🧠 Unit Tests — Persistence (Postgres Repository - Error Handling)
-    tests/unit/persistence/test_P1_S2_PostgresTaskRepository.cpp
+    ## 🗄️ Database Simulation (Fake DB Connection) — Unit Tests
+    tests/unit/db/test_P1_S2_FakeDbConnection.cpp
 
-    # 🧩 Unit Tests — Runtime (Phase 1)
+    ## 🗃️ Real Database Repository — Unit Tests
+    tests/unit/persistence/test_P1_S2_DbTaskRepository.cpp
+
+
+    #=========================================================
+    # Phase[1] — Runtime Layer
+    #=========================================================
+
+    ## ⚙️ Runtime Services — Unit Tests
     tests/unit/runtime/test_P1_Error.cpp
     tests/unit/runtime/test_P1_Notifier.cpp
     tests/unit/runtime/test_P1_AppSettings.cpp
     tests/unit/runtime/test_P1_Logger.cpp
-    tests/unit/runtime/test_P1_S2_TaskRepositoryFactory.cpp
 
-    # 🧩 Shared Common
+
+    #=========================================================
+    # Shared / Test Framework Core
+    #=========================================================
+
+    ## 🧩 Shared Test Utilities
     tests/common/RuntimeDiagnostic.h
+
+    ## 🧪 Test Entry Points
     tests/test_main.cpp
     tests/test_result.cpp
     tests/test_result_void.cpp
@@ -71,7 +84,6 @@ if (TASQLY_PG_AVAILABLE)
         tests/integration/common/DatabaseIntegrationFixture.cpp
         tests/integration/common/DatabaseIntegrationFixture.h
         tests/integration/migrations/test_P1_S2_Migrations.cpp
-        tests/integration/persistence/test_P1_S2_PostgresTaskRepository.cpp
     )
 else()
     message(WARNING "[Tests] PostgreSQL not available — skipping DB integration tests")

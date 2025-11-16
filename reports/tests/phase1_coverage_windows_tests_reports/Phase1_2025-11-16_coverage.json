@@ -1,6 +1,6 @@
 {
   "meta": {
-    "timestamp": "2025-11-12 07:01",
+    "timestamp": "2025-11-16 13:04",
     "phase": "Phase1",
     "commit": "local",
     "branch": "main",
@@ -9,7 +9,7 @@
     "os": "windows"
   },
   "phase_summary": {
-    "Generated": "2025-11-12 07:01",
+    "Generated": "2025-11-16 13:04",
     "Commit": "local",
     "Branch": "main",
     "Job": "manual",
@@ -18,30 +18,30 @@
     "Compiler": "windows"
   },
   "coverage_summary": {
-    "Total Files": 23,
-    "Avg Coverage": "96.15%",
-    "Covered Lines": 845,
-    "Uncovered Lines": 108,
-    "Files < 80%": 1
+    "Total Files": 22,
+    "Avg Coverage": "96.30%",
+    "Covered Lines": 816,
+    "Uncovered Lines": 82,
+    "Files < 80%": 0
   },
   "files": [
     {
       "rank": 1,
-      "file": "P1_S2_PostgresTaskRepository.cpp",
-      "coverage": 74.74,
-      "covered": 219,
-      "uncovered": 74,
-      "total": 293,
-      "level": "Medium",
+      "file": "P1_S2_InMemoryTaskRepository.cpp",
+      "coverage": 81.36,
+      "covered": 48,
+      "uncovered": 11,
+      "total": 59,
+      "level": "High",
       "change": 0.0
     },
     {
       "rank": 2,
-      "file": "P1_S2_TaskRepositoryFactory.cpp",
-      "coverage": 85.11,
-      "covered": 40,
-      "uncovered": 7,
-      "total": 47,
+      "file": "P1_S2_DbTaskRepository.cpp",
+      "coverage": 84.04,
+      "covered": 237,
+      "uncovered": 45,
+      "total": 282,
       "level": "High",
       "change": 0.0
     },
@@ -107,16 +107,6 @@
     },
     {
       "rank": 9,
-      "file": "P1_S2_InMemoryTaskRepository.cpp",
-      "coverage": 98.31,
-      "covered": 58,
-      "uncovered": 1,
-      "total": 59,
-      "level": "High",
-      "change": 0.0
-    },
-    {
-      "rank": 10,
       "file": "Error.h",
       "coverage": 100.0,
       "covered": 14,
@@ -126,7 +116,7 @@
       "change": 0.0
     },
     {
-      "rank": 11,
+      "rank": 10,
       "file": "P1_ITaskRepository.h",
       "coverage": 100.0,
       "covered": 1,
@@ -136,7 +126,7 @@
       "change": 0.0
     },
     {
-      "rank": 12,
+      "rank": 11,
       "file": "P1_DomainValidation.cpp",
       "coverage": 100.0,
       "covered": 15,
@@ -146,7 +136,7 @@
       "change": 0.0
     },
     {
-      "rank": 13,
+      "rank": 12,
       "file": "P1_Task.h",
       "coverage": 100.0,
       "covered": 7,
@@ -156,7 +146,7 @@
       "change": 0.0
     },
     {
-      "rank": 14,
+      "rank": 13,
       "file": "P1_DomainError.h",
       "coverage": 100.0,
       "covered": 28,
@@ -166,7 +156,7 @@
       "change": 0.0
     },
     {
-      "rank": 15,
+      "rank": 14,
       "file": "P1_DomainResult.h",
       "coverage": 100.0,
       "covered": 38,
@@ -176,27 +166,17 @@
       "change": 0.0
     },
     {
+      "rank": 15,
+      "file": "P1_S2_IDbConnection.h",
+      "coverage": 100.0,
+      "covered": 1,
+      "uncovered": 0,
+      "total": 1,
+      "level": "High",
+      "change": 0.0
+    },
+    {
       "rank": 16,
-      "file": "P1_S2_PostgresTaskRepository.h",
-      "coverage": 100.0,
-      "covered": 3,
-      "uncovered": 0,
-      "total": 3,
-      "level": "High",
-      "change": 0.0
-    },
-    {
-      "rank": 17,
-      "file": "P1_S2_TaskRepositoryFactory.h",
-      "coverage": 100.0,
-      "covered": 4,
-      "uncovered": 0,
-      "total": 4,
-      "level": "High",
-      "change": 0.0
-    },
-    {
-      "rank": 18,
       "file": "P1_S2_InMemoryTaskRepository.h",
       "coverage": 100.0,
       "covered": 2,
@@ -206,7 +186,7 @@
       "change": 0.0
     },
     {
-      "rank": 19,
+      "rank": 17,
       "file": "P1_AppSettings.h",
       "coverage": 100.0,
       "covered": 1,
@@ -216,7 +196,7 @@
       "change": 0.0
     },
     {
-      "rank": 20,
+      "rank": 18,
       "file": "P1_Error.cpp",
       "coverage": 100.0,
       "covered": 50,
@@ -226,7 +206,7 @@
       "change": 0.0
     },
     {
-      "rank": 21,
+      "rank": 19,
       "file": "P1_Error.h",
       "coverage": 100.0,
       "covered": 32,
@@ -236,7 +216,7 @@
       "change": 0.0
     },
     {
-      "rank": 22,
+      "rank": 20,
       "file": "P1_Logger.h",
       "coverage": 100.0,
       "covered": 2,
@@ -246,12 +226,22 @@
       "change": 0.0
     },
     {
-      "rank": 23,
+      "rank": 21,
       "file": "P1_Notifier.cpp",
       "coverage": 100.0,
       "covered": 55,
       "uncovered": 0,
       "total": 55,
+      "level": "High",
+      "change": 0.0
+    },
+    {
+      "rank": 22,
+      "file": "P1_S2_Result.h",
+      "coverage": 100.0,
+      "covered": 9,
+      "uncovered": 0,
+      "total": 9,
       "level": "High",
       "change": 0.0
     }

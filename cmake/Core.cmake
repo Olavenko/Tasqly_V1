@@ -136,14 +136,17 @@ add_library(tasqly_core STATIC
     # -------------------------
     # 🧩 Database Layer [Phase1][Slice2]
     # -------------------------
-    src/infra/db/P1_S2_PostgresTaskRepository.h
-    src/infra/db/P1_S2_PostgresTaskRepository.cpp
+    src/infra/db/P1_S2_IDbConnection.h
+    src/infra/db/P1_S2_PostgresConnection.h
+    src/infra/db/P1_S2_PostgresConnection.cpp
 
     # -------------------------
     # 🧩 Persistence Layer [Phase1][Slice2]
     # -------------------------
     src/infra/persistence/P1_S2_InMemoryTaskRepository.h
     src/infra/persistence/P1_S2_InMemoryTaskRepository.cpp
+    src/infra/persistence/P1_S2_DbTaskRepository.h
+    src/infra/persistence/P1_S2_DbTaskRepository.cpp
 
     # -------------------------
     # 🧩 Runtime Layer [Phase1][Slice2]
@@ -154,6 +157,7 @@ add_library(tasqly_core STATIC
     src/infra/runtime/P1_Logger.cpp
     src/infra/runtime/P1_Notifier.h
     src/infra/runtime/P1_Notifier.cpp
+    src/infra/runtime/P1_S2_Result.h
     src/infra/runtime/P1_AppSettings.h
     src/infra/runtime/P1_AppSettings.cpp
 
@@ -242,6 +246,11 @@ add_library(tasqly_fakes STATIC
     # Domain Fakes [Phase1][Slice1]
     tests/fakes/domain/FakeTaskRepository.h
     tests/fakes/domain/FakeTaskRepository.cpp
+    # Database Fakes [Phase1][Slice2]
+    tests/fakes/db/P1_S2_FakeDbConnection.h
+    tests/fakes/db/P1_S2_FakeDbConnection.cpp
+    tests/fakes/factories/P1_S2_TestTaskRepositoryFactory.h
+    tests/fakes/factories/P1_S2_TestTaskRepositoryFactory.cpp
 
 )
 
