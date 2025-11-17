@@ -4,7 +4,7 @@
 # 📌 Purpose: Normalize line endings, enforce UTF-8, improve GitHub linguist stats
 # 🧱 Layer   : Infrastructure
 # 👤 Author  : Mohamed Ali
-# 🗓️ Updated : 2025-08-27
+# 🗓️ Updated : 2025-11-17
 # ------------------------------------------------------------
 
 # -------------------------------
@@ -13,6 +13,15 @@
 * text=auto eol=lf
 *.cpp text eol=lf
 *.h   text eol=lf
+
+# -------------------------------
+# 🔄 Config files
+# -------------------------------
+.gitattributes text eol=lf
+.gitignore text eol=lf
+.editorconfig text eol=lf
+.clang-format text eol=lf
+.clang-tidy text eol=lf
 
 # -------------------------------
 # 🌐 Default Encoding
@@ -92,8 +101,22 @@
 # Ignore vendored libraries (googletest, etc.)
 external/* linguist-vendored
 
-# Ignore docs UML libs (we use online includes)
-docs/uml/libs/ linguist-vendored
+# Ignore IDE and build directories
+.vs/ linguist-vendored
+.idea/ linguist-vendored
+.vscode/ linguist-vendored
+.qt/ linguist-vendored
+.build/ linguist-vendored
+build*/ linguist-vendored
 
-# Mark UML diagrams as documentation (not main code)
+# Ignore docs and UML libs
+docs/uml/libs/ linguist-vendored
+docs/_build/ linguist-vendored
+docs/generated/ linguist-vendored
+docs/api/ linguist-vendored
+
+# Mark documentation files
 docs/uml/* linguist-documentation
+*.md linguist-documentation
+*.adoc linguist-documentation
+*.txt linguist-documentation

@@ -7,7 +7,7 @@
 # 🧱 Layer   : Infrastructure (Repo Hygiene)
 # 👤 Author  : Mohamed Ali
 # 🗓️ Created : 2025-08-27
-# 🗓️ Updated : 2025-09-13 (improved version)
+# 🗓️ Updated : 2025-11-17 (updated with additional patterns and cleanup)
 # ======================================================================
 
 # ----------------------------------------------------------------------
@@ -92,8 +92,10 @@ __pycache__/
 # ----------------------------------------------------------------------
 # 📦 External / Vendored Libraries
 # ----------------------------------------------------------------------
-external/*
-!external/CMakeLists.txt   # keep control file
+externals/*
+!externals/CMakeLists.txt   # keep control file
+/externals/postgresql/lib/
+/externals/postgresql/include/
 
 # ----------------------------------------------------------------------
 # 📐 UML Tools & Exports
@@ -127,17 +129,20 @@ performance/
 tests_tmp/
 
 # ----------------------------------------------------------------------
-# 📊 Reports (auto-generated performance dashboards)
+# 📦 Documentation Builds
 # ----------------------------------------------------------------------
-# ❌ don't ignore benchmarks folders anymore
-# reports/benchmarks/phase0_perf_benchmarks_reports/
-# reports/benchmarks/phase0_perf_reports/
-# reports/performance/
+docs/_build/
+docs/generated/
+docs/api/
 
 # ----------------------------------------------------------------------
-# 📦 External / Vendored Libraries
+# 🖥️ System Files
 # ----------------------------------------------------------------------
-externals/*
-!externals/CMakeLists.txt   # keep control file
-/externals/postgresql/lib/
-/externals/postgresql/include/
+.directory
+*~
+*.sublime-*
+*.bak
+*.swp
+*.swo
+*.swn
+*.swo
