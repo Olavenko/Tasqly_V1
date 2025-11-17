@@ -3,7 +3,9 @@
 # 📌 Purpose   : Unified CI pipeline for Tasqly (PostgreSQL Linux-only)
 # 🧱 Layer     : CI/CD (GitHub Actions)
 # 👤 Author    : Tasqly AI Assistant
+# 🗓️ Created   : 2025-10-01
 # 🗓️ Updated   : 2025-11-03
+# 📝 Version   : 1.0.0
 #
 # 🧠 Description:
 # - PostgreSQL integration tests now run ONLY on Linux (Docker service).
@@ -112,7 +114,6 @@ jobs:
       # 🧩 Install OpenCppCoverage
       # ------------------------------------------------------------
       - name: Install OpenCppCoverage
-        #if: false # 🚫 disabled temporarily
         shell: powershell
         run: |
           choco install opencppcoverage --no-progress -y
@@ -136,52 +137,44 @@ jobs:
       # --- Coverage (Debug) ---
       # ------------------------------------------------------------
       - name: Configure Debug (MSVC Coverage)
-        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: |
           if (Test-Path build/msvc-tests-reports-debug) { Remove-Item -Recurse -Force build/msvc-tests-reports-debug }
           cmake --preset=msvc-tests-reports-debug -DENABLE_COVERAGE=ON -DTASQLY_TEST_PHASE=Phase1
 
       - name: Build Debug (MSVC Coverage)
-        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: cmake --build --preset=build-msvc-tests-reports-debug --target coverage_tests --parallel
 
       - name: Run Tests (MSVC Debug + Coverage)
-        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: ctest --test-dir build/msvc-tests-reports-debug --output-on-failure
 
       - name: Install Python dependencies for coverage report
-        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: |
           pip install --upgrade pip
           pip install plotly pandas
 
       - name: Generate Coverage Reports
-        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: |
-          python scripts/coverage_report_updated.py reports/coverage/tests/coverage.xml all --archive Phase0
+          python scripts/coverage_report_updated.py reports/coverage/tests/coverage.xml all --archive Phase1
 
       # ------------------------------------------------------------
       # --- Benchmarks (Release) ---
       # ------------------------------------------------------------
       - name: Configure Release (MSVC Benchmarks)
-        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: |
           if (Test-Path build/msvc-benchmarks-release) { Remove-Item -Recurse -Force build/msvc-benchmarks-release }
           cmake --preset=msvc-benchmarks-release -DTASQLY_BENCHMARK_PHASE=Phase1
 
       - name: Build Release (MSVC Benchmarks)
-        #if: false   # 🚫 disabled temporarily
         shell: powershell
         run: cmake --build --preset=build-msvc-benchmarks-release --parallel
 
       - name: Run Benchmarks
-        #if: false   # 🚫 disabled temporarily
         shell: powershell
         env:
           QT_QPA_PLATFORM: offscreen
@@ -193,7 +186,7 @@ jobs:
       # --- Upload Coverage Reports ---
       # ------------------------------------------------------------
       - name: Upload Test Coverage Reports
-        if: always() #always()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Tests-Coverage-Report-MSVC
@@ -206,7 +199,7 @@ jobs:
       # --- Upload Benchmark Reports ---
       # ------------------------------------------------------------
       - name: Upload Benchmark Performance Reports
-        if: always() #always()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: benchmarks-Reports-MSVC
@@ -279,14 +272,188 @@ jobs:
           ldd build/mingw-debug/TasqlyTestsRunner.exe || true
           ctest --preset=test-mingw-debug --output-on-failure
       
+  # ------------------------------------------------------------
+  # 🧪 Linux — Sanitizers (ASan + UBSan) • Debug Build
+  # ------------------------------------------------------------
+  linux-sanitizers:
+    name: Linux • Sanitizers (ASan + UBSan) • Debug
+    runs-on: ubuntu-latest
+    needs: secrets-scan
 
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ------------------------------------------------------------
+      # 🔧 Install Compiler Toolchain
+      # ------------------------------------------------------------
+      - name: Install Toolchain
+        run: |
+          sudo apt-get update
+          if [[ "${{ matrix.compiler }}" == "gcc" ]]; then
+            sudo apt-get install -y g++ gcc
+          else
+            sudo apt-get install -y clang
+          fi
+
+      # ------------------------------------------------------------
+      # 🧱 Configure Project with Sanitizers
+      # ------------------------------------------------------------
+      - name: Configure Debug (Sanitizers)
+        run: |
+          if [[ "${{ matrix.compiler }}" == "gcc" ]]; then
+            cmake --preset=gcc-debug -DTASQLY_TEST_PHASE=Phase1 -DSANITIZERS=ON
+          else
+            cmake --preset=clang-debug -DTASQLY_TEST_PHASE=Phase1 -DSANITIZERS=ON
+          fi
+
+      # ------------------------------------------------------------
+      # 🏗️ Build Project
+      # ------------------------------------------------------------
+      - name: Build Debug
+        run: |
+          if [[ "${{ matrix.compiler }}" == "gcc" ]]; then
+            cmake --build --preset=build-gcc-debug --parallel
+          else
+            cmake --build --preset=build-clang-debug --parallel
+          fi
+
+      # ------------------------------------------------------------
+      # 🧪 Run Tests under Sanitizers
+      # ------------------------------------------------------------
+      - name: Run Tests (ASan + UBSan)
+        env:
+          ASAN_OPTIONS: detect_leaks=1:strict_init_order=true
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=true
+        run: |
+          if [[ "${{ matrix.compiler }}" == "gcc" ]]; then
+            ctest --preset=test-gcc-debug --output-on-failure
+          else
+            ctest --preset=test-clang-debug --output-on-failure
+          fi
+
+      # ------------------------------------------------------------
+      # 📦 Upload Sanitizer Logs
+      # ------------------------------------------------------------
+      - name: Upload Sanitizer Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sanitizer-logs-${{ matrix.compiler }}
+          path: |
+            build/${{ matrix.compiler }}-debug/**/*.log
+            build/${{ matrix.compiler }}-debug/**/*.txt
+            build/${{ matrix.compiler }}-debug/**/*asan*
+            build/${{ matrix.compiler }}-debug/**/*ubsan*
+
+  # ------------------------------------------------------------
+  # 🧮 Linux — Unified Coverage (gcov + lcov + script) • Debug Build
+  # ------------------------------------------------------------
+  linux-coverage:
+    name: Linux • Unified Coverage (gcov + lcov + script) • Debug
+    runs-on: ubuntu-latest
+    needs: linux-sanitizers
+
+    steps:
+      # ------------------------------------------------------------
+      # 📦 Checkout
+      # ------------------------------------------------------------
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ------------------------------------------------------------
+      # 🔧 Install coverage tools
+      # ------------------------------------------------------------
+      - name: Install Coverage Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lcov gcovr ninja-build python3 python3-pip build-essential
+          pip install --upgrade pip
+          pip install plotly pandas
+
+      # ------------------------------------------------------------
+      # 🧱 Configure Build (with coverage)
+      # ------------------------------------------------------------
+      - name: Configure Debug (Coverage)
+        run: |
+          rm -rf build/gcc-coverage
+          cmake --preset=gcc-debug \
+            -DENABLE_COVERAGE=ON \
+            -DTASQLY_TEST_PHASE=Phase1 \
+            -S . \
+            -B build/gcc-coverage
+
+      # ------------------------------------------------------------
+      # 🏗️ Build Targets
+      # ------------------------------------------------------------
+      - name: Build Debug (Coverage)
+        run: cmake --build build/gcc-coverage --parallel
+
+      # ------------------------------------------------------------
+      # 🧪 Run Tests
+      # ------------------------------------------------------------
+      - name: Run Tests with Coverage
+        run: ctest --test-dir build/gcc-coverage --output-on-failure
+
+      # ------------------------------------------------------------
+      # 📊 Generate gcovr XML for unified script
+      # ------------------------------------------------------------
+      - name: Generate gcovr XML Report
+        run: |
+          mkdir -p reports/coverage/tests
+          gcovr -r . \
+            build/gcc-coverage \
+            --xml \
+            -o reports/coverage/tests/coverage.xml
+
+      # ------------------------------------------------------------
+      # 📊 Generate LCOV + HTML (for HTML viewer)
+      # ------------------------------------------------------------
+      - name: Generate LCOV + HTML Reports
+        run: |
+          mkdir -p reports/coverage/linux/html
+          lcov --capture --directory build/gcc-coverage \
+               --output-file reports/coverage/linux/coverage.info
+          lcov --remove reports/coverage/linux/coverage.info \
+               "/usr/*" "*/Qt6/*" "*/tests/*" \
+               -o reports/coverage/linux/coverage.cleaned.info
+          genhtml reports/coverage/linux/coverage.cleaned.info \
+               --output-directory reports/coverage/linux/html
+
+      # ------------------------------------------------------------
+      # 📝 Run Unified Coverage Script (same as MSVC)
+      # ------------------------------------------------------------
+      - name: Generate Unified Coverage Report (Python Script)
+        run: |
+          python scripts/coverage_report_updated.py reports/coverage/tests/coverage.xml all --archive Phase1
+
+      # ------------------------------------------------------------
+      # 📦 Upload Artifacts
+      # ------------------------------------------------------------
+      - name: Upload Coverage Artifacts (Linux)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-coverage-artifacts
+          path: |
+            reports/coverage/**
+            reports/tests/**
+            reports/coverage/linux/**
+            reports/coverage/tests/**
+            build/gcc-coverage/**
+            
   # ------------------------------------------------------------
   # 🐧 Linux (GCC + Clang, Debug only, PostgreSQL integration)
   # ------------------------------------------------------------
   linux:
     name: Linux • ${{ matrix.compiler }} • Integration + DB Tests
     runs-on: ubuntu-latest
-    needs: windows-mingw
+    needs: linux-coverage
     strategy:
       fail-fast: false
       matrix:
