@@ -41,6 +41,20 @@ protected:
   static PGconn* adminConn;
   static PGconn* conn;
 
+  static std::string buildConnectionString(const std::string& dbName)
+  {
+    const std::string host = "localhost";
+    const std::string port = "5432";
+    const std::string user = "postgres";
+    const std::string pass = "themyth2060";
+    return "host=" + host + " port=" + port + " dbname=" + dbName + " user=" + user
+           + " password=" + pass;
+  }
+
+  static std::string adminConnectionString() { return buildConnectionString("postgres"); }
+
+  static std::string testDbConnectionString() { return buildConnectionString("tasqly_test"); }
+
 // ------------------------------------------------------------
 // 🧱 Skip if PostgreSQL not compiled in (from CMake define)
 // ------------------------------------------------------------
@@ -71,11 +85,8 @@ protected:
       }
     #endif
     const char* ci = ciValue.empty() ? nullptr : ciValue.c_str();
-    const std::string host = "localhost";
-    const std::string port = "5432";
-    const std::string user = "postgres";
-    const std::string pass = "themyth2060";
     const std::string testDb = "tasqly_test";
+    const std::string owner = "postgres";
 
     #ifdef _WIN32
     if (ci && std::string(ci) == "true") {
@@ -87,8 +98,7 @@ protected:
       std::cout << "\n[DB FIXTURE] Running on Windows Local Environment. trying to connect to "
                    "PostgreSQL.\n";
 
-      std::string adminConnStr = "host=" + host + " port=" + port + " dbname=postgres user=" + user
-                                 + " password=" + pass;
+      std::string adminConnStr = adminConnectionString();
       PGconn* testConn = PQconnectdb(adminConnStr.c_str());
 
       if (PQstatus(testConn) != CONNECTION_OK) {
@@ -108,8 +118,7 @@ protected:
     std::cout << "[DB FIXTURE] Initializing PostgreSQL Test Environment...\n";
 
     // 🧩 Step 1 — Connect to the admin DB
-    std::string adminConnStr = "host=" + host + " port=" + port + " dbname=postgres user=" + user
-                               + " password=" + pass;
+    std::string adminConnStr = adminConnectionString();
     adminConn = PQconnectdb(adminConnStr.c_str());
     ASSERT_EQ(PQstatus(adminConn), CONNECTION_OK)
         << " Cannot connect to Postgres admin DB: " << PQerrorMessage(adminConn);
@@ -123,7 +132,7 @@ protected:
 
     if (!exists) {
       std::cout << "[DB FIXTURE] Creating test database '" << testDb << "'...\n";
-      res = PQexec(adminConn, ("CREATE DATABASE " + testDb + " OWNER " + user + ";").c_str());
+      res = PQexec(adminConn, ("CREATE DATABASE " + testDb + " OWNER " + owner + ";").c_str());
       ASSERT_EQ(PQresultStatus(res), PGRES_COMMAND_OK)
           << " Failed to create test DB: " << PQerrorMessage(adminConn);
       PQclear(res);
@@ -133,8 +142,7 @@ protected:
     }
 
     // 🧩 Step 3 — Connect to the test database
-    std::string testConnStr = "host=" + host + " port=" + port + " dbname=" + testDb
-                              + " user=" + user + " password=" + pass;
+    std::string testConnStr = testDbConnectionString();
     conn = PQconnectdb(testConnStr.c_str());
     ASSERT_EQ(PQstatus(conn), CONNECTION_OK)
         << "Cannot connect to test DB: " << PQerrorMessage(conn);

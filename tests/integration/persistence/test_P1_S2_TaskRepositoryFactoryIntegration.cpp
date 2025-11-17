@@ -20,7 +20,7 @@
 #include "infra/runtime/P1_Logger.h"
 #include <gtest/gtest.h>
 
-using namespace tasqly::p1::infra::factories;
+using namespace tasqly::p1::s2::infra::factories;
 using namespace tasqly::p1::infra::runtime;
 using namespace tasqly::p1::infra::persistence;
 
@@ -63,7 +63,7 @@ TEST_F(FactoryFallbackIntegrationTest, FallbackToInMemoryWhenPostgresFails)
   auto& factory = P1_S2_TaskRepositoryFactory::instance();
 
   // 🧩 Act — Attempt repository creation (Postgres expected to fail)
-  auto repoVoid = factory.createRepository();
+  auto repoVoid = factory.create();
 
   // 🧾 Assert — Ensure repository was created and is InMemory
   ASSERT_NE(repoVoid, nullptr) << "Expected fallback repository to be created.";
@@ -73,7 +73,7 @@ TEST_F(FactoryFallbackIntegrationTest, FallbackToInMemoryWhenPostgresFails)
   ASSERT_NE(memRepo, nullptr) << "Expected InMemory repository after Postgres failure.";
 
   // 🧩 Verify fallback mode
-  EXPECT_EQ(factory.currentMode(), "InMemory (Fallback)");
+  EXPECT_EQ(factory.mode(), "InMemory (Fallback)");
 
   // 🧩 Verify InMemory CRUD works
   Task t{"FB-001",
@@ -118,12 +118,61 @@ TEST_F(FactoryFallbackIntegrationTest, ReturnsNullWhenFallbackDisabled)
   settings.set("DB_PASS", "bad_pass");
 
   // 🧩 Act — Attempt to create repository
-  auto repoVoid = factory.createRepository();
-
-  // 🧾 Assert — Should return nullptr (no fallback)
-  EXPECT_EQ(repoVoid, nullptr) << "Expected nullptr when fallback is disabled.";
+  // Should throw when fallback is disabled and PostgreSQL fails
+  bool exception_thrown = false;
+  try {
+    factory.createRepository();
+  } catch (const std::runtime_error& e) {
+    exception_thrown = true;
+    EXPECT_NE(std::string(e.what()).find("PostgreSQL failed with no fallback"), std::string::npos)
+        << "Expected specific error message.";
+  }
+  EXPECT_TRUE(exception_thrown) << "Expected exception when fallback is disabled.";
 
   // 🧩 Verify factory mode updated correctly
   EXPECT_EQ(factory.currentMode(), "Offline (No Repository)")
       << "Expected factory mode to indicate offline/no repo state.";
 }
+
+#ifndef TASQLY_SKIP_DB_TESTS
+
+#include "infra/persistence/P1_S2_DbTaskRepository.h"
+#include "tests/integration/common/DatabaseIntegrationFixture.h"
+
+using tasqly::p1::s2::infra::persistence::P1_S2_DbTaskRepository;
+using tasqly::testing::infra::DatabaseIntegrationFixture;
+
+// ================================================================
+// 🧩 Factory + PostgreSQL Integration
+// ================================================================
+
+class FactoryPostgresIntegrationTest : public DatabaseIntegrationFixture
+{
+protected:
+  void SetUp() override
+  {
+    DatabaseIntegrationFixture::SetUp();
+    P1_Logger::instance().setMinimumLevel(LogLevel::Error);
+
+    auto& settings = P1_AppSettings::instance();
+    settings.set("db.connection_string", testDbConnectionString());
+    settings.set("features.db.fallback_inmemory", "true");
+  }
+};
+
+TEST_F(FactoryPostgresIntegrationTest, UsesPostgresBackendWhenAvailable)
+{
+  auto& factory = P1_S2_TaskRepositoryFactory::instance();
+
+  auto repo = factory.createRepository();
+  ASSERT_NE(repo, nullptr);
+
+  if (factory.currentMode() != "PostgreSQL (Primary)") {
+    GTEST_SKIP() << "PostgreSQL not available for factory; mode=" << factory.currentMode();
+  }
+
+  auto dbRepo = std::static_pointer_cast<P1_S2_DbTaskRepository>(repo);
+  ASSERT_NE(dbRepo, nullptr);
+}
+
+#endif // TASQLY_SKIP_DB_TESTS

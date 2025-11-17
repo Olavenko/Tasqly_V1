@@ -19,7 +19,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-using namespace tasqly::domain::core::v1; // ✅ FIXED: isolate Phase1 namespace
+using namespace tasqly::p1::s1::domain::core; // ✅ FIXED: isolate Phase1 namespace
 
 // ============================================================================
 // 🧪 TEST CASE — Minimal ToDto conversion smoke test

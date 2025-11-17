@@ -38,8 +38,14 @@ public:
   static P1_S2_TaskRepositoryFactory& instance();
 
   std::shared_ptr<tasqly::p1::s1::domain::core::ITaskRepository> create();
+  
+  // Alias for integration tests
+  std::shared_ptr<tasqly::p1::s1::domain::core::ITaskRepository> createRepository();
 
   std::string mode() const;
+  
+  // Alias for integration tests
+  std::string currentMode() const;
 
 private:
   P1_S2_TaskRepositoryFactory() = default;

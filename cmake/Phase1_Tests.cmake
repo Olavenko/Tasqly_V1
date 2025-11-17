@@ -35,6 +35,11 @@ set(_test_sources
 
     ## 🔄 Domain Mappers — Unit Tests
     tests/unit/domain/mappers/test_P1_TaskMapper.cpp
+    tests/unit/domain/mappers/test_P1_TaskMapper_Single.cpp
+
+    ## 🔗 Domain Mappers — Integration Tests
+    tests/integration/domain/mappers/test_P1_TaskMapperRepository_RoundTrip.cpp
+    tests/integration/domain/mappers/test_P1_TaskRepositoryIntegration.cpp
 
 
     #=========================================================
@@ -46,9 +51,13 @@ set(_test_sources
 
     ## 🗄️ Database Simulation (Fake DB Connection) — Unit Tests
     tests/unit/db/test_P1_S2_FakeDbConnection.cpp
+    tests/unit/db/test_P1_S2_PostgresConnectionUnit.cpp
 
     ## 🗃️ Real Database Repository — Unit Tests
     tests/unit/persistence/test_P1_S2_DbTaskRepository.cpp
+
+    ## 🗄️ Persistence — Integration Tests
+    tests/integration/persistence/test_P1_S2_TaskRepositoryFactoryIntegration.cpp
 
 
     #=========================================================
@@ -60,6 +69,7 @@ set(_test_sources
     tests/unit/runtime/test_P1_Notifier.cpp
     tests/unit/runtime/test_P1_AppSettings.cpp
     tests/unit/runtime/test_P1_Logger.cpp
+    tests/unit/runtime/test_P1_S2_TaskRepositoryFactoryUnit.cpp
 
 
     #=========================================================
@@ -83,7 +93,9 @@ if (TASQLY_PG_AVAILABLE)
     list(APPEND _test_sources
         tests/integration/common/DatabaseIntegrationFixture.cpp
         tests/integration/common/DatabaseIntegrationFixture.h
+        tests/integration/db/test_P1_S2_PostgresConnectionIntegration.cpp
         tests/integration/migrations/test_P1_S2_Migrations.cpp
+        tests/integration/persistence/test_P1_S2_DbTaskRepositoryIntegration.cpp
     )
 else()
     message(WARNING "[Tests] PostgreSQL not available — skipping DB integration tests")

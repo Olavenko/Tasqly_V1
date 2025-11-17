@@ -1,6 +1,6 @@
 {
   "meta": {
-    "timestamp": "2025-11-16 13:04",
+    "timestamp": "2025-11-17 14:14",
     "phase": "Phase1",
     "commit": "local",
     "branch": "main",
@@ -9,7 +9,7 @@
     "os": "windows"
   },
   "phase_summary": {
-    "Generated": "2025-11-16 13:04",
+    "Generated": "2025-11-17 14:14",
     "Commit": "local",
     "Branch": "main",
     "Job": "manual",
@@ -18,10 +18,10 @@
     "Compiler": "windows"
   },
   "coverage_summary": {
-    "Total Files": 22,
-    "Avg Coverage": "96.30%",
-    "Covered Lines": 816,
-    "Uncovered Lines": 82,
+    "Total Files": 26,
+    "Avg Coverage": "95.97%",
+    "Covered Lines": 1049,
+    "Uncovered Lines": 102,
     "Files < 80%": 0
   },
   "files": [
@@ -37,11 +37,11 @@
     },
     {
       "rank": 2,
-      "file": "P1_S2_DbTaskRepository.cpp",
-      "coverage": 84.04,
-      "covered": 237,
-      "uncovered": 45,
-      "total": 282,
+      "file": "P1_S2_TaskRepositoryFactory.cpp",
+      "coverage": 84.0,
+      "covered": 42,
+      "uncovered": 8,
+      "total": 50,
       "level": "High",
       "change": 0.0
     },
@@ -57,6 +57,16 @@
     },
     {
       "rank": 4,
+      "file": "P1_S2_DbTaskRepository.cpp",
+      "coverage": 87.5,
+      "covered": 252,
+      "uncovered": 36,
+      "total": 288,
+      "level": "High",
+      "change": 0.0
+    },
+    {
+      "rank": 5,
       "file": "P1_TaskMapper.cpp",
       "coverage": 88.61,
       "covered": 70,
@@ -66,7 +76,17 @@
       "change": 0.0
     },
     {
-      "rank": 5,
+      "rank": 6,
+      "file": "P1_S2_PostgresConnection.cpp",
+      "coverage": 89.01,
+      "covered": 170,
+      "uncovered": 21,
+      "total": 191,
+      "level": "High",
+      "change": 0.0
+    },
+    {
+      "rank": 7,
       "file": "P1_TaskPriority.h",
       "coverage": 93.75,
       "covered": 15,
@@ -76,7 +96,7 @@
       "change": 0.0
     },
     {
-      "rank": 6,
+      "rank": 8,
       "file": "P1_TaskStatus.h",
       "coverage": 93.75,
       "covered": 15,
@@ -86,7 +106,7 @@
       "change": 0.0
     },
     {
-      "rank": 7,
+      "rank": 9,
       "file": "Result.h",
       "coverage": 94.74,
       "covered": 54,
@@ -96,7 +116,7 @@
       "change": 0.0
     },
     {
-      "rank": 8,
+      "rank": 10,
       "file": "P1_Logger.cpp",
       "coverage": 96.92,
       "covered": 63,
@@ -106,7 +126,7 @@
       "change": 0.0
     },
     {
-      "rank": 9,
+      "rank": 11,
       "file": "Error.h",
       "coverage": 100.0,
       "covered": 14,
@@ -116,7 +136,7 @@
       "change": 0.0
     },
     {
-      "rank": 10,
+      "rank": 12,
       "file": "P1_ITaskRepository.h",
       "coverage": 100.0,
       "covered": 1,
@@ -126,7 +146,7 @@
       "change": 0.0
     },
     {
-      "rank": 11,
+      "rank": 13,
       "file": "P1_DomainValidation.cpp",
       "coverage": 100.0,
       "covered": 15,
@@ -136,7 +156,7 @@
       "change": 0.0
     },
     {
-      "rank": 12,
+      "rank": 14,
       "file": "P1_Task.h",
       "coverage": 100.0,
       "covered": 7,
@@ -146,7 +166,7 @@
       "change": 0.0
     },
     {
-      "rank": 13,
+      "rank": 15,
       "file": "P1_DomainError.h",
       "coverage": 100.0,
       "covered": 28,
@@ -156,7 +176,7 @@
       "change": 0.0
     },
     {
-      "rank": 14,
+      "rank": 16,
       "file": "P1_DomainResult.h",
       "coverage": 100.0,
       "covered": 38,
@@ -166,7 +186,7 @@
       "change": 0.0
     },
     {
-      "rank": 15,
+      "rank": 17,
       "file": "P1_S2_IDbConnection.h",
       "coverage": 100.0,
       "covered": 1,
@@ -176,7 +196,27 @@
       "change": 0.0
     },
     {
-      "rank": 16,
+      "rank": 18,
+      "file": "P1_S2_PostgresConnection.h",
+      "coverage": 100.0,
+      "covered": 2,
+      "uncovered": 0,
+      "total": 2,
+      "level": "High",
+      "change": 0.0
+    },
+    {
+      "rank": 19,
+      "file": "P1_S2_TaskRepositoryFactory.h",
+      "coverage": 100.0,
+      "covered": 4,
+      "uncovered": 0,
+      "total": 4,
+      "level": "High",
+      "change": 0.0
+    },
+    {
+      "rank": 20,
       "file": "P1_S2_InMemoryTaskRepository.h",
       "coverage": 100.0,
       "covered": 2,
@@ -186,7 +226,7 @@
       "change": 0.0
     },
     {
-      "rank": 17,
+      "rank": 21,
       "file": "P1_AppSettings.h",
       "coverage": 100.0,
       "covered": 1,
@@ -196,7 +236,7 @@
       "change": 0.0
     },
     {
-      "rank": 18,
+      "rank": 22,
       "file": "P1_Error.cpp",
       "coverage": 100.0,
       "covered": 50,
@@ -206,7 +246,7 @@
       "change": 0.0
     },
     {
-      "rank": 19,
+      "rank": 23,
       "file": "P1_Error.h",
       "coverage": 100.0,
       "covered": 32,
@@ -216,7 +256,7 @@
       "change": 0.0
     },
     {
-      "rank": 20,
+      "rank": 24,
       "file": "P1_Logger.h",
       "coverage": 100.0,
       "covered": 2,
@@ -226,7 +266,7 @@
       "change": 0.0
     },
     {
-      "rank": 21,
+      "rank": 25,
       "file": "P1_Notifier.cpp",
       "coverage": 100.0,
       "covered": 55,
@@ -236,7 +276,7 @@
       "change": 0.0
     },
     {
-      "rank": 22,
+      "rank": 26,
       "file": "P1_S2_Result.h",
       "coverage": 100.0,
       "covered": 9,

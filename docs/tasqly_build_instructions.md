@@ -39,9 +39,9 @@ cmake --build --preset=build-mingw-debug --parallel
 # Run unit tests
 ctest --preset=test-mingw-debug --output-on-failure 
 # Run single test in file                                                 
-ctest --preset=test-mingw-debug -R List_FailThenRecover_RetryWorks -VV   
+ctest --preset=test-mingw-debug -R ReturnsNullWhenFallbackDisabled -VV   
 # Run all file tests
-ctest --preset=test-mingw-debug -R P1_S2_DbTaskRepository -VV                  
+ctest --preset=test-mingw-debug -R PostgresConnectionIntegrationTest -VV                  
 build\mingw-debug\TasqlyTestsRunner.exe --gtest_filter=PostgresTaskRepoTest.* --gtest_output=console # to read all console msg
 ```
 
@@ -80,7 +80,8 @@ cmake --build --preset=build-msvc-debug --parallel
 # Run unit tests
 ctest --preset=test-msvc-debug --output-on-failure ## to run all tests
 ctest --preset=test-msvc-debug -R PostgresTaskRepoTest -VV ## to run single test in file
-ctest --preset=test-msvc-debug -R TaskMapperIntegration -VV ## to run all file tests
+ctest --preset=test-msvc-debug -R FactoryFallbackIntegrationTest -VV ## to run all file tests
+ctest --preset=test-msvc-debug -R P1_S2_TaskRepositoryFactoryTest -VV
 build\mingw-debug\TasqlyTestsRunner.exe --gtest_filter=PostgresTaskRepoTest.* --gtest_output=console # to read all console msg
 ```
 

@@ -119,10 +119,16 @@ TEST_F(FactoryFallbackIntegrationTest, ReturnsNullWhenFallbackDisabled)
   settings.set("DB_PASS", "bad_pass");
 
   // 🧩 Act — Attempt to create repository
-  auto repoVoid = factory.createRepository();
-
-  // 🧾 Assert — Should return nullptr (no fallback)
-  EXPECT_EQ(repoVoid, nullptr) << "Expected nullptr when fallback is disabled.";
+  // Should throw when fallback is disabled and PostgreSQL fails
+  bool exception_thrown = false;
+  try {
+    factory.createRepository();
+  } catch (const std::runtime_error& e) {
+    exception_thrown = true;
+    EXPECT_NE(std::string(e.what()).find("PostgreSQL failed with no fallback"), std::string::npos)
+        << "Expected specific error message.";
+  }
+  EXPECT_TRUE(exception_thrown) << "Expected exception when fallback is disabled.";
 
   // 🧩 Verify factory mode updated correctly
   EXPECT_EQ(factory.currentMode(), "Offline (No Repository)")

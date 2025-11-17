@@ -66,22 +66,31 @@ std::shared_ptr<ITaskRepository> P1_S2_TaskRepositoryFactory::create()
 
     if (pg->isValid()) {
       logger.info("TaskRepositoryFactory: using PostgreSQL backend");
-
-      m_currentMode = "PostgreSQL";
+      m_currentMode = "PostgreSQL (Primary)";
       m_usingFallback = false;
-
       return std::make_shared<P1_S2_DbTaskRepository>(pg.get(), &logger);
     }
 
     logger.error("PostgreSQL connection invalid");
 
     if (!fallbackEnable) {
+      logger.error("Fallback is disabled, no repository available");
+      m_currentMode = "Offline (No Repository)";
+      m_usingFallback = false;
       notifier.error("❌ PostgreSQL failed — fallback disabled");
       throw std::runtime_error("PostgreSQL failed with no fallback");
     }
 
+  } catch (const std::runtime_error&) {
+    throw;
   } catch (const std::exception& ex) {
     logger.error("PostgreSQL exception: " + std::string(ex.what()));
+    if (!fallbackEnable) {
+      logger.error("Fallback is disabled, no repository available");
+      m_currentMode = "Offline (No Repository)";
+      m_usingFallback = false;
+      throw std::runtime_error("PostgreSQL failed with no fallback");
+    }
   }
 
   // -----------------------------------------------------
@@ -90,10 +99,18 @@ std::shared_ptr<ITaskRepository> P1_S2_TaskRepositoryFactory::create()
   logger.warn("TaskRepositoryFactory: Using InMemory fallback");
   notifier.toast("⚠️ Falling back to InMemory repository");
 
-  m_currentMode = "InMemory";
+  m_currentMode = "InMemory (Fallback)";
   m_usingFallback = true;
 
   return std::make_shared<P1_S2_InMemoryTaskRepository>();
+}
+
+// ---------------------------------------------------------
+// createRepository() - Alias for integration tests
+// ---------------------------------------------------------
+std::shared_ptr<ITaskRepository> P1_S2_TaskRepositoryFactory::createRepository()
+{
+  return create();
 }
 
 // ---------------------------------------------------------
@@ -102,6 +119,14 @@ std::shared_ptr<ITaskRepository> P1_S2_TaskRepositoryFactory::create()
 std::string P1_S2_TaskRepositoryFactory::mode() const
 {
   return m_currentMode;
+}
+
+// ---------------------------------------------------------
+// currentMode() - Alias for integration tests
+// ---------------------------------------------------------
+std::string P1_S2_TaskRepositoryFactory::currentMode() const
+{
+  return mode();
 }
 
 } // namespace tasqly::p1::s2::infra::factories

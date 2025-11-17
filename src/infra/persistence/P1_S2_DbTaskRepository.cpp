@@ -10,6 +10,7 @@
 #include "infra/db/P1_S2_IDbConnection.h"
 #include "infra/runtime/P1_Error.h"
 #include "infra/runtime/P1_S2_Result.h"
+#include <cstring>
 
 // ------------------------------------------------------------
 // 🔧 FIX: aliases from correct namespace
@@ -81,17 +82,28 @@ DomainResult<Task> P1_S2_DbTaskRepository::create(const Task& task)
 
   if (task.deadline) {
     auto t = std::chrono::system_clock::to_time_t(*task.deadline);
-    sql += "'" + std::string(std::ctime(&t)) + "', ";
+    char bufDeadline[32];
+    ctime_s(bufDeadline, sizeof(bufDeadline), &t);
+    bufDeadline[strcspn(bufDeadline, "\n")] = '\0';
+    sql += "'" + std::string(bufDeadline) + "', ";
   } else {
     sql += "NULL, ";
   }
 
   {
     auto c = std::chrono::system_clock::to_time_t(task.createdAt);
-    auto u = std::chrono::system_clock::to_time_t(task.updatedAt);
+    char bufCreated[32];
+    ctime_s(bufCreated, sizeof(bufCreated), &c);
+    bufCreated[strcspn(bufCreated, "\n")] = '\0';
+    sql += "'" + std::string(bufCreated) + "', ";
+  }
 
-    sql += "'" + std::string(std::ctime(&c)) + "', ";
-    sql += "'" + std::string(std::ctime(&u)) + "'";
+  {
+    auto u = std::chrono::system_clock::to_time_t(task.updatedAt);
+    char bufUpdated[32];
+    ctime_s(bufUpdated, sizeof(bufUpdated), &u);
+    bufUpdated[strcspn(bufUpdated, "\n")] = '\0';
+    sql += "'" + std::string(bufUpdated) + "'";
   }
 
   sql += ");";
