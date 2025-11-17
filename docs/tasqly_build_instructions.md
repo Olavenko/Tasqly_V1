@@ -41,7 +41,7 @@ ctest --preset=test-mingw-debug --output-on-failure
 # Run single test in file                                                 
 ctest --preset=test-mingw-debug -R ReturnsNullWhenFallbackDisabled -VV   
 # Run all file tests
-ctest --preset=test-mingw-debug -R PostgresConnectionIntegrationTest -VV                  
+ctest --preset=test-mingw-debug -R P1_S2_Result -VV                  
 build\mingw-debug\TasqlyTestsRunner.exe --gtest_filter=PostgresTaskRepoTest.* --gtest_output=console # to read all console msg
 ```
 

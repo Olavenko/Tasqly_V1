@@ -38,15 +38,15 @@ std::string makeInsertSql(const std::string& id)
 // ------------------------------------------------------------------
 TEST_F(PostgresConnectionIntegrationTest, InsertAndSelectRoundTrip)
 {
-  P1_S2_PostgresConnection conn(testDbConnectionString(), &P1_Logger::instance());
-  ASSERT_TRUE(conn.isValid());
+  P1_S2_PostgresConnection pgconn(testDbConnectionString(), &P1_Logger::instance());
+  ASSERT_TRUE(pgconn.isValid());
 
   const std::string taskId = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeee0001";
 
-  auto insertRes = conn.execute(makeInsertSql(taskId));
+  auto insertRes = pgconn.execute(makeInsertSql(taskId));
   ASSERT_TRUE(insertRes.isOk()) << insertRes.error().message;
 
-  auto selectRes = conn.execute("SELECT id, title, status, priority FROM tasks WHERE id = '"
+  auto selectRes = pgconn.execute("SELECT id, title, status, priority FROM tasks WHERE id = '"
                                 + taskId + "';");
   ASSERT_TRUE(selectRes.isOk()) << selectRes.error().message;
 
@@ -68,9 +68,9 @@ TEST_F(PostgresConnectionIntegrationTest, InsertAndSelectRoundTrip)
 // ------------------------------------------------------------------
 TEST_F(PostgresConnectionIntegrationTest, ResetKeepsConnectionHealthy)
 {
-  P1_S2_PostgresConnection conn(testDbConnectionString(), &P1_Logger::instance());
-  ASSERT_TRUE(conn.isValid());
+  P1_S2_PostgresConnection pgconn(testDbConnectionString(), &P1_Logger::instance());
+  ASSERT_TRUE(pgconn.isValid());
 
-  EXPECT_TRUE(conn.reset());
-  EXPECT_TRUE(conn.isValid());
+  EXPECT_TRUE(pgconn.reset());
+  EXPECT_TRUE(pgconn.isValid());
 }

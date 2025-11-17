@@ -69,6 +69,7 @@ set(_test_sources
     tests/unit/runtime/test_P1_Notifier.cpp
     tests/unit/runtime/test_P1_AppSettings.cpp
     tests/unit/runtime/test_P1_Logger.cpp
+    tests/unit/runtime/test_P1_S2_Result.cpp
     tests/unit/runtime/test_P1_S2_TaskRepositoryFactoryUnit.cpp
 
 

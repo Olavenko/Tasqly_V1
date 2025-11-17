@@ -83,7 +83,11 @@ DomainResult<Task> P1_S2_DbTaskRepository::create(const Task& task)
   if (task.deadline) {
     auto t = std::chrono::system_clock::to_time_t(*task.deadline);
     char bufDeadline[32];
+#ifdef _WIN32
     ctime_s(bufDeadline, sizeof(bufDeadline), &t);
+#else
+    ctime_r(&t, bufDeadline);
+#endif
     bufDeadline[strcspn(bufDeadline, "\n")] = '\0';
     sql += "'" + std::string(bufDeadline) + "', ";
   } else {
@@ -93,7 +97,11 @@ DomainResult<Task> P1_S2_DbTaskRepository::create(const Task& task)
   {
     auto c = std::chrono::system_clock::to_time_t(task.createdAt);
     char bufCreated[32];
+#ifdef _WIN32
     ctime_s(bufCreated, sizeof(bufCreated), &c);
+#else
+    ctime_r(&c, bufCreated);
+#endif
     bufCreated[strcspn(bufCreated, "\n")] = '\0';
     sql += "'" + std::string(bufCreated) + "', ";
   }
@@ -101,7 +109,11 @@ DomainResult<Task> P1_S2_DbTaskRepository::create(const Task& task)
   {
     auto u = std::chrono::system_clock::to_time_t(task.updatedAt);
     char bufUpdated[32];
+#ifdef _WIN32
     ctime_s(bufUpdated, sizeof(bufUpdated), &u);
+#else
+    ctime_r(&u, bufUpdated);
+#endif
     bufUpdated[strcspn(bufUpdated, "\n")] = '\0';
     sql += "'" + std::string(bufUpdated) + "'";
   }
