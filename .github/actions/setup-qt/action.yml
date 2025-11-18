@@ -25,6 +25,10 @@ inputs:
     description: "Optional space separated additional Qt modules."
     required: false
     default: ""
+  aqtversion:
+    description: "Pinned aqtinstall version (pass through to jurplel/install-qt-action)."
+    required: false
+    default: "==3.1.0"
 outputs:
   qt-root:
     description: "Root directory where Qt was installed."
@@ -51,6 +55,7 @@ runs:
         arch: ${{ inputs.arch }}
         dir: ${{ inputs.dir }}
         modules: ${{ inputs.modules }}
+        aqtversion: ${{ inputs.aqtversion }}
         cache: true
     - name: Derive Qt paths (POSIX)
       id: paths
