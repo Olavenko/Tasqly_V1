@@ -1,0 +1,67 @@
+name: "Setup Coverage Tools"
+description: "Installs coverage utilities for Linux (gcov/lcov/gcovr) and Windows (OpenCppCoverage)."
+inputs:
+  mode:
+    description: "linux or windows."
+    required: false
+    default: "linux"
+  install-python-deps:
+    description: "Install Python packages pandas+plotly when true."
+    required: false
+    default: "true"
+outputs:
+  coverage-bin:
+    description: "Primary coverage executable path."
+    value: ${{ steps.capture.outputs.coverage-bin }}
+  coverage-format:
+    description: "Coverage format identifier."
+    value: ${{ steps.capture.outputs.coverage-format }}
+runs:
+  using: "composite"
+  steps:
+    - name: Install Linux coverage dependencies
+      if: inputs.mode == 'linux'
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y lcov gcovr ninja-build python3-pip
+    - name: Install Windows coverage dependencies
+      if: inputs.mode == 'windows'
+      shell: pwsh
+      run: |
+        choco install opencppcoverage --no-progress -y
+        $exe = (Get-Command OpenCppCoverage.exe -ErrorAction SilentlyContinue).Source
+        if (-not $exe) {
+          throw "OpenCppCoverage executable not found after installation."
+        }
+        (Split-Path $exe) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+    - name: Install Python coverage helpers (POSIX)
+      if: inputs.install-python-deps == 'true' && runner.os != 'Windows'
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install plotly pandas
+    - name: Install Python coverage helpers (Windows)
+      if: inputs.install-python-deps == 'true' && runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install plotly pandas
+    - name: Capture coverage metadata (Linux)
+      if: inputs.mode == 'linux'
+      id: capture
+      shell: bash
+      run: |
+        echo "coverage-bin=$(which gcovr)" >> "$GITHUB_OUTPUT"
+        echo "coverage-format=gcovr" >> "$GITHUB_OUTPUT"
+        echo "COVERAGE_TOOL=gcovr" >> "$GITHUB_ENV"
+    - name: Capture coverage metadata (Windows)
+      if: inputs.mode == 'windows'
+      id: capture
+      shell: pwsh
+      run: |
+        $exe = (Get-Command OpenCppCoverage.exe -ErrorAction SilentlyContinue).Source
+        if (-not $exe) { throw "OpenCppCoverage missing" }
+        "coverage-bin=$exe" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        "coverage-format=opencppcoverage" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        "COVERAGE_TOOL=OpenCppCoverage" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append

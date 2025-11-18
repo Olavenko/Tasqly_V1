@@ -1,0 +1,90 @@
+name: "Setup Qt"
+description: "Installs Qt via aqt and configures environment variables."
+inputs:
+  version:
+    description: "Qt version to install."
+    required: false
+    default: "6.9.2"
+  host:
+    description: "Host platform (linux, windows, mac)."
+    required: false
+    default: "linux"
+  target:
+    description: "Qt target (desktop, android, etc.)."
+    required: false
+    default: "desktop"
+  arch:
+    description: "Qt architecture directory (gcc_64, win64_msvc2022_64, win64_mingw)."
+    required: false
+    default: "gcc_64"
+  dir:
+    description: "Installation directory."
+    required: false
+    default: "${{ github.workspace }}/Qt"
+  modules:
+    description: "Optional space separated additional Qt modules."
+    required: false
+    default: ""
+outputs:
+  qt-root:
+    description: "Root directory where Qt was installed."
+    value: ${{ steps.qt.outputs.qt-dir }}
+  qt-bin:
+    description: "Qt binary directory."
+    value: ${{ steps.paths.outputs.qt-bin }}
+  cmake-prefix:
+    description: "CMake prefix path for Qt."
+    value: ${{ steps.paths.outputs.cmake-prefix }}
+  qml-path:
+    description: "Qt QML import path."
+    value: ${{ steps.paths.outputs.qml-path }}
+runs:
+  using: "composite"
+  steps:
+    - name: Install Qt
+      id: qt
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: ${{ inputs.version }}
+        host: ${{ inputs.host }}
+        target: ${{ inputs.target }}
+        arch: ${{ inputs.arch }}
+        dir: ${{ inputs.dir }}
+        modules: ${{ inputs.modules }}
+        cache: true
+    - name: Derive Qt paths (POSIX)
+      id: paths
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        qt_dir="${{ steps.qt.outputs.qt-dir }}"
+        arch="${{ inputs.arch }}"
+        bin="${qt_dir}/${arch}/bin"
+        cmake_prefix="${qt_dir}/${arch}/lib/cmake/Qt6"
+        qml_path="${qt_dir}/${arch}/qml"
+        echo "QT_ROOT=$qt_dir" >> "$GITHUB_ENV"
+        echo "$bin" >> "$GITHUB_PATH"
+        echo "CMAKE_PREFIX_PATH=$cmake_prefix" >> "$GITHUB_ENV"
+        echo "QT_PLUGIN_PATH=${qt_dir}/${arch}/plugins" >> "$GITHUB_ENV"
+        echo "QML2_IMPORT_PATH=$qml_path" >> "$GITHUB_ENV"
+        echo "qt-bin=$bin" >> "$GITHUB_OUTPUT"
+        echo "cmake-prefix=$cmake_prefix" >> "$GITHUB_OUTPUT"
+        echo "qml-path=$qml_path" >> "$GITHUB_OUTPUT"
+    - name: Derive Qt paths (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $qtDir = '${{ steps.qt.outputs.qt-dir }}'
+        $arch = '${{ inputs.arch }}'
+        $archRoot = Join-Path $qtDir $arch
+        $bin = Join-Path $archRoot 'bin'
+        $cmakePrefix = [System.IO.Path]::Combine($archRoot, 'lib', 'cmake', 'Qt6')
+        $qmlPath = Join-Path $archRoot 'qml'
+        "QT_ROOT=$qtDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        $bin | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        "CMAKE_PREFIX_PATH=$cmakePrefix" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "QT_PLUGIN_PATH=$($archRoot)/plugins" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "QML2_IMPORT_PATH=$qmlPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "qt-bin=$bin" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        "cmake-prefix=$cmakePrefix" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        "qml-path=$qmlPath" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append

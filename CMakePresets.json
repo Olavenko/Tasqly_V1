@@ -46,6 +46,31 @@
         "TASQLY_BUILD_REPORTS": "OFF"
       }
     },
+    {
+      "name": "gcc-coverage",
+      "inherits": "gcc-debug",
+      "binaryDir": "${sourceDir}/build/gcc-coverage",
+      "cacheVariables": {
+        "ENABLE_COVERAGE": "ON",
+        "TASQLY_BUILD_REPORTS": "ON"
+      }
+    },
+    {
+      "name": "gcc-sanitizers",
+      "inherits": "gcc-debug",
+      "binaryDir": "${sourceDir}/build/gcc-sanitizers",
+      "cacheVariables": {
+        "SANITIZERS": "ON"
+      }
+    },
+    {
+      "name": "clang-sanitizers",
+      "inherits": "clang-debug",
+      "binaryDir": "${sourceDir}/build/clang-sanitizers",
+      "cacheVariables": {
+        "SANITIZERS": "ON"
+      }
+    },
 
     {
       "name": "mingw-debug",
@@ -181,6 +206,9 @@
   "buildPresets": [
     { "name": "build-gcc-debug", "configurePreset": "gcc-debug" },
     { "name": "build-clang-debug", "configurePreset": "clang-debug" },
+    { "name": "build-gcc-coverage", "configurePreset": "gcc-coverage" },
+    { "name": "build-gcc-sanitizers", "configurePreset": "gcc-sanitizers" },
+    { "name": "build-clang-sanitizers", "configurePreset": "clang-sanitizers" },
 
     { "name": "build-mingw-debug", "configurePreset": "mingw-debug" },
     { "name": "build-mingw-release", "configurePreset": "mingw-release" },
@@ -207,6 +235,24 @@
     {
       "name": "test-clang-debug",
       "configurePreset": "clang-debug",
+      "output": { "outputOnFailure": true },
+      "filter": { "include": { "name": "TasqlyTests.*" } }
+    },
+    {
+      "name": "test-gcc-coverage",
+      "configurePreset": "gcc-coverage",
+      "output": { "outputOnFailure": true },
+      "filter": { "include": { "name": "TasqlyTests.*" } }
+    },
+    {
+      "name": "test-gcc-sanitizers",
+      "configurePreset": "gcc-sanitizers",
+      "output": { "outputOnFailure": true },
+      "filter": { "include": { "name": "TasqlyTests.*" } }
+    },
+    {
+      "name": "test-clang-sanitizers",
+      "configurePreset": "clang-sanitizers",
       "output": { "outputOnFailure": true },
       "filter": { "include": { "name": "TasqlyTests.*" } }
     },

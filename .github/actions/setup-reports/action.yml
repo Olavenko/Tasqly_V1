@@ -1,0 +1,58 @@
+name: "Setup Reports"
+description: "Creates report directories and exposes artifact globs."
+inputs:
+  root:
+    description: "Reports root directory."
+    required: false
+    default: "reports"
+outputs:
+  tests-pattern:
+    description: "Glob for test reports."
+    value: ${{ steps.patterns-posix.outputs.tests || steps.patterns-win.outputs.tests }}
+  benchmarks-pattern:
+    description: "Glob for benchmark reports."
+    value: ${{ steps.patterns-posix.outputs.benchmarks || steps.patterns-win.outputs.benchmarks }}
+  coverage-pattern:
+    description: "Glob for coverage reports."
+    value: ${{ steps.patterns-posix.outputs.coverage || steps.patterns-win.outputs.coverage }}
+runs:
+  using: "composite"
+  steps:
+    - name: Create directories (POSIX)
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        mkdir -p "${{ inputs.root }}/tests" "${{ inputs.root }}/benchmarks" "${{ inputs.root }}/coverage/tests"
+    - name: Create directories (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $root = '${{ inputs.root }}'
+        $paths = @(
+          (Join-Path $root 'tests'),
+          (Join-Path $root 'benchmarks'),
+          (Join-Path $root 'coverage'),
+          (Join-Path $root 'coverage\\tests')
+        )
+        foreach ($p in $paths) {
+          New-Item -ItemType Directory -Force -Path $p | Out-Null
+        }
+    - name: Export patterns (POSIX)
+      id: patterns-posix
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        tests="${{ inputs.root }}/tests/**/*"
+        benchmarks="${{ inputs.root }}/benchmarks/**/*"
+        coverage="${{ inputs.root }}/coverage/**/*"
+        echo "tests=$tests" >> "$GITHUB_OUTPUT"
+        echo "benchmarks=$benchmarks" >> "$GITHUB_OUTPUT"
+        echo "coverage=$coverage" >> "$GITHUB_OUTPUT"
+    - name: Export patterns (Windows)
+      id: patterns-win
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        "tests=${{ inputs.root }}/tests/**/*" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        "benchmarks=${{ inputs.root }}/benchmarks/**/*" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        "coverage=${{ inputs.root }}/coverage/**/*" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append

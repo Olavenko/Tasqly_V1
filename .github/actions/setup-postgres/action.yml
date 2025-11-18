@@ -1,0 +1,98 @@
+name: "Setup PostgreSQL"
+description: "Waits for the PostgreSQL service and optionally applies migrations."
+inputs:
+  enabled:
+    description: "Skip all steps when false."
+    required: false
+    default: "true"
+  host:
+    description: "PostgreSQL host."
+    required: false
+    default: "localhost"
+  port:
+    description: "PostgreSQL port."
+    required: false
+    default: "5432"
+  user:
+    description: "PostgreSQL user."
+    required: false
+    default: "postgres"
+  password:
+    description: "PostgreSQL password."
+    required: false
+    default: ""
+  database:
+    description: "Database name."
+    required: false
+    default: "tasqly_test"
+  migration-script:
+    description: "Path to SQL file executed once ready."
+    required: false
+    default: ""
+outputs:
+  connection-uri:
+    description: "psql URI for downstream steps."
+    value: postgresql://${{ inputs.user }}:${{ inputs.password }}@${{ inputs.host }}:${{ inputs.port }}/${{ inputs.database }}
+  psql-bin:
+    description: "psql binary location (Linux only)."
+    value: ${{ steps.psql-path.outputs.psql || '' }}
+runs:
+  using: "composite"
+  steps:
+    - name: Ensure PostgreSQL client
+      if: inputs.enabled == 'true' && runner.os == 'Linux'
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y postgresql-client
+        psql --version
+    - name: Export PG environment (POSIX)
+      if: inputs.enabled == 'true' && runner.os != 'Windows'
+      shell: bash
+      run: |
+        echo "PGHOST=${{ inputs.host }}" >> "$GITHUB_ENV"
+        echo "PGPORT=${{ inputs.port }}" >> "$GITHUB_ENV"
+        echo "PGUSER=${{ inputs.user }}" >> "$GITHUB_ENV"
+        echo "PGPASSWORD=${{ inputs.password }}" >> "$GITHUB_ENV"
+        echo "PGDATABASE=${{ inputs.database }}" >> "$GITHUB_ENV"
+    - name: Export PG environment (Windows)
+      if: inputs.enabled == 'true' && runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        "PGHOST=${{ inputs.host }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "PGPORT=${{ inputs.port }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "PGUSER=${{ inputs.user }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "PGPASSWORD=${{ inputs.password }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "PGDATABASE=${{ inputs.database }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+    - name: Wait for PostgreSQL
+      if: inputs.enabled == 'true' && runner.os != 'Windows'
+      shell: bash
+      run: |
+        echo "Waiting for PostgreSQL at ${{ inputs.host }}:${{ inputs.port }}..."
+        for i in {1..30}; do
+          if pg_isready -h "${{ inputs.host }}" -p "${{ inputs.port }}" -U "${{ inputs.user }}"; then
+            echo "PostgreSQL is ready."
+            exit 0
+          fi
+          echo "Retry $i..."
+          sleep 2
+        done
+        echo "PostgreSQL did not become ready in time." >&2
+        exit 1
+    - name: Apply migration
+      if: inputs.enabled == 'true' && inputs.migration-script != '' && runner.os != 'Windows'
+      shell: bash
+      env:
+        PGPASSWORD: ${{ inputs.password }}
+      run: |
+        if [ ! -f "${{ inputs.migration-script }}" ]; then
+          echo "Migration script ${{ inputs.migration-script }} missing" >&2
+          exit 1
+        fi
+        psql -h "${{ inputs.host }}" -p "${{ inputs.port }}" -U "${{ inputs.user }}" -d "${{ inputs.database }}" -f "${{ inputs.migration-script }}"
+    - name: Capture psql path
+      id: psql-path
+      if: inputs.enabled == 'true' && runner.os == 'Linux'
+      shell: bash
+      run: |
+        echo "psql=$(which psql)" >> "$GITHUB_OUTPUT"

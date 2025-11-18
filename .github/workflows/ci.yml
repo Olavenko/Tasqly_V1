@@ -72,66 +72,38 @@ jobs:
     name: Windows • MSVC 2022 • Build + Test + Reports
     runs-on: windows-2022
     needs: [secrets-scan]
+    # Windows jobs run in parallel with Linux jobs
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup MSVC Dev Command Prompt
-        uses: ilammy/msvc-dev-cmd@v1
+      - name: Setup toolchain
+        uses: ./.github/actions/setup-toolchain
         with:
-          arch: x64
+          compiler: msvc
 
-      - name: Ensure Ninja
-        shell: powershell
-        run: |
-          if (-not (Get-Command ninja -ErrorAction SilentlyContinue)) {
-            choco install ninja --no-progress -y
-          }
-          ninja --version
-
-
-      # ------------------------------------------------------------
-      # 🧩 Setup Qt 6.9.2 (MSVC)
-      # ------------------------------------------------------------
-      - name: Setup Qt 6.9.2 (MSVC)
-        uses: jurplel/install-qt-action@v3
+      - name: Setup Qt
+        uses: ./.github/actions/setup-qt
         with:
-          version: 6.9.2
           host: windows
           target: desktop
           arch: win64_msvc2022_64
-          cache: false
 
-      # ------------------------------------------------------------
-      # 🧩 Setup Python 3.13
-      # ------------------------------------------------------------
-      - name: Setup Python 3.13
-        uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: ./.github/actions/setup-python
         with:
           python-version: '3.13'
+          extra-packages: "plotly pandas"
 
-      # ------------------------------------------------------------
-      # 🧩 Install OpenCppCoverage
-      # ------------------------------------------------------------
-      - name: Install OpenCppCoverage
-        shell: powershell
-        run: |
-          choco install opencppcoverage --no-progress -y
-          $exePath = (Get-Command OpenCppCoverage.exe -ErrorAction SilentlyContinue).Source
-          if (-not $exePath) {
-            $searchDirs = @(
-              "C:\\ProgramData\\chocolatey\\bin",
-              "C:\\Program Files\\OpenCppCoverage"
-            )
-            $exePath = $searchDirs |
-              ForEach-Object { Get-ChildItem -Path $_ -Filter "OpenCppCoverage*.exe" -Recurse -ErrorAction SilentlyContinue } |
-              Select-Object -First 1 -ExpandProperty FullName
-          }
-          if (-not $exePath) {
-            throw "OpenCppCoverage executable not found after installation."
-          }
-          Write-Output " OpenCppCoverage installed at: $exePath"
-          echo (Split-Path $exePath) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Setup coverage tooling
+        uses: ./.github/actions/setup-coverage
+        with:
+          mode: windows
+          install-python-deps: "false"
+
+      - name: Prep report directories
+        id: reports
+        uses: ./.github/actions/setup-reports
 
       # ------------------------------------------------------------
       # --- Coverage (Debug) ---
@@ -149,12 +121,6 @@ jobs:
       - name: Run Tests (MSVC Debug + Coverage)
         shell: powershell
         run: ctest --test-dir build/msvc-tests-reports-debug --output-on-failure
-
-      - name: Install Python dependencies for coverage report
-        shell: powershell
-        run: |
-          pip install --upgrade pip
-          pip install plotly pandas
 
       - name: Generate Coverage Reports
         shell: powershell
@@ -190,10 +156,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Tests-Coverage-Report-MSVC
-          path: |
-            reports/tests/**/*.md
-            reports/tests/**/*.html
-            reports/tests/**/*.json
+          path: ${{ steps.reports.outputs.tests-pattern }}
 
       # ------------------------------------------------------------
       # --- Upload Benchmark Reports ---
@@ -203,10 +166,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: benchmarks-Reports-MSVC
-          path: |
-            reports/benchmarks/**/*.md
-            reports/benchmarks/**/*.html
-            reports/benchmarks/**/*.json
+          path: ${{ steps.reports.outputs.benchmarks-pattern }}
 
   # ------------------------------------------------------------
   # 🪟 Windows — MinGW (Debug only)
@@ -214,23 +174,16 @@ jobs:
   windows-mingw:
     name: Windows • MinGW • Build + Test
     runs-on: windows-latest
-    needs: [windows-msvc]
+    needs: [windows-msvc]  # Depends on MSVC build
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-  
-      - name: Setup MSYS2
-        uses: msys2/setup-msys2@v2
+
+      - name: Setup toolchain
+        uses: ./.github/actions/setup-toolchain
         with:
-          update: true
-          install: >-
-            base-devel
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-cmake
-            mingw-w64-x86_64-ninja
-            mingw-w64-x86_64-qt6-base
-            mingw-w64-x86_64-qt6-declarative
-            mingw-w64-x86_64-qt6-shadertools
+          compiler: mingw
+
       # ------------------------------------------------------------
       # 🧱 Configure Project (MinGW)
       # ------------------------------------------------------------
@@ -256,7 +209,6 @@ jobs:
         shell: msys2 {0}
         run: |
           echo "Ensuring PostgreSQL client (libpq.dll) is available..."
-          pacman -S --noconfirm mingw-w64-x86_64-postgresql
           ls /mingw64/bin | grep libpq || echo "libpq.dll still missing!"
           echo "PostgreSQL client ensured."
 
@@ -278,7 +230,7 @@ jobs:
   linux-sanitizers:
     name: Linux • Sanitizers (ASan + UBSan) • Debug
     runs-on: ubuntu-latest
-    needs: [windows-mingw]
+    needs: [secrets-scan]  # Run in parallel with Windows jobs
 
     strategy:
       fail-fast: false
@@ -289,58 +241,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ------------------------------------------------------------
-      # 🔧 Install Compiler Toolchain
-      # ------------------------------------------------------------
-      - name: Install Toolchain
-        run: |
-          sudo apt-get update
-          if [[ "${{ matrix.compiler }}" == "gcc" ]]; then
-            sudo apt-get install -y g++ gcc
-          else
-            sudo apt-get install -y clang
-          fi
+      - name: Setup toolchain
+        uses: ./.github/actions/setup-toolchain
+        with:
+          compiler: ${{ matrix.compiler }}
+          enable-sanitizers: true
+
+      - name: Setup Qt
+        uses: ./.github/actions/setup-qt
 
       # ------------------------------------------------------------
       # 🧱 Configure Project with Sanitizers
       # ------------------------------------------------------------
       - name: Configure Debug (Sanitizers)
-        run: |
-          if [[ "${{ matrix.compiler }}" == "gcc" ]]; then
-            cmake --preset=gcc-debug -DTASQLY_TEST_PHASE=Phase1 -DSANITIZERS=ON
-          else
-            cmake --preset=clang-debug -DTASQLY_TEST_PHASE=Phase1 -DSANITIZERS=ON
-          fi
-
-      # ------------------------------------------------------------
-      # 🧩 Setup Qt 6.9.2 (Linux)
-      # ------------------------------------------------------------
-      - name: Setup Qt 6.9.2
-        id: qt
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: 6.9.2
-          host: linux
-          target: desktop
-          dir: ${{ github.workspace }}/Qt
-
-      - name: Set up Qt environment
-        run: |
-          echo "QT_ROOT=${{ steps.qt.outputs.qt-dir }}" >> $GITHUB_ENV
-          echo "${{ steps.qt.outputs.qt-dir }}/gcc_64/bin" >> $GITHUB_PATH
-          echo "CMAKE_PREFIX_PATH=${{ steps.qt.outputs.qt-dir }}/gcc_64/lib/cmake/Qt6" >> $GITHUB_ENV
-
+        run: cmake --preset=${{ matrix.compiler }}-sanitizers -DTASQLY_TEST_PHASE=Phase1
 
       # ------------------------------------------------------------
       # 🏗️ Build Project
       # ------------------------------------------------------------
       - name: Build Debug
-        run: |
-          if [[ "${{ matrix.compiler }}" == "gcc" ]]; then
-            cmake --build --preset=build-gcc-debug --parallel
-          else
-            cmake --build --preset=build-clang-debug --parallel
-          fi
+        run: cmake --build --preset=build-${{ matrix.compiler }}-sanitizers --parallel
 
       # ------------------------------------------------------------
       # 🧪 Run Tests under Sanitizers
@@ -349,12 +269,7 @@ jobs:
         env:
           ASAN_OPTIONS: detect_leaks=1:strict_init_order=true
           UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=true
-        run: |
-          if [[ "${{ matrix.compiler }}" == "gcc" ]]; then
-            ctest --preset=test-gcc-debug --output-on-failure
-          else
-            ctest --preset=test-clang-debug --output-on-failure
-          fi
+        run: ctest --preset=test-${{ matrix.compiler }}-sanitizers --output-on-failure
 
       # ------------------------------------------------------------
       # 📦 Upload Sanitizer Logs
@@ -376,7 +291,7 @@ jobs:
   linux-coverage:
     name: Linux • Unified Coverage (gcov + lcov + script) • Debug
     runs-on: ubuntu-latest
-    needs: [linux-sanitizers]
+    needs: [linux-sanitizers]  # Depends on sanitizers
 
     steps:
       # ------------------------------------------------------------
@@ -385,69 +300,47 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ------------------------------------------------------------
-      # 🔧 Install coverage tools and Python dependencies
-      # ------------------------------------------------------------
-      - name: Install Coverage Tools and Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y lcov gcovr ninja-build python3 python3-pip build-essential
-          pip install --upgrade pip
-          pip install plotly pandas
-
-      # ------------------------------------------------------------
-      # 🧩 Setup Qt 6.9.2 (Linux)
-      # ------------------------------------------------------------
-      - name: Setup Qt 6.9.2
-        id: qt
-        uses: jurplel/install-qt-action@v3
+      - name: Setup toolchain
+        uses: ./.github/actions/setup-toolchain
         with:
-          version: 6.9.2
-          host: linux
-          target: desktop
-          dir: ${{ github.workspace }}/Qt
+          compiler: gcc
 
-      - name: Set up Qt environment
-        run: |
-          echo "QT_ROOT=${{ steps.qt.outputs.qt-dir }}" >> $GITHUB_ENV
-          echo "${{ steps.qt.outputs.qt-dir }}/gcc_64/bin" >> $GITHUB_PATH
-          echo "CMAKE_PREFIX_PATH=${{ steps.qt.outputs.qt-dir }}/gcc_64/lib/cmake/Qt6" >> $GITHUB_ENV
+      - name: Setup Qt
+        uses: ./.github/actions/setup-qt
+
+      - name: Setup Python
+        uses: ./.github/actions/setup-python
+        with:
+          python-version: '3.13'
+          extra-packages: "plotly pandas"
+
+      - name: Setup coverage tooling
+        uses: ./.github/actions/setup-coverage
+        with:
+          mode: linux
+          install-python-deps: "false"
+
+      - name: Prep report directories
+        id: reports
+        uses: ./.github/actions/setup-reports
 
       # ------------------------------------------------------------
       # 🧱 Configure Build (with coverage)
       # ------------------------------------------------------------
       - name: Configure Debug (Coverage)
-        run: |
-          mkdir -p build/gcc-coverage
-          cd build/gcc-coverage
-          cmake -G Ninja \
-            -DCMAKE_BUILD_TYPE=Debug \
-            -DCMAKE_CXX_COMPILER=g++ \
-            -DCMAKE_CXX_STANDARD=20 \
-            -DCMAKE_C_COMPILER=gcc \
-            -DENABLE_COVERAGE=ON \
-            -DTASQLY_TEST_PHASE=Phase1 \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-            -DTASQLY_BUILD_TESTS=ON \
-            -DTASQLY_BUILD_BENCHMARKS=OFF \
-            -DTASQLY_BUILD_REPORTS=OFF \
-            -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}" \
-            ../..
+        run: cmake --preset=gcc-coverage -DTASQLY_TEST_PHASE=Phase1
 
       # ------------------------------------------------------------
       # 🏗️ Build Tests
       # ------------------------------------------------------------
       - name: Build Tests with Coverage
-        run: |
-          cmake --build build/gcc-coverage --target TasqlyTestsRunner --parallel
+        run: cmake --build --preset=build-gcc-coverage --target TasqlyTestsRunner --parallel
 
       # ------------------------------------------------------------
       # 🧪 Run Tests with Coverage
       # ------------------------------------------------------------
       - name: Run Tests with Coverage
-        run: |
-          cd build/gcc-coverage
-          ctest --output-on-failure
+        run: ctest --preset=test-gcc-coverage --output-on-failure
 
       # ------------------------------------------------------------
       # 📊 Generate Coverage Reports
@@ -481,11 +374,11 @@ jobs:
         with:
           name: linux-coverage-artifacts
           path: |
-            reports/coverage/**
-            reports/tests/**
+            ${{ steps.reports.outputs.coverage-pattern }}
+            ${{ steps.reports.outputs.tests-pattern }}
 
       # ------------------------------------------------------------
-      # 📦 Upload Artifacts
+      # 📦 Upload Artifacts with Retention
       # ------------------------------------------------------------
       - name: Upload Test Coverage Reports (Linux)
         if: always()
@@ -493,20 +386,17 @@ jobs:
         with:
           name: Tests-Coverage-Report-Linux
           path: |
-            reports/tests/**/*.md
-            reports/tests/**/*.html
-            reports/tests/**/*.json
+            ${{ steps.reports.outputs.tests-pattern }}
             reports/coverage/tests/coverage.xml
+          retention-days: 7  # Keep for 7 days
       
       - name: Upload Benchmark Reports (Linux)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: benchmarks-Reports-Linux
-          path: |
-            reports/benchmarks/**/*.md
-            reports/benchmarks/**/*.html
-            reports/benchmarks/**/*.json
+          path: ${{ steps.reports.outputs.benchmarks-pattern }}
+          retention-days: 7  # Keep for 7 days
             
   # ------------------------------------------------------------
   # 🐧 Linux (GCC + Clang, Debug only, PostgreSQL integration)
@@ -514,7 +404,7 @@ jobs:
   linux:
     name: Linux • ${{ matrix.compiler }} • Integration + DB Tests
     runs-on: ubuntu-latest
-    needs: [linux-coverage]
+    needs: [linux-coverage]  # Final Linux job
     strategy:
       fail-fast: false
       matrix:
@@ -539,78 +429,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ------------------------------------------------------------
-      # 🧩 Dependencies
-      # ------------------------------------------------------------
-      - name: Install build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends build-essential ninja-build clang python3-pip libpq-dev
-          cmake --version
-          ninja --version
-
-      - name: Wait for PostgreSQL
-        run: |
-          echo "Waiting for PostgreSQL to be ready..."
-          for i in {1..20}; do
-            pg_isready -h localhost -p 5432 -U postgres && break
-            echo "Waiting..."; sleep 2
-          done
-          echo "PostgreSQL is ready."
-
-      - name: Show PostgreSQL Environment
-        run: |
-          printenv | grep PG || true
-
-      # ------------------------------------------------------------
-      # 🧩 Initialize Schema (migration)
-      # ------------------------------------------------------------
-      - name: Initialize PostgreSQL Schema
-        env:
-          PGPASSWORD: themyth2060
-        run: |
-          echo "Applying migration schema to tasqly_test..."
-          psql -h localhost -U postgres -d tasqly_test -f src/infra/migrations/P1_S2_create_tasks.sql
-          echo "Schema applied successfully."
-
-      # ------------------------------------------------------------
-      # 🧩 Setup Qt
-      # ------------------------------------------------------------
-      - name: Setup Qt 6.9.2
-        id: qt
-        uses: jurplel/install-qt-action@v3
+      - name: Setup toolchain
+        uses: ./.github/actions/setup-toolchain
         with:
-          version: 6.9.2
-          host: linux
-          target: desktop
-          cache: false
-          dir: ${{ github.workspace }}/Qt
-          
-      - name: Set up Qt environment
-        run: |
-          echo "QT_ROOT=${{ steps.qt.outputs.qt-dir }}" >> $GITHUB_ENV
-          echo "${{ steps.qt.outputs.qt-dir }}/gcc_64/bin" >> $GITHUB_PATH
-          echo "CMAKE_PREFIX_PATH=${{ steps.qt.outputs.qt-dir }}/gcc_64/lib/cmake/Qt6" >> $GITHUB_ENV
+          compiler: ${{ matrix.compiler }}
+
+      - name: Setup Qt
+        uses: ./.github/actions/setup-qt
+
+      - name: Setup PostgreSQL
+        uses: ./.github/actions/setup-postgres
+        with:
+          password: themyth2060
+          migration-script: src/infra/migrations/P1_S2_create_tasks.sql
 
       # ------------------------------------------------------------
       # 🧪 Build & Test
       # ------------------------------------------------------------
       - name: Configure Debug (${{ matrix.compiler }})
-        run: |
-          rm -rf build/${{ matrix.compiler }}-debug
-          if [ "${{ matrix.compiler }}" = "gcc" ]; then
-            cmake --preset=gcc-debug -DTASQLY_TEST_PHASE=Phase1 -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
-          else
-            cmake --preset=clang-debug -DTASQLY_TEST_PHASE=Phase1 -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
-          fi
+        run: cmake --preset=${{ matrix.compiler }}-debug -DTASQLY_TEST_PHASE=Phase1
 
       - name: Build Debug (${{ matrix.compiler }})
-        run: |
-          if [ "${{ matrix.compiler }}" = "gcc" ]; then
-            cmake --build --preset=build-gcc-debug --parallel
-          else
-            cmake --build --preset=build-clang-debug --parallel
-          fi
+        run: cmake --build --preset=build-${{ matrix.compiler }}-debug --parallel
 
       # ✅ Run ALL tests (unit + integration + postgres)
       - name: Run PostgreSQL Integration Tests (${{ matrix.compiler }})
@@ -622,8 +462,4 @@ jobs:
           PGDATABASE: tasqly_test
         run: |
           echo "Running PostgreSQL Integration Tests..."
-          if [ "${{ matrix.compiler }}" = "gcc" ]; then
-            ctest --preset=test-gcc-debug --output-on-failure 
-          else
-            ctest --preset=test-clang-debug --output-on-failure
-          fi
+          ctest --preset=test-${{ matrix.compiler }}-debug --output-on-failure
