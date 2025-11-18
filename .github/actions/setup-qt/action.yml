@@ -130,17 +130,18 @@ runs:
         if [ "${{ inputs.arch }}" = "win64_mingw" ]; then
           qt_dir="/mingw64"
         else
-          primary="${{ steps.qt-primary.outputs.qt-dir }}"
-          fallback="${{ steps.qt-fallback.outputs.qt-dir }}"
-          qt_dir="${primary:-$fallback}"
+          qt_dir="${Qt6_DIR:-${Qt5_DIR:-${QT_ROOT_DIR:-}}}"
         fi
 
         if [ -z "$qt_dir" ]; then
           echo "::error::Qt installation path not detected."
+          echo "Available ENV:"
+          env | grep -i qt || true
           exit 1
         fi
 
         echo "qt-dir=$qt_dir" >> "$GITHUB_OUTPUT"
+        echo ">>> Resolved Qt Root: $qt_dir"
 
     # ================================
     # 🐧 POSIX Path Derivation
