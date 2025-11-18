@@ -1,0 +1,64 @@
+# 🧱 File: .github/workflows/ci/_main.yml
+# ---------------------------------
+# 📌 Purpose   : Main CI workflow that orchestrates all other workflows
+# 🧱 Layer     : CI/CD (GitHub Actions)
+# 👤 Author    : Tasqly AI Assistant
+# 📅 Created   : 2025-11-18
+# 🗓️ Updated   : 2025-11-18
+# 📝 Version   : 1.0.0
+#
+# 🧠 Description:
+# - Coordinates the execution of all CI/CD workflows in the correct sequence
+# - Manages dependencies between different jobs
+# - Passes necessary parameters to child workflows
+#
+# 🔗 Depends On:
+#   - All workflow files in .github/workflows/ci/
+# 🔗 Related   : 
+#   - .github/workflows/ci/linting.yml
+#   - .github/workflows/ci/security.yml
+#   - .github/workflows/ci/windows-*.yml
+#   - .github/workflows/ci/linux.yml
+# ✅ Tested In : GitHub Actions
+# ⚠️ Errors    : Fails fast if any dependent workflow fails
+# ⚡ Performance: Optimized for parallel execution where possible
+# 🔒 Security  : Uses GitHub's built-in secret management
+
+name: CI Pipeline
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Linting and code quality checks
+  linting:
+    uses: ./.github/workflows/ci/linting.yml
+
+  # Security scans
+  security:
+    needs: linting
+    uses: ./.github/workflows/ci/security.yml
+
+  # Windows MSVC build and test
+  windows-msvc:
+    needs: security
+    uses: ./.github/workflows/ci/windows-msvc.yml
+
+  # Windows MinGW build and test
+  windows-mingw:
+    needs: windows-msvc
+    uses: ./.github/workflows/ci/windows-mingw.yml
+
+  # Linux builds and tests (GCC/Clang)
+  linux:
+    needs: windows-mingw
+    uses: ./.github/workflows/ci/linux.yml
+    with:
+      postgres-password: themyth2060
