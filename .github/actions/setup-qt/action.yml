@@ -29,24 +29,29 @@ inputs:
     description: "Pinned aqtinstall version (pass through to jurplel/install-qt-action)."
     required: false
     default: "==3.1.0"
+  fallback-version:
+    description: "Version to install if the primary version is unavailable."
+    required: false
+    default: "6.8.0"
 outputs:
   qt-root:
     description: "Root directory where Qt was installed."
-    value: ${{ steps.qt.outputs.qt-dir }}
+    value: ${{ steps.resolved.outputs.qt-dir }}
   qt-bin:
     description: "Qt binary directory."
-    value: ${{ steps.paths.outputs.qt-bin }}
+    value: ${{ steps.paths.outputs.qt-bin || steps.paths-win.outputs.qt-bin }}
   cmake-prefix:
     description: "CMake prefix path for Qt."
-    value: ${{ steps.paths.outputs.cmake-prefix }}
+    value: ${{ steps.paths.outputs.cmake-prefix || steps.paths-win.outputs.cmake-prefix }}
   qml-path:
     description: "Qt QML import path."
-    value: ${{ steps.paths.outputs.qml-path }}
+    value: ${{ steps.paths.outputs.qml-path || steps.paths-win.outputs.qml-path }}
 runs:
   using: "composite"
   steps:
     - name: Install Qt
-      id: qt
+      id: qt-primary
+      continue-on-error: true
       uses: jurplel/install-qt-action@v3
       with:
         version: ${{ inputs.version }}
@@ -57,12 +62,32 @@ runs:
         modules: ${{ inputs.modules }}
         aqtversion: ${{ inputs.aqtversion }}
         cache: true
-    - name: Derive Qt paths (POSIX)
-      id: paths
-      if: runner.os != 'Windows'
+    - name: Install Qt (fallback)
+      id: qt-fallback
+      if: steps.qt-primary.outcome != 'success'
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: ${{ inputs.fallback-version }}
+        host: ${{ inputs.host }}
+        target: ${{ inputs.target }}
+        arch: ${{ inputs.arch }}
+        dir: ${{ inputs.dir }}
+        modules: ${{ inputs.modules }}
+        aqtversion: ${{ inputs.aqtversion }}
+        cache: true
+    - name: Verify Qt installation
+      if: steps.qt-primary.outcome != 'success' && steps.qt-fallback.outcome != 'success'
       shell: bash
       run: |
-        qt_dir="${{ steps.qt.outputs.qt-dir }}"
+        echo "::error::Failed to install Qt version '${{ inputs.version }}' and fallback '${{ inputs.fallback-version }}'." >&2
+        exit 1
+    - name: Resolve Qt root
+      id: resolved
+      shell: bash
+      run: |
+        primary="${{ steps.qt-primary.outputs.qt-dir }}"
+        fallback="${{ steps.qt-fallback.outputs.qt-dir }}"
+        qt_dir="${primary:-$fallback}"
         if [ -z "$qt_dir" ]; then
           qt_dir="${QT_ROOT_DIR:-${Qt6_DIR:-${Qt5_DIR:-}}}"
         fi
@@ -70,6 +95,15 @@ runs:
           echo "::error::Qt install path not reported by install-qt-action" >&2
           exit 1
         fi
+        echo "qt-dir=$qt_dir" >> "$GITHUB_OUTPUT"
+    - name: Derive Qt paths (POSIX)
+      id: paths
+      if: runner.os != 'Windows'
+      shell: bash
+      env:
+        QT_DIR: ${{ steps.resolved.outputs.qt-dir }}
+      run: |
+        qt_dir="${QT_DIR}"
         arch="${{ inputs.arch }}"
         bin="${qt_dir}/${arch}/bin"
         cmake_prefix="${qt_dir}/${arch}/lib/cmake/Qt6"
@@ -83,16 +117,13 @@ runs:
         echo "cmake-prefix=$cmake_prefix" >> "$GITHUB_OUTPUT"
         echo "qml-path=$qml_path" >> "$GITHUB_OUTPUT"
     - name: Derive Qt paths (Windows)
+      id: paths-win
       if: runner.os == 'Windows'
       shell: pwsh
+      env:
+        QT_DIR: ${{ steps.resolved.outputs.qt-dir }}
       run: |
-        $qtDir = '${{ steps.qt.outputs.qt-dir }}'
-        if (-not $qtDir) {
-          $qtDir = $env:QT_ROOT_DIR
-        }
-        if (-not $qtDir) {
-          throw "Qt install path not reported by install-qt-action"
-        }
+        $qtDir = $env:QT_DIR
         $arch = '${{ inputs.arch }}'
         $archRoot = Join-Path $qtDir $arch
         $bin = Join-Path $archRoot 'bin'
@@ -104,6 +135,9 @@ runs:
         $pluginPath = Join-Path $archRoot 'plugins'
         "QT_PLUGIN_PATH=$pluginPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         "QML2_IMPORT_PATH=$qmlPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "qt-bin=$bin" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        "cmake-prefix=$cmakePrefix" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        "qml-path=$qmlPath" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
         "qt-bin=$bin" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
         "cmake-prefix=$cmakePrefix" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
         "qml-path=$qmlPath" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append

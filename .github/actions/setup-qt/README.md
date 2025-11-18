@@ -8,6 +8,7 @@ Installs Qt with [`jurplel/install-qt-action`](https://github.com/jurplel/instal
 - `dir` — installation root inside the workspace (default `./Qt`).
 - `modules` — optional modules list (`qtshadertools qtimageformats …`).
 - `aqtversion` — pin for the underlying `aqtinstall` version (default `==3.1.0` to avoid current upstream regressions).
+- `fallback-version` — backup Qt version (default `6.8.0`) that will be installed automatically if the requested version is unavailable.
 
 ## Outputs
 - `qt-root` — installation directory returned by Aqt.
