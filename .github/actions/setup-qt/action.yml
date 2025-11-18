@@ -33,6 +33,7 @@ inputs:
     description: "Version to install if the primary version is unavailable."
     required: false
     default: "6.8.0"
+
 outputs:
   qt-root:
     description: "Root directory where Qt was installed."
@@ -46,9 +47,26 @@ outputs:
   qml-path:
     description: "Qt QML import path."
     value: ${{ steps.paths.outputs.qml-path || steps.paths-win.outputs.qml-path }}
+
 runs:
   using: "composite"
   steps:
+
+    # ========================
+    # 🔍 DEBUG INPUTS ADDED HERE
+    # ========================
+    - name: DEBUG INPUTS
+      shell: bash
+      run: |
+        echo ">>> version = '${{ inputs.version }}'"
+        echo ">>> host    = '${{ inputs.host }}'"
+        echo ">>> target  = '${{ inputs.target }}'"
+        echo ">>> arch    = '${{ inputs.arch }}'"
+        echo ">>> dir     = '${{ inputs.dir }}'"
+        echo ">>> modules = '${{ inputs.modules }}'"
+        echo ">>> aqtver  = '${{ inputs.aqtversion }}'"
+        echo ">>> fallback= '${{ inputs['fallback-version'] }}'"
+
     - name: Install Qt
       id: qt-primary
       continue-on-error: true
@@ -62,6 +80,7 @@ runs:
         modules: ${{ inputs.modules }}
         aqtversion: ${{ inputs.aqtversion }}
         cache: true
+
     - name: Install Qt (fallback)
       id: qt-fallback
       if: steps.qt-primary.outcome != 'success'
@@ -75,12 +94,14 @@ runs:
         modules: ${{ inputs.modules }}
         aqtversion: ${{ inputs.aqtversion }}
         cache: true
+
     - name: Verify Qt installation
       if: steps.qt-primary.outcome != 'success' && steps.qt-fallback.outcome != 'success'
       shell: bash
       run: |
         echo "::error::Failed to install Qt version '${{ inputs.version }}' and fallback '${{ inputs.fallback-version }}'." >&2
         exit 1
+
     - name: Resolve Qt root
       id: resolved
       shell: bash
@@ -96,6 +117,7 @@ runs:
           exit 1
         fi
         echo "qt-dir=$qt_dir" >> "$GITHUB_OUTPUT"
+
     - name: Derive Qt paths (POSIX)
       id: paths
       if: runner.os != 'Windows'
@@ -116,6 +138,7 @@ runs:
         echo "qt-bin=$bin" >> "$GITHUB_OUTPUT"
         echo "cmake-prefix=$cmake_prefix" >> "$GITHUB_OUTPUT"
         echo "qml-path=$qml_path" >> "$GITHUB_OUTPUT"
+
     - name: Derive Qt paths (Windows)
       id: paths-win
       if: runner.os == 'Windows'
