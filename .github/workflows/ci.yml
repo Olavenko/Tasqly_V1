@@ -49,6 +49,7 @@ jobs:
     name: Lint • Clang-Format
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/clang-format-check
 
   # ------------------------------------------------------------
@@ -58,6 +59,7 @@ jobs:
     name: Security • Git-Secrets
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/secrets-scan
 
   # ------------------------------------------------------------
@@ -68,6 +70,7 @@ jobs:
     runs-on: windows-2022
     needs: secrets-scan
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/windows-msvc
 
   # ------------------------------------------------------------
@@ -78,6 +81,7 @@ jobs:
     runs-on: windows-latest
     needs: windows-msvc
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/windows-mingw
       
   # ------------------------------------------------------------
@@ -104,6 +108,7 @@ jobs:
           --health-start-period=10s
 
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/linux
         with:
           compiler: gcc
@@ -132,6 +137,7 @@ jobs:
           --health-start-period=10s
 
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/linux
         with:
           compiler: clang
