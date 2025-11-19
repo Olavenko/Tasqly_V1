@@ -1,0 +1,82 @@
+name: "Linux Sanitizers (GCC + Clang)"
+description: "Run ASan/UBSan builds and tests on Linux using GCC/Clang"
+
+inputs:
+  compiler:
+    description: "Compiler to use (gcc or clang)"
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    #---------------------------
+    # 1) Checkout
+    #---------------------------
+    - name: Checkout
+      uses: actions/checkout@v4
+    
+    #---------------------------
+    # 2) Install deps (no Qt)
+    #---------------------------
+    - name: Install build dependencies
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends \
+          build-essential ninja-build clang libpq-dev
+    
+    #---------------------------
+    # 3) Wait for PostgreSQL
+    #---------------------------
+    - name: Wait for PostgreSQL
+      shell: bash
+      run: |
+        for i in {1..20}; do
+          pg_isready -h localhost -p 5432 -U postgres && break
+          echo "Waiting for PostgreSQL..."
+          sleep 2
+        done
+        echo "PostgreSQL is ready."
+    
+    #--------------------------------
+    # 4) Configure Sanitizers Build
+    #--------------------------------
+    - name: Configure Sanitizers (${{ inputs.compiler }})
+      shell: bash
+      run: |
+        if [ "${{ inputs.compiler }}" = "gcc" ]; then
+          cmake --preset=gcc-sanitizers -DTASQLY_TEST_PHASE=Phase1
+        else
+          cmake --preset=clang-sanitizers -DTASQLY_TEST_PHASE=Phase1
+        fi
+
+    #---------------------------
+    # 5) Build
+    #---------------------------
+    - name: Build Sanitizers (${{ inputs.compiler }})
+      shell: bash
+      run: |
+        if [ "${{ inputs.compiler }}" = "gcc" ]; then
+          cmake --build --preset=build-gcc-sanitizers --parallel
+        else
+          cmake --build --preset=build-clang-sanitizers --parallel
+        fi
+
+    #---------------------------
+    # 6) Run Tests
+    #---------------------------
+    - name: Run Sanitizers Tests (${{ inputs.compiler }})
+      shell: bash
+      env:
+        PGHOST: localhost
+        PGPORT: 5432
+        PGUSER: postgres
+        PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        PGDATABASE: tasqly_test
+      run: |
+        if [ "${{ inputs.compiler }}" = "gcc" ]; then
+          ctest --preset=test-gcc-sanitizers --output-on-failure
+        else
+          ctest --preset=test-clang-sanitizers --output-on-failure
+        fi
