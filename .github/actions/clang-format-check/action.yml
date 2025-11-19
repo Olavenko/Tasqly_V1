@@ -1,0 +1,64 @@
+# 🧱 File: .github/actions/clang-format-check/action.yml
+# -----------------------------------------------------
+# 📌 Purpose      : Run clang-format-20 to validate C++ code style
+# 🧱 Layer        : CI/CD → Linting (Composite Action)
+# 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Created      : 2025-11-03
+# 🗓️ Updated      : 2025-11-XX
+# 📝 Version      : 1.1.0
+#
+# 🧠 Description:
+#   This composite action performs automated formatting validation for the
+#   Tasqly codebase using clang-format-20. It ensures consistent style
+#   across the entire project and runs as part of the pre-check CI stage.
+#
+# Key Features:
+#   • Runs clang-format-20 on Ubuntu (latest).
+#   • Ensures formatting rules match the project's style guidelines.
+#   • Fast, isolated, and fully reusable across all CI workflows.
+#
+# 🚀 Notes:
+#   • Designed to be used inside main CI (ci.yml)
+#   • Contains no build logic — strictly linting only
+
+name: "Clang Format Check"
+description: "Run clang-format-20 to verify code style"
+
+runs:
+  using: "composite"
+  steps:
+
+    # ---------------------------------------
+    # 1) Checkout repository
+    #    Retrieves the latest source code so
+    #    the formatter can validate all files.
+    # ---------------------------------------
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # ---------------------------------------
+    # 2) Install clang-format-20
+    #    Adds the LLVM apt repository and installs
+    #    the exact clang-format version required
+    #    by Tasqly's formatting rules.
+    # ---------------------------------------
+    - name: Install clang-format-20
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget lsb-release gnupg
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh 20
+        sudo apt-get install -y clang-format-20
+
+    # ---------------------------------------
+    # 3) Validate code formatting
+    #    Runs the project’s custom script to ensure
+    #    every file matches the required style.
+    #    CI fails if formatting does not conform.
+    # ---------------------------------------
+    - name: Check formatting
+      shell: bash
+      run: ./scripts/check-format.sh
+

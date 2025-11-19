@@ -1,30 +1,35 @@
-# 🧱 File: .github/workflows/ci/_main.yml
+# 🧱 File: .github/workflows/ci.yml
 # ---------------------------------
-# 📌 Purpose   : Main CI workflow that orchestrates all other workflows
-# 🧱 Layer     : CI/CD (GitHub Actions)
-# 👤 Author    : Tasqly AI Assistant
-# 📅 Created   : 2025-11-18
-# 🗓️ Updated   : 2025-11-18
-# 📝 Version   : 1.0.0
+# 📌 Purpose      : High-Performance Modular CI Pipeline for Tasqly
+# 🧱 Layer        : CI/CD (GitHub Actions)
+# 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Created      : 2025-10-26
+# 🗓️ Refactored   : 2025-11-03
+# 🧪 Optimized     : 2025-11-XX
+# 📝 Version      : 2.0.0
 #
 # 🧠 Description:
-# - Coordinates the execution of all CI/CD workflows in the correct sequence
-# - Manages dependencies between different jobs
-# - Passes necessary parameters to child workflows
+# This pipeline is a fully-modular, composite-action-driven CI system designed for
+# maximum performance, maintainability, and cross-platform consistency.
 #
-# 🔗 Depends On:
-#   - All workflow files in .github/workflows/ci/
-# 🔗 Related   : 
-#   - .github/workflows/ci/linting.yml
-#   - .github/workflows/ci/security.yml
-#   - .github/workflows/ci/windows-*.yml
-#   - .github/workflows/ci/linux.yml
-# ✅ Tested In : GitHub Actions
-# ⚠️ Errors    : Fails fast if any dependent workflow fails
-# ⚡ Performance: Optimized for parallel execution where possible
-# 🔒 Security  : Uses GitHub's built-in secret management
+# Key Features:
+#   • Modular architecture using Composite Actions (Windows / Linux / Tools).
+#   • Parallelized pre-check stages (Clang-Format + Git-Secrets).
+#   • Optimized Windows build flow (MSVC → MinGW).
+#   • Split Linux jobs (GCC + Clang) for true multi-VM parallel execution.
+#   • Dedicated PostgreSQL service for integration testing.
+#   • Clean YAML surface—jobs reduced to single-line references.
+#   • Faster, more stable, and highly maintainable CI design.
+#
+# ⚙️ Target Platforms:
+#   • Ubuntu (GCC / Clang / PostgreSQL)
+#   • Windows Server (MSVC 2022, MinGW via MSYS2)
+#
+# 🚀 Notes:
+#   • All heavy logic lives inside modular actions under .github/actions/
+#   • This is the official high-performance CI design for Tasqly ≥ v2.0
 
-name: CI Pipeline
+name: ci
 
 on:
   push:
@@ -37,28 +42,96 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Linting and code quality checks
-  linting:
-    uses: ./.github/workflows/ci/linting.yml
+  # ------------------------------------------------------------
+  # 📝 Lint — clang-format
+  # ------------------------------------------------------------
+  clang-format-check:
+    name: Lint • Clang-Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/clang-format-check
 
-  # Security scans
-  security:
-    needs: linting
-    uses: ./.github/workflows/ci/security.yml
+  # ------------------------------------------------------------
+  # 🔒 Security — git-secrets
+  # ------------------------------------------------------------
+  secrets-scan:
+    name: Security • Git-Secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/secrets-scan
 
-  # Windows MSVC build and test
+  # ------------------------------------------------------------
+  # 🪟 Windows — MSVC 2022 (coverage + benchmarks)
+  # ------------------------------------------------------------
   windows-msvc:
-    needs: security
-    uses: ./.github/workflows/ci/windows-msvc.yml
+    name: Windows • MSVC 2022 • Build + Test + Reports
+    runs-on: windows-2022
+    needs: secrets-scan
+    steps:
+      - uses: ./.github/actions/windows-msvc
 
-  # Windows MinGW build and test
+  # ------------------------------------------------------------
+  # 🪟 Windows — MinGW (Debug only)
+  # ------------------------------------------------------------
   windows-mingw:
+    name: Windows • MinGW • Build + Test
+    runs-on: windows-latest
     needs: windows-msvc
-    uses: ./.github/workflows/ci/windows-mingw.yml
-
-  # Linux builds and tests (GCC/Clang)
-  linux:
+    steps:
+      - uses: ./.github/actions/windows-mingw
+      
+  # ------------------------------------------------------------
+  # 🐧 Linux GCC — Debug + PostgreSQL Integration
+  # ------------------------------------------------------------
+  linux-gcc:
+    name: Linux • GCC • Integration + DB Tests
+    runs-on: ubuntu-latest
     needs: windows-mingw
-    uses: ./.github/workflows/ci/linux.yml
-    with:
-      postgres-password: themyth2060
+
+    services:
+      postgres:
+        image: postgres:17
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: themyth2060
+          POSTGRES_DB: tasqly_test
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+          --health-start-period=10s
+
+    steps:
+      - uses: ./.github/actions/linux
+        with:
+          compiler: gcc
+
+  # ------------------------------------------------------------
+  # 🐧 Linux Clang — Debug + PostgreSQL Integration
+  # ------------------------------------------------------------
+  linux-clang:
+    name: Linux • Clang • Integration + DB Tests
+    runs-on: ubuntu-latest
+    needs: windows-mingw
+
+    services:
+      postgres:
+        image: postgres:17
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: themyth2060
+          POSTGRES_DB: tasqly_test
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+          --health-start-period=10s
+
+    steps:
+      - uses: ./.github/actions/linux
+        with:
+          compiler: clang

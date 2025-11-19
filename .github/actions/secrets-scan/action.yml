@@ -1,0 +1,61 @@
+# 🧱 File: .github/actions/secrets-scan/action.yml
+# --------------------------------------------------------------
+# 📌 Purpose      : Scan the repository for secrets using AWS git-secrets
+# 🧱 Layer        : CI/CD → Security (Composite Action)
+# 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Created      : 2025-11-03
+# 🗓️ Updated      : 2025-11-XX
+# 📝 Version      : 1.1.0
+#
+# 🧠 Description:
+#   This composite action runs a full git-secrets scan to ensure the repository
+#   does not contain accidentally committed credentials or sensitive strings.
+#   It is executed early in the CI pipeline as a security gate.
+#
+# Key Features:
+#   • Installs and configures git-secrets (AWS Labs)
+#   • Runs a repository-wide secret detection scan
+#   • Fast, clean, and reusable across all workflows
+#
+# 🚀 Notes:
+#   • Recommended to run after lint checks
+#   • No dependencies on build or platform-specific tools
+#   • Designed as a standalone CI security module
+
+name: "Git Secrets Scan"
+description: "Scan source code for secrets using aws git-secrets"
+
+runs:
+  using: "composite"
+  steps:
+
+    # ---------------------------------------
+    # 1) Checkout repository content
+    #    Ensures the latest commit is available
+    #    for scanning before the security checks run.
+    # ---------------------------------------
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # ---------------------------------------
+    # 2) Install git-secrets (AWS Labs)
+    #    Downloads, compiles, and installs the tool
+    #    that performs secret-pattern scanning.
+    # ---------------------------------------
+    - name: Install git-secrets
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git
+        git clone https://github.com/awslabs/git-secrets.git
+        cd git-secrets && sudo make install
+
+    # ---------------------------------------
+    # 3) Run repository-wide secret detection
+    #    Scans the entire project for leaked keys,
+    #    tokens, or sensitive credentials.
+    # ---------------------------------------
+    - name: Run secrets scan
+      shell: bash
+      run: git secrets --scan
+

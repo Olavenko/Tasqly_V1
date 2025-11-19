@@ -1,0 +1,202 @@
+# 🧱 File: .github/actions/windows-msvc/action.yml
+# ---------------------------------------------------------------------------
+# 📌 Purpose      : Build, Test, Coverage, and Benchmarking using MSVC 2022
+# 🧱 Layer        : CI/CD → Windows Build Pipeline (Composite Action)
+# 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Created      : 2025-11-03
+# 🗓️ Updated      : 2025-11-XX
+# 📝 Version      : 1.1.0
+#
+# 🧠 Description:
+#   This composite action performs the complete MSVC build and verification
+#   pipeline for Tasqly, including:
+#     • Setting up MSVC 2022 developer environment
+#     • Provisioning Qt 6.9.2 (MSVC toolchain)
+#     • Running coverage-enabled Debug builds
+#     • Executing unit tests and generating coverage reports
+#     • Running Release-mode benchmarks
+#     • Uploading all HTML/JSON/MD result artifacts
+#
+#   It represents the primary Windows CI stage, ensuring high-quality
+#   validation across both development (Debug) and performance (Release)
+#   configurations.
+#
+# Key Features:
+#   • Full MSVC initialization (via ilammy/msvc-dev-cmd)
+#   • Debug build with coverage and unit testing
+#   • Release build for performance benchmarking
+#   • Automated Python environment for report generation
+#   • Artifact uploads for CI insights & dashboards
+#
+# 🚀 Notes:
+#   • This action is intentionally comprehensive (build → test → reports)
+#   • Invoked early in the main CI sequence before MinGW & Linux stages
+#   • Mirrors the original workflow structure with zero behavioral changes
+
+name: "Windows MSVC Build and Test"
+description: "Build, test, coverage, and benchmarks using MSVC 2022"
+
+runs:
+  using: "composite"
+  steps:
+
+    # ---------------------------------------
+    # 1) Checkout
+    # ---------------------------------------
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # ---------------------------------------
+    # 2) Setup MSVC Dev Environment
+    # ---------------------------------------
+    - name: Setup MSVC Dev Command Prompt
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+
+    # ---------------------------------------
+    # 3) Ensure Ninja
+    # ---------------------------------------
+    - name: Ensure Ninja
+      shell: powershell
+      run: |
+        if (-not (Get-Command ninja -ErrorAction SilentlyContinue)) {
+          choco install ninja --no-progress -y
+        }
+        ninja --version
+
+    # ---------------------------------------
+    # 4) Setup Qt 6.9.2
+    # ---------------------------------------
+    - name: Setup Qt 6.9.2 (MSVC)
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: 6.9.2
+        host: windows
+        target: desktop
+        arch: win64_msvc2022_64
+        cache: false
+
+    # ---------------------------------------
+    # 5) Setup Python 3.13
+    # ---------------------------------------
+    - name: Setup Python 3.13
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+
+    # ---------------------------------------
+    # 6) Install OpenCppCoverage
+    # ---------------------------------------
+    - name: Install OpenCppCoverage
+      shell: powershell
+      run: |
+        choco install opencppcoverage --no-progress -y
+        $exePath = (Get-Command OpenCppCoverage.exe -ErrorAction SilentlyContinue).Source
+        if (-not $exePath) {
+          $searchDirs = @(
+            "C:\\ProgramData\\chocolatey\\bin",
+            "C:\\Program Files\\OpenCppCoverage"
+          )
+          $exePath = $searchDirs |
+            ForEach-Object { Get-ChildItem -Path $_ -Filter "OpenCppCoverage*.exe" -Recurse -ErrorAction SilentlyContinue } |
+            Select-Object -First 1 -ExpandProperty FullName
+        }
+        if (-not $exePath) {
+          throw "OpenCppCoverage executable not found after installation."
+        }
+        Write-Output "OpenCppCoverage installed at: $exePath"
+        echo (Split-Path $exePath) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+    # ---------------------------------------
+    # 7) Configure Debug (Coverage)
+    # ---------------------------------------
+    - name: Configure Debug (MSVC Coverage)
+      shell: powershell
+      run: |
+        if (Test-Path build/msvc-tests-reports-debug) { Remove-Item -Recurse -Force build/msvc-tests-reports-debug }
+        cmake --preset=msvc-tests-reports-debug -DENABLE_COVERAGE=ON -DTASQLY_TEST_PHASE=Phase1
+
+    # ---------------------------------------
+    # 8) Build Debug (Coverage)
+    # ---------------------------------------
+    - name: Build Debug (MSVC Coverage)
+      shell: powershell
+      run: cmake --build --preset=build-msvc-tests-reports-debug --target coverage_tests --parallel
+
+    # ---------------------------------------
+    # 9) Run Tests Debug + Coverage
+    # ---------------------------------------
+    - name: Run Tests (MSVC Debug + Coverage)
+      shell: powershell
+      run: ctest --test-dir build/msvc-tests-reports-debug --output-on-failure
+
+    # ---------------------------------------
+    # 10) Install Python deps for coverage
+    # ---------------------------------------
+    - name: Install Python dependencies for coverage report
+      shell: powershell
+      run: |
+        pip install --upgrade pip
+        pip install plotly pandas
+
+    # ---------------------------------------
+    # 11) Generate Coverage Reports
+    # ---------------------------------------
+    - name: Generate Coverage Reports
+      shell: powershell
+      run: |
+        python scripts/coverage_report_updated.py reports/coverage/tests/coverage.xml all --archive Phase1
+
+    # ---------------------------------------
+    # 12) Configure Release (Benchmarks)
+    # ---------------------------------------
+    - name: Configure Release (MSVC Benchmarks)
+      shell: powershell
+      run: |
+        if (Test-Path build/msvc-benchmarks-release) { Remove-Item -Recurse -Force build/msvc-benchmarks-release }
+        cmake --preset=msvc-benchmarks-release -DTASQLY_BENCHMARK_PHASE=Phase1
+
+    # ---------------------------------------
+    # 13) Build Release (Benchmarks)
+    # ---------------------------------------
+    - name: Build Release (MSVC Benchmarks)
+      shell: powershell
+      run: cmake --build --preset=build-msvc-benchmarks-release --parallel
+
+    # ---------------------------------------
+    # 14) Run Benchmarks
+    # ---------------------------------------
+    - name: Run Benchmarks
+      shell: powershell
+      env:
+        QT_QPA_PLATFORM: offscreen
+        QSG_RHI_BACKEND: software
+      run: |
+        python scripts/run_benchmarks.py --phase Phase1 --compiler msvc --timeout 3600
+
+    # ---------------------------------------
+    # 15) Upload Coverage Reports
+    # ---------------------------------------
+    - name: Upload Test Coverage Reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Tests-Coverage-Report-MSVC
+        path: |
+          reports/tests/**/*.md
+          reports/tests/**/*.html
+          reports/tests/**/*.json
+
+    # ---------------------------------------
+    # 16) Upload Benchmark Reports
+    # ---------------------------------------
+    - name: Upload Benchmark Performance Reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: benchmarks-Reports-MSVC
+        path: |
+          reports/benchmarks/**/*.md
+          reports/benchmarks/**/*.html
+          reports/benchmarks/**/*.json
