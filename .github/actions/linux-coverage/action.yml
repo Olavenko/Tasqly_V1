@@ -1,0 +1,127 @@
+# 🧱 File: .github/actions/linux-coverage/action.yml
+# ---------------------------------------------------------------
+# 📌 Purpose      : Generate LCOV coverage report (info + HTML)
+# 🧱 Layer        : CI/CD → Linux Coverage
+# 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Created      : 2025-11-XX
+# 📝 Version      : 1.0.0
+#
+# 🧠 Description:
+#   Runs GCC coverage build using CMake presets, executes tests,
+#   generates LCOV coverage.info, builds a full HTML dashboard via
+#   genhtml, and uploads artifacts for download.
+#
+# Notes:
+#   • PostgreSQL service must be provided at workflow level
+#   • No Qt needed for coverage builds
+#   • Pure LCOV report + HTML dashboard (no Codecov)
+# ---------------------------------------------------------------
+
+name: "Linux Coverage Report"
+description: "Run GCC coverage build, generate lcov+html report, upload artifacts"
+
+inputs:
+  pgpassword:
+    description: "PostgreSQL password passed from workflow"
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+
+    #----------------
+    # 1) Checkout
+    #----------------
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    #-----------------------------
+    # 2) Install deps (LCOV + GCC)
+    #------------------------------
+    - name: Install coverage dependencies
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends \
+          lcov \
+          build-essential \
+          ninja-build \
+          libpq-dev \
+          gcc g++
+
+    #------------------------
+    # 3) Wait for PostgreSQL
+    #------------------------
+    - name: Wait for PostgreSQL
+      shell: bash
+      run: |
+        for i in {1..20}; do
+          pg_isready -h localhost -p 5432 -U postgres && break
+          echo "Waiting for PostgreSQL..."
+          sleep 2
+        done
+        echo "PostgreSQL is ready."
+
+    #---------------------------------
+    # 4) Configure GCC Coverage build
+    #---------------------------------
+    - name: Configure Coverage (gcc)
+      shell: bash
+      run: |
+        cmake --preset=gcc-coverage -DTASQLY_TEST_PHASE=Phase1
+
+    #----------------
+    # 5) Build
+    #----------------
+    - name: Build Coverage (gcc)
+      shell: bash
+      run: |
+        cmake --build --preset=build-gcc-coverage --parallel
+
+    #----------------
+    # 6) Run Tests
+    #----------------
+    - name: Run Tests (gcc coverage)
+      shell: bash
+      env:
+        PGHOST: localhost
+        PGPORT: 5432
+        PGUSER: postgres
+        PGPASSWORD: ${{ inputs.pgpassword }}
+        PGDATABASE: tasqly_test
+      run: |
+        ctest --preset=test-gcc-coverage --output-on-failure
+
+    #----------------------
+    # 7) Capture LCOV data
+    #----------------------
+    - name: Generate coverage.info
+      shell: bash
+      run: |
+        mkdir -p coverage
+        lcov --capture \
+             --directory . \
+             --output-file coverage/coverage.info \
+             --rc lcov_branch_coverage=1
+
+    #-------------------------
+    # 8) Generate HTML report
+    #-------------------------
+    - name: Generate HTML coverage report
+      shell: bash
+      run: |
+        genhtml coverage/coverage.info \
+                --output-directory coverage_html \
+                --branch-coverage
+
+    #--------------------------------------------
+    # 9) Upload artifacts (coverage.info + HTML)
+    #--------------------------------------------
+    - name: Upload coverage artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: |
+          coverage/coverage.info
+          coverage_html/

@@ -201,3 +201,44 @@ jobs:
         with:
           compiler: ${{ matrix.compiler }}
           pgpassword: ${{ secrets.POSTGRES_PASSWORD }}
+
+  # ------------------------------------------------------------
+  # 🐧 Linux Coverage — GCC Only (HTML Report Artifact)
+  # ------------------------------------------------------------
+  linux-coverage:
+    name: Linux • Coverage (GCC • HTML Report)
+    runs-on: ubuntu-latest
+    needs: windows-mingw
+
+    services:
+      postgres:
+        image: postgres:17
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: tasqly_test
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+          --health-start-period=10s
+
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      PGDATABASE: tasqly_test
+
+    steps:
+      #----------------
+      # 1) Checkout
+      #----------------
+      - uses: actions/checkout@v4
+
+      #----------------
+      # 2) Run Linux Coverage Composite Action
+      #----------------
+      - uses: ./.github/actions/linux-coverage
