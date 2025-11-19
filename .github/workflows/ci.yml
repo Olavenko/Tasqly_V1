@@ -106,6 +106,7 @@ jobs:
           --health-timeout=5s
           --health-retries=5
           --health-start-period=10s
+
     env:
       PGHOST: localhost
       PGPORT: 5432
@@ -118,6 +119,8 @@ jobs:
       - uses: ./.github/actions/linux
         with:
           compiler: gcc
+          pgpassword: ${{ secrets.POSTGRES_PASSWORD }}
+
 
   # ------------------------------------------------------------
   # 🐧 Linux Clang — Debug + PostgreSQL Integration
@@ -141,6 +144,7 @@ jobs:
           --health-timeout=5s
           --health-retries=5
           --health-start-period=10s
+
     env:
       PGHOST: localhost
       PGPORT: 5432
@@ -153,6 +157,8 @@ jobs:
       - uses: ./.github/actions/linux
         with:
           compiler: clang
+          pgpassword: ${{ secrets.POSTGRES_PASSWORD }}
+
 
   #------------------------------------------------------------
   # 🐧 Linux Sanitizers — GCC + Clang
@@ -160,7 +166,7 @@ jobs:
   linux-sanitizers:
     name: Linux • Sanitizers (GCC + Clang)
     runs-on: ubuntu-latest
-    needs: windows-mingw  # parallel with linux-gcc & linux-clang
+    needs: windows-mingw
 
     strategy:
       fail-fast: false
@@ -194,3 +200,4 @@ jobs:
       - uses: ./.github/actions/linux-sanitizers
         with:
           compiler: ${{ matrix.compiler }}
+          pgpassword: ${{ secrets.POSTGRES_PASSWORD }}

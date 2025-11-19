@@ -7,6 +7,11 @@ inputs:
     required: true
     type: string
 
+  pgpassword:
+    description: "PostgreSQL password passed from workflow"
+    required: true
+    type: string
+
 runs:
   using: "composite"
   steps:
@@ -72,7 +77,7 @@ runs:
         PGHOST: localhost
         PGPORT: 5432
         PGUSER: postgres
-        PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        PGPASSWORD: ${{ inputs.pgpassword }}
         PGDATABASE: tasqly_test
       run: |
         if [ "${{ inputs.compiler }}" = "gcc" ]; then

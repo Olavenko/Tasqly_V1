@@ -37,6 +37,11 @@ inputs:
     required: true
     type: string
 
+  pgpassword:
+    description: "PostgreSQL password passed from workflow"
+    required: true
+    type: string
+
 runs:
   using: "composite"
   steps:
@@ -54,7 +59,8 @@ runs:
       shell: bash
       run: |
         sudo apt-get update
-        sudo apt-get install -y --no-install-recommends build-essential ninja-build clang python3-pip libpq-dev
+        sudo apt-get install -y --no-install-recommends \
+          build-essential ninja-build clang python3-pip libpq-dev
         cmake --version
         ninja --version
 
@@ -85,10 +91,11 @@ runs:
     - name: Initialize PostgreSQL Schema
       shell: bash
       env:
-        PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        PGPASSWORD: ${{ inputs.pgpassword }}
       run: |
         echo "Applying migration schema to tasqly_test..."
-        psql -h localhost -U postgres -d tasqly_test -f src/infra/migrations/P1_S2_create_tasks.sql
+        psql -h localhost -U postgres -d tasqly_test \
+             -f src/infra/migrations/P1_S2_create_tasks.sql
         echo "Schema applied successfully."
 
     # ---------------------------------------
@@ -136,7 +143,7 @@ runs:
         PGHOST: localhost
         PGPORT: 5432
         PGUSER: postgres
-        PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        PGPASSWORD: ${{ inputs.pgpassword }}
         PGDATABASE: tasqly_test
       run: |
         echo "Running PostgreSQL Integration Tests..."
