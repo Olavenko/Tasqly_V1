@@ -48,7 +48,7 @@ runs:
           build-essential \
           ninja-build \
           libpq-dev \
-          gcc g++
+          gcc g++     
 
     #------------------------
     # 3) Wait for PostgreSQL
@@ -63,8 +63,19 @@ runs:
         done
         echo "PostgreSQL is ready."
 
+    #---------------------------
+    # 4) Setup Qt 6.9.2
+    #---------------------------
+    - name: Setup Qt 6.9.2
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: 6.9.2
+        host: linux
+        target: desktop
+        cache: false 
+
     #---------------------------------
-    # 4) Configure GCC Coverage build
+    # 5) Configure GCC Coverage build
     #---------------------------------
     - name: Configure Coverage (gcc)
       shell: bash
@@ -72,7 +83,7 @@ runs:
         cmake --preset=gcc-coverage -DTASQLY_TEST_PHASE=Phase1
 
     #----------------
-    # 5) Build
+    # 6) Build
     #----------------
     - name: Build Coverage (gcc)
       shell: bash
@@ -80,7 +91,7 @@ runs:
         cmake --build --preset=build-gcc-coverage --parallel
 
     #----------------
-    # 6) Run Tests
+    # 7) Run Tests
     #----------------
     - name: Run Tests (gcc coverage)
       shell: bash
@@ -94,7 +105,7 @@ runs:
         ctest --preset=test-gcc-coverage --output-on-failure
 
     #----------------------
-    # 7) Capture LCOV data
+    # 8) Capture LCOV data
     #----------------------
     - name: Generate coverage.info
       shell: bash
@@ -106,7 +117,7 @@ runs:
              --rc lcov_branch_coverage=1
 
     #-------------------------
-    # 8) Generate HTML report
+    # 9) Generate HTML report
     #-------------------------
     - name: Generate HTML coverage report
       shell: bash
@@ -116,7 +127,7 @@ runs:
                 --branch-coverage
 
     #--------------------------------------------
-    # 9) Upload artifacts (coverage.info + HTML)
+    # 10) Upload artifacts (coverage.info + HTML)
     #--------------------------------------------
     - name: Upload coverage artifacts
       uses: actions/upload-artifact@v4
