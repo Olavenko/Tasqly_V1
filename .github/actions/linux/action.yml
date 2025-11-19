@@ -85,7 +85,7 @@ runs:
     - name: Initialize PostgreSQL Schema
       shell: bash
       env:
-        PGPASSWORD: ${{ env.PGPASSWORD }}
+        PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       run: |
         echo "Applying migration schema to tasqly_test..."
         psql -h localhost -U postgres -d tasqly_test -f src/infra/migrations/P1_S2_create_tasks.sql
@@ -136,7 +136,7 @@ runs:
         PGHOST: localhost
         PGPORT: 5432
         PGUSER: postgres
-        PGPASSWORD: themyth2060
+        PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         PGDATABASE: tasqly_test
       run: |
         echo "Running PostgreSQL Integration Tests..."

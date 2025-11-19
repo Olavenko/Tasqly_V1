@@ -98,7 +98,7 @@ jobs:
         ports: ["5432:5432"]
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: themyth2060
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB: tasqly_test
         options: >-
           --health-cmd="pg_isready -U postgres"
@@ -106,6 +106,12 @@ jobs:
           --health-timeout=5s
           --health-retries=5
           --health-start-period=10s
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      PGDATABASE: tasqly_test
 
     steps:
       - uses: actions/checkout@v4
@@ -127,7 +133,7 @@ jobs:
         ports: ["5432:5432"]
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: themyth2060
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB: tasqly_test
         options: >-
           --health-cmd="pg_isready -U postgres"
@@ -135,6 +141,12 @@ jobs:
           --health-timeout=5s
           --health-retries=5
           --health-start-period=10s
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      PGDATABASE: tasqly_test
 
     steps:
       - uses: actions/checkout@v4
