@@ -114,7 +114,8 @@ runs:
         lcov --capture \
              --directory . \
              --output-file coverage/coverage.info \
-             --rc lcov_branch_coverage=1
+             --rc branch_coverage=1 \
+             --ignore-errors mismatch
 
     #-------------------------
     # 9) Generate HTML report
