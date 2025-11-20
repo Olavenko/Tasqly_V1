@@ -61,7 +61,6 @@ runs:
         version: 6.9.2
         host: linux
         target: desktop
-        cache: false
 
     #---------------------------
     # 4) Configure Release Benchmarks

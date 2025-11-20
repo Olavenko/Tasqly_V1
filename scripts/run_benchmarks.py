@@ -118,13 +118,15 @@ raw_dir.mkdir(parents=True, exist_ok=True)
 dashboard_dir.mkdir(parents=True, exist_ok=True)
 md_dir.mkdir(parents=True, exist_ok=True)
 
-default_runners = {
-    "mingw": "build/mingw-benchmarks-release/TasqlyBenchmarksRunner.exe",
-    "msvc": "build/msvc-benchmarks-release/TasqlyBenchmarksRunner.exe",
-    "gcc": "build/gcc-benchmarks-release/TasqlyBenchmarksRunner",
-    "clang": "build/clang-benchmarks-release/TasqlyBenchmarksRunner"
-}
-runner_path = Path(args.runner) if args.runner else project_root / default_runners[compiler]
+# Auto-detect the benchmark runner inside build/
+def find_runner():
+    candidates = list((project_root / "build").rglob("TasqlyBenchmarksRunner*"))
+    if not candidates:
+        print("[ERROR] Could not find TasqlyBenchmarksRunner in any build folder!")
+        sys.exit(1)
+    return candidates[0]  # first match
+
+runner_path = Path(args.runner) if args.runner else find_runner()
 
 json_path = raw_dir / f"{PHASE_NAME}_{date_str}_bench_results.json"
 md_path = md_dir / f"{PHASE_NAME}_{date_str}_report.md"
