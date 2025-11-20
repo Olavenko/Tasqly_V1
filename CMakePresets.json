@@ -64,7 +64,7 @@
       }
     },
     {
-      "name": "gcc-benchmarks",
+      "name": "gcc-benchmarks-release",
       "inherits": "default-release",
       "binaryDir": "${sourceDir}/build/gcc-benchmarks",
       "cacheVariables": {
@@ -76,7 +76,7 @@
       }
     },
     {
-      "name": "clang-benchmarks",
+      "name": "clang-benchmarks-release",
       "inherits": "default-release",
       "binaryDir": "${sourceDir}/build/clang-benchmarks",
       "cacheVariables": {
@@ -233,8 +233,8 @@
     { "name": "build-gcc-coverage", "configurePreset": "gcc-coverage" },
     { "name": "build-gcc-sanitizers", "configurePreset": "gcc-sanitizers" },
     { "name": "build-clang-sanitizers", "configurePreset": "clang-sanitizers" },
-    { "name": "build-gcc-benchmarks", "configurePreset": "gcc-benchmarks" },
-    { "name": "build-clang-benchmarks", "configurePreset": "clang-benchmarks" },
+    { "name": "build-gcc-benchmarks-release", "configurePreset": "gcc-benchmarks-release" },
+    { "name": "build-clang-benchmarks-release", "configurePreset": "clang-benchmarks-release" },
 
     { "name": "build-mingw-debug", "configurePreset": "mingw-debug" },
     { "name": "build-mingw-release", "configurePreset": "mingw-release" },

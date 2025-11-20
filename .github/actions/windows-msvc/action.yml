@@ -118,4 +118,4 @@ runs:
     # ---------------------------------------
     - name: Run Tests (MSVC)
       shell: powershell
-      run: ctest --preset=test-msvc --output-on-failure
+      run: ctest --preset=test-msvc-debug --output-on-failure
