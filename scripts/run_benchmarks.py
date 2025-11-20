@@ -102,7 +102,7 @@ parser.add_argument("--format", choices=["markdown", "html", "json", "all"], def
                     help="Output report format (default=all)")
 args = parser.parse_args()
 
-# ----------------------------------------------------------------------------- 
+# -----------------------------------------------------------------------------
 # Paths & Setup
 # -----------------------------------------------------------------------------
 PHASE_NAME = args.phase
@@ -118,26 +118,49 @@ raw_dir.mkdir(parents=True, exist_ok=True)
 dashboard_dir.mkdir(parents=True, exist_ok=True)
 md_dir.mkdir(parents=True, exist_ok=True)
 
-# Auto-detect the benchmark runner inside build/
+# -----------------------------------------------------------------------------
+# Auto-detect Benchmark Runner (robust, avoids autogen)
+# -----------------------------------------------------------------------------
 def find_runner():
     candidates = []
-    for p in (project_root / "build").rglob("TasqlyBenchmarksRunner*"):
-        # Ignore Qt's autogen directory
-        if "autogen" in p.name.lower():
+    build_root = project_root / "build"
+
+    for p in build_root.rglob("TasqlyBenchmarksRunner*"):
+        name_lower = p.name.lower()
+
+        # Skip the Qt auto-generated directory
+        if "autogen" in name_lower:
             continue
 
-        # Accept only executable files (not directories)
-        if p.is_file():
-            candidates.append(p)
+        # Must be a file, not a folder
+        if not p.is_file():
+            continue
+
+        candidates.append(p)
 
     if not candidates:
-        print("[ERROR] Could not find TasqlyBenchmarksRunner executable!")
+        print("[ERROR] Could not find a valid TasqlyBenchmarksRunner executable!")
         sys.exit(1)
 
-    # Prefer the one without extension (Linux), otherwise .exe (Windows)
-    candidates.sort(key=lambda x: len(x.suffix))  # .exe > no suffix
+    # Prefer Linux no-extension -> then .exe
+    candidates.sort(key=lambda x: len(x.suffix))
     return candidates[0]
 
+
+# -----------------------------------------------------------------------------
+# Resolve runner_path (ALWAYS defined)
+# -----------------------------------------------------------------------------
+if args.runner:
+    runner_path = Path(args.runner)
+else:
+    runner_path = find_runner()
+
+# Now safe to print
+print(f"[INFO] Running {runner_path}")
+
+# -----------------------------------------------------------------------------
+# Output paths
+# -----------------------------------------------------------------------------
 json_path = raw_dir / f"{PHASE_NAME}_{date_str}_bench_results.json"
 md_path = md_dir / f"{PHASE_NAME}_{date_str}_report.md"
 html_path = dashboard_dir / f"{PHASE_NAME}_{date_str}_dashboard.html"
