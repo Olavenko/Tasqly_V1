@@ -115,10 +115,34 @@ runs:
              --directory . \
              --output-file coverage/coverage.info \
              --rc branch_coverage=1 \
-             --ignore-errors mismatch
+             --ignore-errors mismatch \
+             --exclude '/usr/include/*' \
+             --exclude '/usr/lib/*' \
+             --exclude '/usr/local/*' \
+             --exclude '*/external/*' \
+             --exclude '*/externals/*' \
+             --exclude '*/_deps/*' \
+             --exclude '*/googletest-src/*' \
+             --exclude '*/gtest/*' \
+             --exclude '*/Qt/*' \
+             --exclude '*/Qt6/*' \
+             --exclude '*/QtCore/*' \
+             --exclude '*/tests/*' \
+             --exclude '*/build/*'
 
+    #-----------------------
+    # 9) Pretty Coverage Summary
+    #-----------------------
+    - name: Coverage Summary (Pretty)
+      shell: bash
+      run: |
+        echo "📊 **LCOV Coverage Summary**"
+        echo "-------------------------------------"
+        lcov --summary coverage/coverage.info | grep -E "lines|functions|branches"
+
+    
     #-------------------------
-    # 9) Generate HTML report
+    # 10) Generate HTML report
     #-------------------------
     - name: Generate HTML coverage report
       shell: bash
@@ -128,7 +152,7 @@ runs:
                 --branch-coverage
 
     #--------------------------------------------
-    # 10) Upload artifacts (coverage.info + HTML)
+    # 11) Upload artifacts (coverage.info + HTML)
     #--------------------------------------------
     - name: Upload coverage artifacts
       uses: actions/upload-artifact@v4
