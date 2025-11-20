@@ -53,6 +53,17 @@ runs:
         pip install pandas plotly
 
     #---------------------------
+    # 3) Setup Qt 6.9.2
+    #---------------------------
+    - name: Setup Qt 6.9.2
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: 6.9.2
+        host: linux
+        target: desktop
+        cache: false
+
+    #---------------------------
     # 4) Configure Release Benchmarks
     #---------------------------
     - name: Configure Benchmarks (${{ inputs.compiler }})

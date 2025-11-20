@@ -22,7 +22,7 @@ runs:
       uses: actions/checkout@v4
     
     #---------------------------
-    # 2) Install deps (no Qt)
+    # 2) Install deps
     #---------------------------
     - name: Install build dependencies
       shell: bash
@@ -40,7 +40,6 @@ runs:
         version: 6.9.2
         host: linux
         target: desktop
-        cache: false
     
     #---------------------------
     # 4) Wait for PostgreSQL
