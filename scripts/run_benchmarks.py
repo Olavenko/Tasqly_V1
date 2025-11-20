@@ -120,13 +120,23 @@ md_dir.mkdir(parents=True, exist_ok=True)
 
 # Auto-detect the benchmark runner inside build/
 def find_runner():
-    candidates = list((project_root / "build").rglob("TasqlyBenchmarksRunner*"))
-    if not candidates:
-        print("[ERROR] Could not find TasqlyBenchmarksRunner in any build folder!")
-        sys.exit(1)
-    return candidates[0]  # first match
+    candidates = []
+    for p in (project_root / "build").rglob("TasqlyBenchmarksRunner*"):
+        # Ignore Qt's autogen directory
+        if "autogen" in p.name.lower():
+            continue
 
-runner_path = Path(args.runner) if args.runner else find_runner()
+        # Accept only executable files (not directories)
+        if p.is_file():
+            candidates.append(p)
+
+    if not candidates:
+        print("[ERROR] Could not find TasqlyBenchmarksRunner executable!")
+        sys.exit(1)
+
+    # Prefer the one without extension (Linux), otherwise .exe (Windows)
+    candidates.sort(key=lambda x: len(x.suffix))  # .exe > no suffix
+    return candidates[0]
 
 json_path = raw_dir / f"{PHASE_NAME}_{date_str}_bench_results.json"
 md_path = md_dir / f"{PHASE_NAME}_{date_str}_report.md"
