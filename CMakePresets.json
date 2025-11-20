@@ -64,6 +64,30 @@
       }
     },
     {
+      "name": "gcc-benchmarks",
+      "inherits": "default-release",
+      "binaryDir": "${sourceDir}/build/gcc-benchmarks",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++",
+        "TASQLY_BUILD_TESTS": "OFF",
+        "TASQLY_BUILD_BENCHMARKS": "ON",
+        "TASQLY_BUILD_REPORTS": "OFF"
+      }
+    },
+    {
+      "name": "clang-benchmarks",
+      "inherits": "default-release",
+      "binaryDir": "${sourceDir}/build/clang-benchmarks",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "TASQLY_BUILD_TESTS": "OFF",
+        "TASQLY_BUILD_BENCHMARKS": "ON",
+        "TASQLY_BUILD_REPORTS": "OFF"
+      }
+    },
+    {
       "name": "clang-sanitizers",
       "inherits": "clang-debug",
       "binaryDir": "${sourceDir}/build/clang-sanitizers",
@@ -209,6 +233,8 @@
     { "name": "build-gcc-coverage", "configurePreset": "gcc-coverage" },
     { "name": "build-gcc-sanitizers", "configurePreset": "gcc-sanitizers" },
     { "name": "build-clang-sanitizers", "configurePreset": "clang-sanitizers" },
+    { "name": "build-gcc-benchmarks", "configurePreset": "gcc-benchmarks" },
+    { "name": "build-clang-benchmarks", "configurePreset": "clang-benchmarks" },
 
     { "name": "build-mingw-debug", "configurePreset": "mingw-debug" },
     { "name": "build-mingw-release", "configurePreset": "mingw-release" },
@@ -256,7 +282,6 @@
       "output": { "outputOnFailure": true },
       "filter": { "include": { "name": "TasqlyTests.*" } }
     },
-
     {
       "name": "test-mingw-debug",
       "configurePreset": "mingw-debug",

@@ -183,3 +183,26 @@ jobs:
       # 2) Run Coverage Composite Action
       #----------------
       - uses: ./.github/actions/linux-coverage
+        with:
+          pgpassword: ${{ secrets.POSTGRES_PASSWORD }}
+
+  # ------------------------------------------------------------
+  # 🐧 Linux Benchmarks — Release Mode (GCC + Clang)
+  # ------------------------------------------------------------
+  linux-benchmarks:
+    name: Linux • Benchmarks (GCC + Clang)
+    runs-on: ubuntu-latest
+    needs: linux-sanitizers   # Runs AFTER sanitizers
+
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/linux-benchmarks
+        with:
+          compiler: ${{ matrix.compiler }}
+  

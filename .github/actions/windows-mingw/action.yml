@@ -28,20 +28,31 @@
 #   • Provides essential multi-compiler coverage for Windows
 
 name: "Windows MinGW Build and Test"
-description: "Build and test Tasqly using MinGW on Windows"
+description: "Fast MinGW build + tests only (no coverage, no benchmarks)"
 
 runs:
   using: "composite"
   steps:
 
     # ---------------------------------------
-    # 1) Checkout source code
+    # 1) Checkout
     # ---------------------------------------
     - name: Checkout
       uses: actions/checkout@v4
 
     # ---------------------------------------
-    # 2) Setup MSYS2 environment
+    # 2) Cache MSYS2 Packages
+    # ---------------------------------------
+    - name: Cache MSYS2 Packages
+      uses: actions/cache@v4
+      with:
+        path: C:\msys64\var\cache\pacman\pkg
+        key: ${{ runner.os }}-msys2-pkgcache
+        restore-keys: |
+          ${{ runner.os }}-msys2-pkgcache
+
+    # ---------------------------------------
+    # 3) Setup MSYS2 environment
     # ---------------------------------------
     - name: Setup MSYS2
       uses: msys2/setup-msys2@v2
@@ -55,43 +66,41 @@ runs:
           mingw-w64-x86_64-qt6-base
           mingw-w64-x86_64-qt6-declarative
           mingw-w64-x86_64-qt6-shadertools
+          mingw-w64-x86_64-postgresql
 
     # ---------------------------------------
-    # 3) Configure Debug build
+    # 4) Cache Build Directory
+    # ---------------------------------------
+    - name: Cache MinGW Build
+      uses: actions/cache@v4
+      with:
+        path: build/mingw-debug
+        key: ${{ runner.os }}-mingw-build-${{ hashFiles('CMakeLists.txt', 'src/**', 'tests/**') }}
+        restore-keys: |
+          ${{ runner.os }}-mingw-build-
+
+    # ---------------------------------------
+    # 5) Configure Debug (MinGW)
     # ---------------------------------------
     - name: Configure Debug (MinGW)
       shell: msys2 {0}
       run: |
         export PATH="/mingw64/bin:$PATH"
         echo "QT_PREFIX=/mingw64" >> $GITHUB_ENV
-        rm -rf build/mingw-debug
         cmake --preset=mingw-debug -DTASQLY_TEST_PHASE=Phase1
 
     # ---------------------------------------
-    # 4) Build Debug
+    # 6) Build Debug
     # ---------------------------------------
     - name: Build Debug (MinGW)
       shell: msys2 {0}
       run: cmake --build --preset=build-mingw-debug --parallel
 
     # ---------------------------------------
-    # 5) Ensure PostgreSQL Client (libpq.dll)
-    # ---------------------------------------
-    - name: Ensure PostgreSQL Client (for MinGW)
-      shell: msys2 {0}
-      run: |
-        echo "Ensuring PostgreSQL client (libpq.dll) is available..."
-        pacman -S --noconfirm mingw-w64-x86_64-postgresql
-        ls /mingw64/bin | grep libpq || echo "libpq.dll still missing!"
-        echo "PostgreSQL client ensured."
-
-    # ---------------------------------------
-    # 6) Run Debug Tests
+    # 7) Run Tests
     # ---------------------------------------
     - name: Run Tests (MinGW Debug)
       shell: msys2 {0}
       run: |
         export PATH="/mingw64/bin:$PATH"
-        echo "PATH updated with /mingw64/bin"
-        ldd build/mingw-debug/TasqlyTestsRunner.exe || true
         ctest --preset=test-mingw-debug --output-on-failure

@@ -1,0 +1,100 @@
+# 🧱 File: .github/actions/linux-benchmarks/action.yml
+# ---------------------------------------------------------------
+# 📌 Purpose      : Run Google Benchmark on Linux (GCC + Clang)
+# 🧱 Layer        : CI/CD → Performance Benchmarks
+# 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Created      : 2025-11-XX
+# 📝 Version      : 1.1.0
+#
+# 🧠 Description:
+#   - Builds Release mode benchmarks using GCC or Clang
+#   - Uses presets: gcc-benchmarks-release / clang-benchmarks-release
+#   - Runs the REAL benchmark generator: scripts/run_benchmarks.py
+#   - Generates JSON + Markdown + HTML dashboard
+#   - Uploads full benchmark reports as CI artifacts
+# ---------------------------------------------------------------
+
+name: "Linux Benchmarks"
+description: "Run GCC/Clang Release benchmarks and upload reports"
+
+inputs:
+  compiler:
+    description: "Compiler to use (gcc or clang)"
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+
+    #---------------------------
+    # 1) Checkout
+    #---------------------------
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    #---------------------------
+    # 2) Install Dependencies
+    #---------------------------
+    - name: Install GCC/Clang + Tools
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends \
+          gcc g++ clang ninja-build python3 python3-pip
+
+    #---------------------------
+    # 3) Install Python Libraries
+    #---------------------------
+    - name: Install Python Tools
+      shell: bash
+      run: |
+        pip install --upgrade pip
+        pip install pandas plotly
+
+    #---------------------------
+    # 4) Configure Release Benchmarks
+    #---------------------------
+    - name: Configure Benchmarks (${{ inputs.compiler }})
+      shell: bash
+      run: |
+        if [ "${{ inputs.compiler }}" = "gcc" ]; then
+          cmake --preset=gcc-benchmarks-release -DTASQLY_BENCHMARK_PHASE=Phase1
+        else
+          cmake --preset=clang-benchmarks-release -DTASQLY_BENCHMARK_PHASE=Phase1
+        fi
+
+    #---------------------------
+    # 5) Build Benchmarks
+    #---------------------------
+    - name: Build Benchmarks (${{ inputs.compiler }})
+      shell: bash
+      run: |
+        if [ "${{ inputs.compiler }}" = "gcc" ]; then
+          cmake --build --preset=build-gcc-benchmarks-release --parallel
+        else
+          cmake --build --preset=build-clang-benchmarks-release --parallel
+        fi
+
+    #---------------------------
+    # 6) Run the Benchmark Suite
+    #---------------------------
+    - name: Run Tasqly Benchmarks (${{ inputs.compiler }})
+      shell: bash
+      run: |
+        python scripts/run_benchmarks.py \
+          --phase Phase1 \
+          --compiler ${{ inputs.compiler }} \
+          --format all \
+          --quiet
+
+    #---------------------------
+    # 7) Upload Benchmark Reports
+    #---------------------------
+    - name: Upload Benchmark Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-benchmarks-${{ inputs.compiler }}
+        path: |
+          reports/benchmarks/**/*
+
