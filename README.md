@@ -4,10 +4,9 @@
 [![C++20](https://img.shields.io/badge/C++-20-blue.svg)](https://en.cppreference.com/)
 [![Qt](https://img.shields.io/badge/Qt-6.9.2-green.svg)](https://www.qt.io/)
 
-Tasqly is a cross‑platform C++/Qt application built with a modular architecture for managing tasks, goals, and planning.  
-The project demonstrates clean layering and vertical slice design, making it both a learning tool and a production‑grade baseline.
+Tasqly is a cross-platform C++/Qt application for managing tasks and goals with a modular, layered architecture. Built with clean separation of concerns, it demonstrates professional software engineering practices including domain-driven design, comprehensive testing, and production-grade infrastructure.
 
-**Current Status:** Phase 1 - Slice 2 (PostgreSQL persistence with fallback to InMemory)
+**Current Status:** Phase 1 - Slice 2 (PostgreSQL persistence with InMemory fallback)
 
 ## 📋 Table of Contents
 
@@ -220,10 +219,6 @@ The project maintains comprehensive documentation following industry best practi
 
 ---
 
-## 🛠️ Development Tools
-
-### Scripts
-- `scripts/run_benchmarks.py` – Run performance benchmarks
 ## 🤝 Contributing
 
 Contributions are welcome! Please follow these steps:
@@ -236,11 +231,7 @@ Contributions are welcome! Please follow these steps:
 
 Please make sure to update tests as appropriate and follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 📦 Project Structure
+##  Project Structure
 
 ```
 Tasqly_V1/
@@ -248,7 +239,7 @@ Tasqly_V1/
 ├── build/                    # Build directory (ignored in git)
 ├── cmake/                    # CMake modules and toolchains
 │   └── toolchains/           # Cross-compilation toolchains
-├── Development Standards/     # Development guidelines
+├── Development Standards/    # Development guidelines
 │   ├── Policies/             # Development policies
 │   ├── Standards/            # Coding standards
 │   └── Templates/            # File templates
@@ -258,8 +249,7 @@ Tasqly_V1/
 │   │   └── phase1/           # Persistence layer decisions
 │   ├── KnowledgeBase/        # Technical documentation
 │   ├── checklists/           # Development checklists
-│   ├── uml/                  # System architecture diagrams
-│   └── ...
+│   └── uml/                  # System architecture diagrams
 ├── externals/                # External dependencies
 │   └── _deps/                # Fetched dependencies
 ├── performance/              # Performance testing
@@ -272,15 +262,30 @@ Tasqly_V1/
 │   └── treegen/              # Directory tree generator
 ├── src/                      # Source code
 │   ├── app/                  # Application layer
+│   │   ├── core/             # Core application services
 │   │   ├── errors/           # Error handling
+│   │   ├── loading/          # Page loading system
 │   │   ├── logging/          # Logging system
-│   │   └── settings/         # Application settings
+│   │   ├── navigation/       # Navigation service
+│   │   ├── notifier/         # Toast notifications
+│   │   ├── qml/              # QML integration
+│   │   ├── settings/         # Application settings
+│   │   ├── theme/            # Theme management
+│   │   └── usecases/         # Business logic use cases
 │   ├── domain/               # Domain layer
-│   │   ├── entities/         # Core business objects
-│   │   └── contracts/        # Interfaces and contracts
-│   ├── infra/                # Infrastructure
-│   │   ├── repositories/     # Data access
-│   │   └── services/         # External services
+│   │   └── core/             # Core domain types and entities
+│   │       ├── contracts/    # Interfaces and contracts
+│   │       ├── entities/     # Core business objects (Task, Goal)
+│   │       ├── errors/       # Domain errors
+│   │       └── mappers/      # Domain mappers
+│   ├── infra/                # Infrastructure layer
+│   │   ├── db/               # Database configuration
+│   │   ├── factories/        # Repository factory pattern
+│   │   ├── logging/          # Logging backends
+│   │   ├── migrations/       # Database migrations
+│   │   ├── persistence/      # Repository implementations
+│   │   ├── runtime/          # Runtime adapters
+│   │   └── utils/            # Utility functions
 │   └── ui/                   # User interface
 │       ├── components/       # Reusable QML components
 │       └── pages/            # Application screens
@@ -290,21 +295,17 @@ Tasqly_V1/
 │   ├── integration/          # Integration tests
 │   ├── qml/                  # QML component tests
 │   └── unit/                 # Unit tests
+├── benchmarks/               # Performance benchmarks
 ├── .clang-format             # Code formatting rules
 ├── .clang-tidy               # Static analysis config
 ├── .gitattributes            # Git attributes
 ├── .gitignore                # Git ignore rules
 ├── CMakeLists.txt            # Root CMake configuration
 ├── CMakePresets.json         # Build presets
+├── Main.qml                  # Main QML entry point
+├── main.cpp                  # C++ entry point
+├── resources.qrc             # Qt resource file
 └── README.md                 # This file
-│   ├── integration/  # Integration tests
-│   ├── qml/          # QML tests
-│   └── fakes/        # Fake implementations for testing
-├── benchmarks/       # Performance benchmarks
-├── cmake/            # CMake modules and toolchains
-├── docs/             # Documentation (ADRs, guides, UML)
-├── scripts/          # Development and build scripts
-└── reports/          # Generated reports (coverage, benchmarks)
 ```
 
 ---
@@ -329,13 +330,7 @@ Tasqly_V1/
 
 ## 📄 License
 
-[Add license information if applicable]
-
----
-
-## 👥 Contributing
-
-[Add contributing guidelines if applicable]
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
