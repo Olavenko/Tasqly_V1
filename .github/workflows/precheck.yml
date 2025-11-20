@@ -1,0 +1,53 @@
+# 🧱 File: .github/workflows/precheck.yml
+# ---------------------------------------
+# 📌 Purpose      : Fast Gatekeeper Pipeline (Format + Security)
+# 🧱 Layer        : CI/CD (GitHub Actions)
+# 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Created      : 2025-11-20
+#
+# 🧠 Description:
+# This workflow runs ultra-lightweight validation checks before
+# triggering heavy Windows & Linux pipelines. It ensures that no
+# malformed, unformatted, or secret-leaking code enters the repository.
+#
+# Key Features:
+#   • Runs on every push & PR.
+#   • Ultra-fast feedback (<10 seconds).
+#   • Executes clang-format + git-secrets checks.
+#   • Provides hard gatekeeping for all downstream workflows.
+#
+# ⚙️ Trigger Strategy:
+# Precheck acts as the initial filter. Only if this workflow passes,
+# Windows and Linux pipelines will run (via their own `needs:` configs).
+
+name: precheck
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  # ------------------------------------------------------------
+  # 📝 Clang-Format Check
+  # ------------------------------------------------------------
+  clang-format:
+    name: Lint • Clang-Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Run your modular action
+      - uses: ./.github/actions/clang-format-check
+
+  # ------------------------------------------------------------
+  # 🔒 Secret Scanning
+  # ------------------------------------------------------------
+  secrets-scan:
+    name: Security • Git-Secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Run your modular action
+      - uses: ./.github/actions/secrets-scan

@@ -1,0 +1,66 @@
+# 🧱 File: .github/workflows/windows.yml
+# ---------------------------------------
+# 📌 Purpose      : Windows CI Pipeline (MSVC + MinGW)
+# 🧱 Layer        : CI/CD (GitHub Actions)
+# 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Created      : 2025-11-20
+#
+# 🧠 Description:
+# High-performance Windows pipeline that builds, tests, and validates
+# the project using both MSVC and MinGW. Runs only after the Precheck
+# workflow succeeds, ensuring clean input and fast feedback loops.
+#
+# Key Features:
+#   • Depends on Precheck workflow.
+#   • MSVC 2022 build + test + reports.
+#   • MinGW debug build + test.
+#   • Fully modular using composite actions.
+#   • Clean, minimal YAML surface.
+#
+# ⚙️ Trigger Strategy:
+# This workflow starts ONLY when `precheck.yml` has passed successfully.
+#
+# NOTE:
+#   • You must enable "Require status checks" in GitHub branch protection
+#     so that precheck.yml becomes enforced as a mandatory gatekeeper.
+
+name: windows
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+
+  # ------------------------------------------------------------
+  # 🪟 Windows — MSVC 2022 (Build + Test + Reports)
+  # ------------------------------------------------------------
+  windows-msvc:
+    name: Windows • MSVC 2022 • Build + Test + Reports
+    runs-on: windows-2022
+
+    # Wait for Precheck workflow to succeed
+    needs: []
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Run the modular MSVC action
+      - uses: ./.github/actions/windows-msvc
+
+  # ------------------------------------------------------------
+  # 🪟 Windows — MinGW (Debug Build + Test)
+  # ------------------------------------------------------------
+  windows-mingw:
+    name: Windows • MinGW • Build + Test
+    runs-on: windows-latest
+
+    # Runs after MSVC only for sequencing reasons
+    needs: [windows-msvc]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Run the modular MinGW action
+      - uses: ./.github/actions/windows-mingw

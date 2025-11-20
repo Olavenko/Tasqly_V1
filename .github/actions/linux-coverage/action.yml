@@ -116,6 +116,7 @@ runs:
              --output-file coverage/coverage.info \
              --rc branch_coverage=1 \
              --ignore-errors mismatch \
+             --ignore-errors unused \
              --exclude '/usr/include/*' \
              --exclude '/usr/lib/*' \
              --exclude '/usr/local/*' \
@@ -129,6 +130,7 @@ runs:
              --exclude '*/QtCore/*' \
              --exclude '*/tests/*' \
              --exclude '*/build/*'
+
 
     #-----------------------
     # 9) Pretty Coverage Summary

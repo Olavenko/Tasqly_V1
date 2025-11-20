@@ -1,0 +1,185 @@
+# 🧱 File: .github/workflows/linux.yml
+# ---------------------------------------
+# 📌 Purpose      : Linux CI Pipeline (GCC, Clang, Sanitizers, Coverage)
+# 🧱 Layer        : CI/CD (GitHub Actions)
+# 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Created      : 2025-11-20
+#
+# 🧠 Description:
+# High-performance Linux CI pipeline featuring:
+#   • GCC + Clang builds.
+#   • Integration testing with PostgreSQL.
+#   • Sanitizers (ASan / UBSan) matrix testing.
+#   • Coverage analysis with HTML report artifacts.
+#
+# Pipeline Notes:
+#   • Runs only after the Precheck workflow in real setups
+#     (via GitHub branch protection rules).
+#   • Each job is isolated and modular using Composite Actions.
+#   • DB service is clean, consistent, and health-checked.
+#
+# ⚙️ Target Platforms:
+#   • Ubuntu-latest (GCC / Clang / Sanitizers / Coverage)
+#   • PostgreSQL 17 (containerized)
+
+name: linux
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+
+  # ------------------------------------------------------------
+  # 🐧 Linux GCC — Debug + PostgreSQL Integration
+  # ------------------------------------------------------------
+  linux-gcc:
+    name: Linux • GCC • Integration + DB Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: tasqly_test
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+          --health-start-period=10s
+
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      PGDATABASE: tasqly_test
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/linux
+        with:
+          compiler: gcc
+          pgpassword: ${{ secrets.POSTGRES_PASSWORD }}
+
+  # ------------------------------------------------------------
+  # 🐧 Linux Clang — Debug + PostgreSQL Integration
+  # ------------------------------------------------------------
+  linux-clang:
+    name: Linux • Clang • Integration + DB Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: tasqly_test
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+          --health-start-period=10s
+
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      PGDATABASE: tasqly_test
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/linux
+        with:
+          compiler: clang
+          pgpassword: ${{ secrets.POSTGRES_PASSWORD }}
+
+  # ------------------------------------------------------------
+  # 🐧 Linux Sanitizers — GCC + Clang Matrix
+  # ------------------------------------------------------------
+  linux-sanitizers:
+    name: Linux • Sanitizers (GCC + Clang)
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+
+    services:
+      postgres:
+        image: postgres:17
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: tasqly_test
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+          --health-start-period=10s
+
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      PGDATABASE: tasqly_test
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/linux-sanitizers
+        with:
+          compiler: ${{ matrix.compiler }}
+          pgpassword: ${{ secrets.POSTGRES_PASSWORD }}
+
+  # ------------------------------------------------------------
+  # 🐧 Linux Coverage — GCC Only (HTML Artifact)
+  # ------------------------------------------------------------
+  linux-coverage:
+    name: Linux • Coverage (GCC • HTML Report)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: tasqly_test
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+          --health-start-period=10s
+
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      PGDATABASE: tasqly_test
+
+    steps:
+      #----------------
+      # 1) Checkout
+      #----------------
+      - uses: actions/checkout@v4
+
+      #----------------
+      # 2) Run Coverage Composite Action
+      #----------------
+      - uses: ./.github/actions/linux-coverage
