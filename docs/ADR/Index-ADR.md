@@ -70,12 +70,18 @@ Each ADR documents a significant architectural or tooling decision.
 | 0007 | Phase0/Phase1 Header Collision in Task.h                           | Accepted | 2025-10-14    | [0007](phase1/slice1/0007-phase0_Phase1_Header_Collision.md) |
 | 0008 | Namespace Isolation & Resolution Strategy in Domain/Core (Phase 1) | Accepted | 2025-10-14    | [0008](phase1/slice1/0008-Namespace-Isolation.md)            |
 
-### phase1/slice2 (2 ADRs)
+### phase1/slice2 (8 ADRs)
 
-| ID   | Title                                                 | Status | Last Modified | File                                                       |
-|------|-------------------------------------------------------|--------|---------------|------------------------------------------------------------|
-| 0001 | runtime-error-layer-adoption                          | Draft  | 2025-10-21    | [0001](phase1/slice2/0001-runtime-error-layer-adoption.md) |
-| 0002 | PostgreSQL Connection Policy and Fallback to InMemory | Draft  | 2025-10-23    | [0002](phase1/slice2/0002-db_connection_and_fallback.md)   |
+| ID   | Title                                                        | Status | Last Modified | File                                                                                        |
+|------|--------------------------------------------------------------|--------|---------------|---------------------------------------------------------------------------------------------|
+| 0001 | runtime-error-layer-adoption                                 | Draft  | 2025-10-21    | [0001](phase1/slice2/0001-runtime-error-layer-adoption.md)                                  |
+| 0002 | PostgreSQL Connection Policy and Fallback to InMemory        | Draft  | 2025-10-23    | [0002](phase1/slice2/0002-db_connection_and_fallback.md)                                    |
+| 0003 | handle-postgresql-tests-on-windows-ci                        | Draft  | 2025-11-03    | [0003](phase1/slice2/0003-handle-postgresql-tests-on-windows-ci.md)                         |
+| 0004 | Conditional-Skip-For-PostgreSQL-Integration-Tests-On-Windows | Draft  | 2025-11-06    | [0004](phase1/slice2/0004-Conditional-Skip-For-PostgreSQL-Integration-Tests-On-Windows.md)  |
+| 0005 | Conditional `final` Class for Testing Builds                 | Draft  | 2025-11-12    | [0005](phase1/slice2/0005-Conditional `final` Class for Testing Builds.md)                  |
+| 0006 | testing-access-limitation-in-postgrestaskrepository          | Draft  | 2025-11-12    | [0006](phase1/slice2/0006 — Testing Access Limitation in `P1_S2_PostgresTaskRepository`.md) |
+| 0007 | dependency-injection-for-db-access                           | Draft  | 2025-11-12    | [0007](phase1/slice2/0007 dependency-injection-for-db-access.md)                            |
+| 0025 | db-abstraction-layer-and-repo-refactor                       | Draft  | 2025-11-15    | [0025](phase1/slice2/0008 db-abstraction-layer-and-repo-refactor.md)                        |
 
 ---
 
@@ -85,4 +91,4 @@ Each ADR documents a significant architectural or tooling decision.
 - **Proposed** → Under discussion.
 - **Draft** → Created but not yet reviewed.
 
-*Index generated on 2025-11-01 13:35 UTC*
+*Index generated on 2025-11-21 16:52 UTC*

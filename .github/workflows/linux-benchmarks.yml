@@ -25,21 +25,39 @@ on:
   push:
     branches: ["**"]
     paths:
+
+      # Core soruce files
       - "src/**"
+      - "benchmarks/**"
+
+      # Build configuration
       - "cmake/**"
       - "CMakeLists.txt"
       - "CMakePresets.json"
+
+      # Scripts
       - "scripts/**"
+
+      # CI/CD workflows files
       - ".github/actions/linux-benchmarks/**"
       - ".github/workflows/linux-benchmarks.yml"
 
   pull_request:
     paths:
+
+      # Core soruce files
       - "src/**"
+      - "benchmarks/**"
+
+      # Build configuration
       - "cmake/**"
       - "CMakeLists.txt"
       - "CMakePresets.json"
+
+      # Scripts
       - "scripts/**"
+
+      # CI/CD workflows files
       - ".github/actions/linux-benchmarks/**"
       - ".github/workflows/linux-benchmarks.yml"
 

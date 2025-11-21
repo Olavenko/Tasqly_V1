@@ -24,25 +24,39 @@ on:
   push:
     branches: ["**"]
     paths:
+
+      # Core soruce files
       - "src/**"
       - "tests/**"
+
+      # Build configuration
       - "cmake/**"
       - "CMakeLists.txt"
       - "CMakePresets.json"
+
+      # Scripts
       - "scripts/**"
-      - "src/infra/migrations/**"
+
+      # CI/CD workflows files
       - ".github/actions/linux-coverage/**"
       - ".github/workflows/linux-coverage.yml"
 
   pull_request:
     paths:
+
+      # Core soruce files
       - "src/**"
       - "tests/**"
+
+      # Build configuration
       - "cmake/**"
       - "CMakeLists.txt"
       - "CMakePresets.json"
+
+      # Scripts
       - "scripts/**"
-      - "src/infra/migrations/**"
+
+      # CI/CD workflows files
       - ".github/actions/linux-coverage/**"
       - ".github/workflows/linux-coverage.yml"
 

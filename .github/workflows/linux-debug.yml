@@ -31,25 +31,45 @@ on:
   push:
     branches: ["**"]
     paths:
+
+      # Core soruce files
       - "src/**"
       - "tests/**"
+
+      # Build configuration
       - "cmake/**"
       - "CMakeLists.txt"
       - "CMakePresets.json"
+
+      # Scripts
       - "scripts/**"
+
+      # Migrations Files
       - "src/infra/migrations/**"
+
+      # CI/CD workflows files
       - ".github/actions/linux/**"
       - ".github/workflows/linux-debug.yml"
 
   pull_request:
     paths:
+      
+      # Core soruce files
       - "src/**"
       - "tests/**"
+
+      # Build configuration
       - "cmake/**"
       - "CMakeLists.txt"
       - "CMakePresets.json"
+
+      # Scripts
       - "scripts/**"
+
+      # Migrations Files
       - "src/infra/migrations/**"
+
+      # CI/CD workflows files
       - ".github/actions/linux/**"
       - ".github/workflows/linux-debug.yml"
 
