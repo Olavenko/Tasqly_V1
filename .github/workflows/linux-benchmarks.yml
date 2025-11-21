@@ -1,0 +1,49 @@
+# 🧱 File: .github/workflows/linux-benchmarks.yml
+# ---------------------------------------------------------------
+# 📌 Purpose      : Linux Release Benchmarks (GCC + Clang)
+# 🧱 Layer        : CI/CD (GitHub Actions)
+# 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Created      : 2025-11-20
+# 🗓️ Updated      : 2025-11-21
+# 📝 Version      : 1.1.0
+# 🧠 Description:
+#   Standalone Release-mode Benchmark pipeline:
+#     • GCC + Clang compiler matrix
+#     • Qt cached through composite action
+#     • Runs Python benchmark generator (JSON + MD + HTML)
+#     • Uploads full benchmark dashboard as artifacts
+#
+# Notes:
+#   • Heavy workload — recommended AFTER sanitizers
+#   • Uses composite action: .github/actions/linux-benchmarks
+#   • Zero DB dependency (faster, cleaner)
+# ---------------------------------------------------------------
+
+name: Linux • Benchmarks • (GCC + Clang)
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+
+  # ------------------------------------------------------------
+  # 🐧 Linux GCC + Clang — Release Benchmarks
+  # ------------------------------------------------------------
+  linux-benchmarks:
+    name: Linux • Benchmarks • ${{ matrix.compiler }}
+    runs-on: ubuntu-latest
+
+    steps:
+      # ------------------------------------------------------------
+      # 1) Checkout source code
+      # ------------------------------------------------------------
+      - uses: actions/checkout@v4
+
+      # ------------------------------------------------------------
+      # 2) Run Linux Benchmarks pipeline
+      # ------------------------------------------------------------
+      - uses: ./.github/actions/linux-benchmarks
+        with:
+          compiler: ${{ matrix.compiler }}
+    

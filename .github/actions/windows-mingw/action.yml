@@ -3,32 +3,22 @@
 # 📌 Purpose      : Build & Test Tasqly on Windows using MinGW (Debug)
 # 🧱 Layer        : CI/CD → Windows Build & Testing (Composite Action)
 # 👤 Maintainer   : Tasqly AI Assistant
-# 🗓️ Created      : 2025-11-03
 # 🗓️ Updated      : 2025-11-XX
-# 📝 Version      : 1.1.0
+# 📝 Version      : 1.2.0
 #
 # 🧠 Description:
-#   This composite action performs MinGW-based builds and test execution
-#   on Windows using the MSYS2 environment. It provides a lightweight,
-#   fast validation layer for Tasqly on the MinGW toolchain, ensuring:
-#     • Debug configuration builds cleanly
-#     • Qt6 environment is correctly provisioned via MSYS2
-#     • PostgreSQL client (libpq.dll) is available
-#     • All unit tests execute successfully using CTest
+#   Lightweight MinGW CI pipeline with full MSYS2 package caching
+#   and clear logging for cache hit/miss detection. Always performs
+#   a clean Debug build (no build caching).
 #
 # Key Features:
-#   • Fully automated MSYS2 environment setup
-#   • Configures and builds using CMake presets (mingw-debug)
-#   • Verifies PostgreSQL client dependencies
-#   • Executes the test suite with proper runtime paths
-#
-# 🚀 Notes:
-#   • Designed for Debug builds only (no Release/Benchmarks here)
-#   • Runs after the MSVC job in the main CI pipeline
-#   • Provides essential multi-compiler coverage for Windows
+#   • MSYS2 package caching (heavy step)
+#   • Logs cache hit/miss explicitly
+#   • Clean builds every run
+#   • MinGW Debug + Test via presets
 
 name: "Windows MinGW Build and Test"
-description: "Fast MinGW build + tests only (no coverage, no benchmarks)"
+description: "MinGW Debug build + tests with MSYS2 caching and full cache logging"
 
 runs:
   using: "composite"
@@ -44,15 +34,28 @@ runs:
     # 2) Cache MSYS2 Packages
     # ---------------------------------------
     - name: Cache MSYS2 Packages
+      id: cache_msys
       uses: actions/cache@v4
       with:
         path: C:\msys64\var\cache\pacman\pkg
-        key: ${{ runner.os }}-msys2-pkgcache
+        key: ${{ runner.os }}-msys2-pkgcache-v2
         restore-keys: |
-          ${{ runner.os }}-msys2-pkgcache
+          ${{ runner.os }}-msys2-pkgcache-
 
     # ---------------------------------------
-    # 3) Setup MSYS2 environment
+    # 3) Log Cache Result (MSYS2)
+    # ---------------------------------------
+    - name: Log MSYS2 Cache Result
+      shell: bash
+      run: |
+        if [ "${{ steps.cache_msys.outputs.cache-hit }}" = "true" ]; then
+          echo "✔ MSYS2 Cache Restored Successfully (HIT)"
+        else
+          echo "✘ MSYS2 Cache MISS — Full MSYS2 installation will run"
+        fi
+
+    # ---------------------------------------
+    # 4) Setup MSYS2 environment
     # ---------------------------------------
     - name: Setup MSYS2
       uses: msys2/setup-msys2@v2
@@ -67,17 +70,6 @@ runs:
           mingw-w64-x86_64-qt6-declarative
           mingw-w64-x86_64-qt6-shadertools
           mingw-w64-x86_64-postgresql
-
-    # ---------------------------------------
-    # 4) Cache Build Directory
-    # ---------------------------------------
-    - name: Cache MinGW Build
-      uses: actions/cache@v4
-      with:
-        path: build/mingw-debug
-        key: ${{ runner.os }}-mingw-build-${{ hashFiles('CMakeLists.txt', 'src/**', 'tests/**') }}
-        restore-keys: |
-          ${{ runner.os }}-mingw-build-
 
     # ---------------------------------------
     # 5) Configure Debug (MinGW)

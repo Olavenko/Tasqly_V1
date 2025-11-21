@@ -4,7 +4,8 @@
 # 🧱 Layer        : CI/CD (GitHub Actions)
 # 👤 Maintainer   : Tasqly AI Assistant
 # 🗓️ Created      : 2025-11-21
-#
+# 🗓️ Updated      : 2025-11-21
+# 📝 Version      : 1.1.0
 # 🧠 Description:
 # Dedicated MinGW build pipeline separated from MSVC for clarity.
 # Performs a clean Debug build + test using MinGW on Windows.

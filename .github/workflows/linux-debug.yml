@@ -1,0 +1,85 @@
+# 🧱 File: .github/workflows/linux-debug.yml
+# ---------------------------------------------------------------
+# 📌 Purpose      : Linux Debug CI Pipeline (GCC + Clang)
+# 🧱 Layer        : CI/CD (GitHub Actions)
+# 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Created      : 2025-11-20
+# 🗓️ Updated      : 2025-11-21
+# 📝 Version      : 1.1.0
+#
+# 🧠 Description:
+#   Clean Linux Debug pipeline running GCC + Clang builds with:
+#     • PostgreSQL-backed integration tests
+#     • Clean debug builds using CMake presets
+#     • Compiler matrix with isolated environments
+#
+#   Lightweight, fast, and structured exactly like Windows-MSVC/MinGW.
+#
+# ⚙️ Target Platforms:
+#   • Ubuntu-latest
+#   • PostgreSQL 17 (containerized)
+#
+# Notes:
+#   • Fully modular — uses composite action: .github/actions/linux
+#   • No sanitizers / no coverage / no benchmarks here
+#   • This workflow focuses ONLY on Debug + DB Tests
+# ---------------------------------------------------------------
+
+name: Linux • Debug • (GCC + Clang)
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+
+  # ------------------------------------------------------------------
+  # 🐧 Linux GCC + Clang — Debug + PostgreSQL Integration
+  # ------------------------------------------------------------------
+  linux-debug:
+    name: Linux • Debug • ${{ matrix.compiler }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+
+    services:
+      postgres:
+        image: postgres:17
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: tasqly_test
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+          --health-start-period=10s
+
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      PGDATABASE: tasqly_test
+
+    steps:
+
+      # ------------------------------------------------------------
+      # 1) Checkout source code
+      # ------------------------------------------------------------
+      - uses: actions/checkout@v4
+
+      # ------------------------------------------------------------
+      # 2) Run Linux Debug pipeline
+      # ------------------------------------------------------------
+      - uses: ./.github/actions/linux
+        with:
+          compiler: ${{ matrix.compiler }}
+          pgpassword: ${{ secrets.POSTGRES_PASSWORD }}
+    

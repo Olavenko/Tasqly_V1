@@ -1,24 +1,34 @@
 # 🧱 File: .github/actions/linux-coverage/action.yml
-# ---------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # 📌 Purpose      : Generate LCOV coverage report (info + HTML)
 # 🧱 Layer        : CI/CD → Linux Coverage
 # 👤 Maintainer   : Tasqly AI Assistant
-# 🗓️ Created      : 2025-11-XX
-# 📝 Version      : 1.0.0
+# 🗓️ Created      : 2025-11-19
+# 🗓️ Updated      : 2025-11-21
+# 📝 Version      : 1.1.0
 #
 # 🧠 Description:
-#   Runs GCC coverage build using CMake presets, executes tests,
-#   generates LCOV coverage.info, builds a full HTML dashboard via
-#   genhtml, and uploads artifacts for download.
+#   Full GCC coverage pipeline:
+#     • Build coverage-enabled targets using CMake presets
+#     • Run PostgreSQL-backed test suite
+#     • Capture LCOV coverage.info
+#     • Produce full HTML dashboard using genhtml
+#     • Upload final artifacts for CI insights
 #
-# Notes:
-#   • PostgreSQL service must be provided at workflow level
-#   • No Qt needed for coverage builds
-#   • Pure LCOV report + HTML dashboard (no Codecov)
-# ---------------------------------------------------------------
+# Key Features:
+#   • Qt caching enabled (fast CI performance)
+#   • Clean builds only (no build caching)
+#   • Pretty LCOV summary in CI logs
+#   • HTML report artifact for download
+#
+# 🚀 Notes:
+#   • PostgreSQL service must be provided by the workflow
+#   • No build directory caching (required for gcov correctness)
+#   • No apt caching (unsupported on GitHub)
+# ---------------------------------------------------------------------------
 
 name: "Linux Coverage Report"
-description: "Run GCC coverage build, generate lcov+html report, upload artifacts"
+description: "Run GCC coverage build, generate LCOV+HTML report, upload artifacts"
 
 inputs:
   pgpassword:
@@ -30,15 +40,15 @@ runs:
   using: "composite"
   steps:
 
-    #----------------
+    # -----------------------
     # 1) Checkout
-    #----------------
+    # -----------------------
     - name: Checkout
       uses: actions/checkout@v4
 
-    #-----------------------------
-    # 2) Install deps (LCOV + GCC)
-    #------------------------------
+    # ----------------------------------------------
+    # 2) Install deps (apt — NOT cached)
+    # ----------------------------------------------
     - name: Install coverage dependencies
       shell: bash
       run: |
@@ -48,11 +58,35 @@ runs:
           build-essential \
           ninja-build \
           libpq-dev \
-          gcc g++     
+          gcc g++
 
-    #------------------------
-    # 3) Wait for PostgreSQL
-    #------------------------
+    # ---------------------------
+    # 3) Setup Qt 6.9.2 (cached)
+    # ---------------------------
+    - name: Setup Qt 6.9.2
+      id: qt_setup
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: 6.9.2
+        host: linux
+        target: desktop
+        cache: true
+
+    # ---------------------------
+    # 4) Log Qt Cache Result
+    # ---------------------------
+    - name: Log Qt Cache Result
+      shell: bash
+      run: |
+        if [ "${{ steps.qt_setup.outputs.cache-hit }}" = "true" ]; then
+          echo "✔ Qt Cache Restored (HIT)"
+        else
+          echo "✘ Qt Cache MISS — Qt will download now"
+        fi
+
+    # ---------------------------
+    # 5) Wait for PostgreSQL
+    # ---------------------------
     - name: Wait for PostgreSQL
       shell: bash
       run: |
@@ -63,36 +97,25 @@ runs:
         done
         echo "PostgreSQL is ready."
 
-    #---------------------------
-    # 4) Setup Qt 6.9.2
-    #---------------------------
-    - name: Setup Qt 6.9.2
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: 6.9.2
-        host: linux
-        target: desktop
-        cache: false 
-
-    #---------------------------------
-    # 5) Configure GCC Coverage build
-    #---------------------------------
+    # -------------------------------------
+    # 6) Configure GCC Coverage build
+    # -------------------------------------
     - name: Configure Coverage (gcc)
       shell: bash
       run: |
         cmake --preset=gcc-coverage -DTASQLY_TEST_PHASE=Phase1
 
-    #----------------
-    # 6) Build
-    #----------------
+    # -----------------------
+    # 7) Build
+    # -----------------------
     - name: Build Coverage (gcc)
       shell: bash
       run: |
         cmake --build --preset=build-gcc-coverage --parallel
 
-    #----------------
-    # 7) Run Tests
-    #----------------
+    # -----------------------
+    # 8) Run Tests
+    # -----------------------
     - name: Run Tests (gcc coverage)
       shell: bash
       env:
@@ -104,9 +127,9 @@ runs:
       run: |
         ctest --preset=test-gcc-coverage --output-on-failure
 
-    #----------------------
-    # 8) Capture LCOV data
-    #----------------------
+    # ------------------------
+    # 9) Capture LCOV data
+    # ------------------------
     - name: Generate coverage.info
       shell: bash
       run: |
@@ -131,10 +154,9 @@ runs:
              --exclude '*/tests/*' \
              --exclude '*/build/*'
 
-
-    #-----------------------
-    # 9) Pretty Coverage Summary
-    #-----------------------
+    # ---------------------------------
+    # 10) Pretty Coverage Summary
+    # ---------------------------------
     - name: Coverage Summary (Pretty)
       shell: bash
       run: |
@@ -142,10 +164,9 @@ runs:
         echo "-------------------------------------"
         lcov --summary coverage/coverage.info | grep -E "lines|functions|branches"
 
-    
-    #-------------------------
-    # 10) Generate HTML report
-    #-------------------------
+    # ---------------------------------
+    # 11) Generate HTML Report
+    # ---------------------------------
     - name: Generate HTML coverage report
       shell: bash
       run: |
@@ -153,9 +174,9 @@ runs:
                 --output-directory coverage_html \
                 --branch-coverage
 
-    #--------------------------------------------
-    # 11) Upload artifacts (coverage.info + HTML)
-    #--------------------------------------------
+    # ----------------------------------------------
+    # 12) Upload artifacts (coverage.info + HTML)
+    # ----------------------------------------------
     - name: Upload coverage artifacts
       uses: actions/upload-artifact@v4
       with:

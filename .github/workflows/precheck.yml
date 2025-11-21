@@ -20,7 +20,7 @@
 # Precheck acts as the initial filter. Only if this workflow passes,
 # Windows and Linux pipelines will run (via their own `needs:` configs).
 
-name: precheck
+name: Precheck
 
 on:
   push:

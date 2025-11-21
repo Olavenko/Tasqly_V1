@@ -19,7 +19,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          lfs: true  # احتياطيًا لو هتستخدم LFS لملفات كبيرة مستقبلاً
+          lfs: true 
 
       # Setup Java for PlantUML
       - name: Setup Java

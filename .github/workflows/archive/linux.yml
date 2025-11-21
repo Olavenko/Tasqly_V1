@@ -22,7 +22,7 @@
 #   • Ubuntu-latest (GCC / Clang / Sanitizers / Coverage)
 #   • PostgreSQL 17 (containerized)
 
-name: linux
+name: Linux
 
 on:
   push:

@@ -1,0 +1,77 @@
+# 🧱 File: .github/workflows/linux-sanitizers.yml
+# ---------------------------------------------------------------
+# 📌 Purpose      : Linux Sanitizers (GCC + Clang)
+# 🧱 Layer        : CI/CD (GitHub Actions)
+# 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Created      : 2025-11-20
+# 🗓️ Updated      : 2025-11-21
+# 📝 Version      : 1.1.0
+# 🧠 Description:
+#   Standalone ASan/UBSan pipeline for Linux:
+#     • GCC + Clang matrix
+#     • PostgreSQL-backed test environment
+#     • Uses sanitizers CMake presets (gcc-sanitizers / clang-sanitizers)
+#
+# Notes:
+#   • Clean separation from Debug, Coverage, and Benchmarks workflows
+#   • Uses composite action: .github/actions/linux-sanitizers
+#   • Runs relatively heavy tests — recommended after Debug stage
+# ---------------------------------------------------------------
+
+name: Linux • Sanitizers • (GCC + Clang)
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+
+  # ------------------------------------------------------------
+  # 🐧 Linux GCC + Clang — Sanitizers + PostgreSQL Integration
+  # ------------------------------------------------------------
+  linux-sanitizers:
+    name: Linux • Sanitizers • ${{ matrix.compiler }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+
+    services:
+      postgres:
+        image: postgres:17
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: tasqly_test
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+          --health-start-period=10s
+
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      PGDATABASE: tasqly_test
+
+    steps:
+
+      # ------------------------------------------------------------
+      # 1) Checkout source code
+      # ------------------------------------------------------------
+      - uses: actions/checkout@v4
+
+      # ------------------------------------------------------------
+      # 2) Run Linux Sanitizers pipeline
+      # ------------------------------------------------------------
+      - uses: ./.github/actions/linux-sanitizers
+        with:
+          compiler: ${{ matrix.compiler }}
+          pgpassword: ${{ secrets.POSTGRES_PASSWORD }}
+    

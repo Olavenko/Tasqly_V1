@@ -1,32 +1,31 @@
 # 🧱 File: .github/actions/linux/action.yml
-# ---------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # 📌 Purpose      : Build & Test Tasqly on Linux using GCC/Clang
 # 🧱 Layer        : CI/CD → Build & Integration Testing (Composite Action)
 # 👤 Maintainer   : Tasqly AI Assistant
 # 🗓️ Created      : 2025-11-03
 # 🗓️ Updated      : 2025-11-XX
-# 📝 Version      : 1.1.0
+# 📝 Version      : 1.2.0
 #
 # 🧠 Description:
-#   This composite action performs full Linux builds (GCC & Clang), including:
-#     • Installing compiler toolchains and build dependencies
-#     • Applying PostgreSQL schema migrations
-#     • Running unit + integration tests
-#     • Preparing the full DB-backed test environment
-#
-#   Designed as a reusable module in the main CI pipeline for Linux-only
-#   integration and database validation.
+#   Performs full Linux builds (GCC & Clang) including:
+#     • Toolchain + dependency installation
+#     • PostgreSQL schema preparation
+#     • Debug build using presets (gcc-debug / clang-debug)
+#     • Full unit + integration test execution
+#     • Qt installation with caching for fast CI performance
 #
 # Key Features:
-#   • Supports both GCC and Clang via `${{ inputs.compiler }}`
-#   • Runs PostgreSQL-backed integration tests automatically
-#   • Uses the project's CMake presets for consistent configuration
-#   • Ensures clean reproducible builds inside Ubuntu runners
+#   • GCC / Clang switch via inputs.compiler
+#   • PostgreSQL-backed integration test suite
+#   • Clean reproducible builds (no build caching)
+#   • Qt caching + HIT/MISS logging
 #
 # 🚀 Notes:
-#   • This action is invoked from ci.yml inside a matrix job
-#   • PostgreSQL service must be defined at the workflow level
-#   • Qt installation happens within this action (Linux-specific)
+#   • PostgreSQL service must be declared at workflow level
+#   • No apt/pip caching (unsupported)
+#   • No build caching (debug/integration requires clean builds)
+# ---------------------------------------------------------------------------
 
 name: "Linux GCC/Clang Integration & DB Tests"
 description: "Build Tasqly on Linux using GCC/Clang and run PostgreSQL integration tests"
@@ -53,7 +52,7 @@ runs:
       uses: actions/checkout@v4
 
     # ---------------------------------------
-    # 2) Install build dependencies
+    # 2) Install dependencies (apt — no cache)
     # ---------------------------------------
     - name: Install build dependencies
       shell: bash
@@ -78,7 +77,7 @@ runs:
         echo "PostgreSQL is ready."
 
     # ---------------------------------------
-    # 4) Show PostgreSQL environment variables
+    # 4) Show PostgreSQL Environment
     # ---------------------------------------
     - name: Show PostgreSQL Environment
       shell: bash
@@ -86,7 +85,7 @@ runs:
         printenv | grep PG || true
 
     # ---------------------------------------
-    # 5) Apply initial database migration
+    # 5) Apply DB Schema Migration
     # ---------------------------------------
     - name: Initialize PostgreSQL Schema
       shell: bash
@@ -99,31 +98,44 @@ runs:
         echo "Schema applied successfully."
 
     # ---------------------------------------
-    # 6) Setup Qt 6.9.2 on Linux
+    # 6) Setup Qt 6.9.2 w/ cache
     # ---------------------------------------
     - name: Setup Qt 6.9.2
+      id: qt_setup
       uses: jurplel/install-qt-action@v3
       with:
         version: 6.9.2
         host: linux
         target: desktop
-        cache: false
+        cache: true
 
     # ---------------------------------------
-    # 7) Configure Debug Build (GCC / Clang)
+    # 7) Log Qt Cache Result
+    # ---------------------------------------
+    - name: Log Qt Cache Result
+      shell: bash
+      run: |
+        if [ "${{ steps.qt_setup.outputs.cache-hit }}" = "true" ]; then
+          echo "✔ Qt Cache Restored (HIT)"
+        else
+          echo "✘ Qt Cache MISS — Qt will download now"
+        fi
+
+    # ---------------------------------------
+    # 8) Configure Debug Build
     # ---------------------------------------
     - name: Configure Debug Build (${{ inputs.compiler }})
       shell: bash
       run: |
         rm -rf build/${{ inputs.compiler }}-debug
         if [ "${{ inputs.compiler }}" = "gcc" ]; then
-          cmake --preset=gcc-debug -DTASQLY_TEST_PHASE=Phase1
+          cmake --preset=gcc-debug -DTASQ﻿LY_TEST_PHASE=Phase1
         else
-          cmake --preset=clang-debug -DTASQLY_TEST_PHASE=Phase1
+          cmake --preset=clang-debug -DTASQ﻿LY_TEST_PHASE=Phase1
         fi
 
     # ---------------------------------------
-    # 8) Build Debug (GCC / Clang)
+    # 9) Build Debug
     # ---------------------------------------
     - name: Build Debug (${{ inputs.compiler }})
       shell: bash
@@ -135,7 +147,7 @@ runs:
         fi
 
     # ---------------------------------------
-    # 9) Run ALL Tests (Unit + Integration + PostgreSQL)
+    # 10) Run ALL Tests
     # ---------------------------------------
     - name: Run PostgreSQL Integration Tests (${{ inputs.compiler }})
       shell: bash

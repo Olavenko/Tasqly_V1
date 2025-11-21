@@ -3,7 +3,9 @@
 # 📌 Purpose      : Windows CI Pipeline (MSVC Only)
 # 🧱 Layer        : CI/CD (GitHub Actions)
 # 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Created      : 2025-11-20
 # 🗓️ Updated      : 2025-11-21
+# 📝 Version      : 1.1.0
 #
 # 🧠 Description:
 # High-performance MSVC pipeline for building, testing, and validating

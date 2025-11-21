@@ -1,5 +1,31 @@
+# 🧱 File: .github/actions/linux-sanitizers/action.yml
+# ---------------------------------------------------------------------------
+# 📌 Purpose      : Run ASan/UBSan builds and tests on Linux (GCC + Clang)
+# 🧱 Layer        : CI/CD → Linux Sanitizers Pipeline (Composite Action)
+# 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Created      : 2025-11-03
+# 🗓️ Updated      : 2025-11-XX
+# 📝 Version      : 1.2.0
+#
+# 🧠 Description:
+#   Composite action for Linux sanitizers (ASan/UBSan) using GCC and Clang.
+#   Designed to ALWAYS perform clean builds with NO build caching to ensure
+#   sanitizer instrumentation correctness. Uses Qt caching only.
+#
+# Key Features:
+#   • GCC + Clang sanitizers pipeline
+#   • Qt 6.9.2 installation with caching enabled
+#   • Explicit Qt cache logging (HIT / MISS)
+#   • Reliable PostgreSQL readiness check
+#   • Debug-style test execution via CTest presets
+#
+# 🚀 Notes:
+#   • No build directory caching (critical for sanitizers)
+#   • No apt-cache (unsupported on GitHub runners)
+#   • Qt caching only for optimal performance
+
 name: "Linux Sanitizers (GCC + Clang)"
-description: "Run ASan/UBSan builds and tests on Linux using GCC/Clang"
+description: "Run ASan/UBSan builds and tests on Linux using GCC/Clang with Qt cache logging"
 
 inputs:
   compiler:
@@ -15,35 +41,50 @@ inputs:
 runs:
   using: "composite"
   steps:
-    #---------------------------
+
+    # ---------------------------
     # 1) Checkout
-    #---------------------------
+    # ---------------------------
     - name: Checkout
       uses: actions/checkout@v4
-    
-    #---------------------------
-    # 2) Install deps
-    #---------------------------
+
+    # ---------------------------
+    # 2) Install build dependencies
+    # ---------------------------
     - name: Install build dependencies
       shell: bash
       run: |
         sudo apt-get update
         sudo apt-get install -y --no-install-recommends \
           build-essential ninja-build clang libpq-dev
-    
-    #---------------------------
-    # 3) Setup Qt 6.9.2
-    #---------------------------
+
+    # ---------------------------
+    # 3) Setup Qt 6.9.2 (cached)
+    # ---------------------------
     - name: Setup Qt 6.9.2
+      id: qt_setup
       uses: jurplel/install-qt-action@v3
       with:
         version: 6.9.2
         host: linux
         target: desktop
-    
-    #---------------------------
-    # 4) Wait for PostgreSQL
-    #---------------------------
+        cache: true
+
+    # ---------------------------
+    # 4) Log Qt Cache Result
+    # ---------------------------
+    - name: Log Qt Cache Result
+      shell: bash
+      run: |
+        if [ "${{ steps.qt_setup.outputs.cache-hit }}" = "true" ]; then
+          echo "✔ Qt Cache Restored (HIT)"
+        else
+          echo "✘ Qt Cache MISS — Qt will download now"
+        fi
+
+    # ---------------------------
+    # 5) Wait for PostgreSQL
+    # ---------------------------
     - name: Wait for PostgreSQL
       shell: bash
       run: |
@@ -53,10 +94,10 @@ runs:
           sleep 2
         done
         echo "PostgreSQL is ready."
-    
-    #--------------------------------
-    # 5) Configure Sanitizers Build
-    #--------------------------------
+
+    # ---------------------------
+    # 6) Configure Sanitizers Build
+    # ---------------------------
     - name: Configure Sanitizers (${{ inputs.compiler }})
       shell: bash
       run: |
@@ -66,9 +107,9 @@ runs:
           cmake --preset=clang-sanitizers -DTASQLY_TEST_PHASE=Phase1
         fi
 
-    #---------------------------
-    # 6) Build
-    #---------------------------
+    # ---------------------------
+    # 7) Build
+    # ---------------------------
     - name: Build Sanitizers (${{ inputs.compiler }})
       shell: bash
       run: |
@@ -78,9 +119,9 @@ runs:
           cmake --build --preset=build-clang-sanitizers --parallel
         fi
 
-    #---------------------------
-    # 7) Run Tests
-    #---------------------------
+    # ---------------------------
+    # 8) Run Tests
+    # ---------------------------
     - name: Run Sanitizers Tests (${{ inputs.compiler }})
       shell: bash
       env:

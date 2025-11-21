@@ -1,40 +1,25 @@
 # 🧱 File: .github/actions/windows-msvc/action.yml
 # ---------------------------------------------------------------------------
-# 📌 Purpose      : Build, Test, Coverage, and Benchmarking using MSVC 2022
+# 📌 Purpose      : MSVC Debug Build + Tests with Cache Logging
 # 🧱 Layer        : CI/CD → Windows Build Pipeline (Composite Action)
 # 👤 Maintainer   : Tasqly AI Assistant
-# 🗓️ Created      : 2025-11-03
 # 🗓️ Updated      : 2025-11-XX
-# 📝 Version      : 1.1.0
+# 📝 Version      : 1.2.0
 #
 # 🧠 Description:
-#   This composite action performs the complete MSVC build and verification
-#   pipeline for Tasqly, including:
-#     • Setting up MSVC 2022 developer environment
-#     • Provisioning Qt 6.9.2 (MSVC toolchain)
-#     • Running coverage-enabled Debug builds
-#     • Executing unit tests and generating coverage reports
-#     • Running Release-mode benchmarks
-#     • Uploading all HTML/JSON/MD result artifacts
-#
-#   It represents the primary Windows CI stage, ensuring high-quality
-#   validation across both development (Debug) and performance (Release)
-#   configurations.
+#   MSVC build pipeline with explicit logging for all cached components:
+#     • Ninja tool cache (actions/cache)
+#     • Qt 6.9.2 cache (install-qt-action)
+#   Always performs clean builds (no build directory cache).
 #
 # Key Features:
-#   • Full MSVC initialization (via ilammy/msvc-dev-cmd)
-#   • Debug build with coverage and unit testing
-#   • Release build for performance benchmarking
-#   • Automated Python environment for report generation
-#   • Artifact uploads for CI insights & dashboards
-#
-# 🚀 Notes:
-#   • This action is intentionally comprehensive (build → test → reports)
-#   • Invoked early in the main CI sequence before MinGW & Linux stages
-#   • Mirrors the original workflow structure with zero behavioral changes
+#   • MSVC Dev Environment
+#   • Ninja Cache + Log
+#   • Qt Cache + Log
+#   • Clean Debug build + tests
 
 name: "Windows MSVC Build and Test"
-description: "Fast MSVC build + test only (no coverage, no benchmarks)"
+description: "MSVC Debug build + tests with full cache logging"
 
 runs:
   using: "composite"
@@ -58,44 +43,50 @@ runs:
     # 3) Cache Ninja
     # ---------------------------------------
     - name: Cache Ninja
+      id: ninja_cache
       uses: actions/cache@v4
       with:
         path: C:\ProgramData\chocolatey\bin\ninja.exe
-        key: ${{ runner.os }}-ninja-cache
+        key: ${{ runner.os }}-ninja-cache-v2
+        restore-keys: |
+          ${{ runner.os }}-ninja-cache-
 
     # ---------------------------------------
-    # 4) Ensure Ninja
+    # 4) Log Ninja Cache Result
     # ---------------------------------------
-    - name: Ensure Ninja
+    - name: Log Ninja Cache Result
       shell: powershell
       run: |
-        if (-not (Get-Command ninja -ErrorAction SilentlyContinue)) {
-          choco install ninja --no-progress -y
+        if ("${{ steps.ninja_cache.outputs.cache-hit }}" -eq "true") {
+          echo "✔ Ninja Cache Restored (HIT)"
+        } else {
+          echo "✘ Ninja Cache MISS — Ninja may be reinstalled"
         }
-        ninja --version
 
     # ---------------------------------------
-    # 5) Setup Qt 6.9.2 (with cache)
+    # 5) Setup Qt 6.9.2 (with caching)
     # ---------------------------------------
     - name: Setup Qt 6.9.2 (MSVC)
+      id: qt_setup
       uses: jurplel/install-qt-action@v3
       with:
         version: 6.9.2
         host: windows
         target: desktop
         arch: win64_msvc2022_64
-        cache: true   # <── ENABLE CACHE
+        cache: true
 
     # ---------------------------------------
-    # 6) Cache CMake Build Directory
+    # 6) Log Qt Cache Result
     # ---------------------------------------
-    - name: Cache build-msvc
-      uses: actions/cache@v4
-      with:
-        path: build/msvc
-        key: ${{ runner.os }}-msvc-build-${{ hashFiles('CMakeLists.txt', 'src/**', 'tests/**') }}
-        restore-keys: |
-          ${{ runner.os }}-msvc-build-
+    - name: Log Qt Cache Result
+      shell: powershell
+      run: |
+        if ("${{ steps.qt_setup.outputs.cache-hit }}" -eq "true") {
+          echo "✔ Qt Cache Restored (HIT)"
+        } else {
+          echo "✘ Qt Cache MISS — Qt will download now"
+        }
 
     # ---------------------------------------
     # 7) Configure (Debug)

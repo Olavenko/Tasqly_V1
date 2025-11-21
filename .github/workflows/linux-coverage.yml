@@ -1,0 +1,71 @@
+# 🧱 File: .github/workflows/linux-coverage.yml
+# ---------------------------------------------------------------
+# 📌 Purpose      : Linux Coverage (GCC Only)
+# 🧱 Layer        : CI/CD (GitHub Actions)
+# 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Created      : 2025-11-20
+#
+# 🧠 Description:
+#   Full LCOV coverage pipeline using GCC:
+#     • CMake coverage preset
+#     • PostgreSQL-backed integration test env
+#     • Coverage.info (lcov)
+#     • Full HTML dashboard generation
+#
+# Notes:
+#   • This workflow is intentionally GCC-only
+#   • Uses composite action: .github/actions/linux-coverage
+#   • Generates downloadable artifacts (HTML + info)
+# ---------------------------------------------------------------
+
+name: Linux • Coverage • (GCC)
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+
+  # ------------------------------------------------------------
+  # 🐧 Linux GCC — Coverage + PostgreSQL Integration
+  # ------------------------------------------------------------
+  linux-coverage:
+    name: Linux • Coverage (GCC • HTML Report)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: tasqly_test
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+          --health-start-period=10s
+
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      PGDATABASE: tasqly_test
+
+    steps:
+
+      # ------------------------------------------------------------
+      # 1) Checkout source code
+      # ------------------------------------------------------------
+      - uses: actions/checkout@v4
+
+      # ------------------------------------------------------------
+      # 2) Run Linux Coverage pipeline
+      # ------------------------------------------------------------
+      - uses: ./.github/actions/linux-coverage
+        with:
+          pgpassword: ${{ secrets.POSTGRES_PASSWORD }}
+    
