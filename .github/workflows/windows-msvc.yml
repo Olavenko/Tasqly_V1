@@ -1,0 +1,42 @@
+# 🧱 File: .github/workflows/windows-msvc.yml
+# ---------------------------------------
+# 📌 Purpose      : Windows CI Pipeline (MSVC Only)
+# 🧱 Layer        : CI/CD (GitHub Actions)
+# 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Updated      : 2025-11-21
+#
+# 🧠 Description:
+# High-performance MSVC pipeline for building, testing, and validating
+# the project using Visual Studio 2022. Now separated from MinGW for
+# maximum clarity and easier debugging.
+#
+# Key Features:
+#   • MSVC 2022 build.
+#   • Unit tests + reports.
+#   • Modular composite action (windows-msvc).
+#   • Clean, minimal YAML.
+#
+# ⚙️ Trigger Strategy:
+# Runs automatically on push + pull request, ideally gated by Precheck.
+
+name: Windows-MSVC
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+
+  # ------------------------------------------------------------
+  # 🪟 Windows — MSVC 2022 (Build + Test + Reports)
+  # ------------------------------------------------------------
+  windows-msvc:
+    name: Windows • MSVC 2022 • Build + Test + Reports
+    runs-on: windows-2022
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Run the modular MSVC action
+      - uses: ./.github/actions/windows-msvc

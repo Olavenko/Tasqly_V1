@@ -1,0 +1,45 @@
+# 🧱 File: .github/workflows/windows-mingw.yml
+# ---------------------------------------
+# 📌 Purpose      : Windows CI Pipeline (MinGW Only)
+# 🧱 Layer        : CI/CD (GitHub Actions)
+# 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Created      : 2025-11-21
+#
+# 🧠 Description:
+# Dedicated MinGW build pipeline separated from MSVC for clarity.
+# Performs a clean Debug build + test using MinGW on Windows.
+#
+# Key Features:
+#   • MinGW debug build.
+#   • MinGW unit testing.
+#   • Runs independently OR after Precheck (your choice).
+#   • Fully modular via composite action: windows-mingw.
+#
+# ⚙️ Trigger Strategy:
+# Runs on every push + pull request unless restricted by precheck.yml.
+#
+# NOTE:
+#   • Recommended to keep this workflow lightweight since MinGW builds
+#     are slower than MSVC. Ideal for portability validation only.
+
+name: Windows-MinGW
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+
+  # ------------------------------------------------------------
+  # 🪟 Windows — MinGW (Debug Build + Test)
+  # ------------------------------------------------------------
+  windows-mingw:
+    name: Windows • MinGW • Debug Build + Test
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Run the modular MinGW action
+      - uses: ./.github/actions/windows-mingw
