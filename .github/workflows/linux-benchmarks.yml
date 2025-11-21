@@ -20,10 +20,28 @@
 # ---------------------------------------------------------------
 
 name: Linux • Benchmarks • (GCC + Clang)
+
 on:
   push:
     branches: ["**"]
+    paths:
+      - "src/**"
+      - "cmake/**"
+      - "CMakeLists.txt"
+      - "CMakePresets.json"
+      - "scripts/**"
+      - ".github/actions/linux-benchmarks/**"
+      - ".github/workflows/linux-benchmarks.yml"
+
   pull_request:
+    paths:
+      - "src/**"
+      - "cmake/**"
+      - "CMakeLists.txt"
+      - "CMakePresets.json"
+      - "scripts/**"
+      - ".github/actions/linux-benchmarks/**"
+      - ".github/workflows/linux-benchmarks.yml"
 
 jobs:
 
@@ -34,24 +52,14 @@ jobs:
     name: Linux • Benchmarks • ${{ matrix.compiler }}
     runs-on: ubuntu-latest
 
-    # ------------------------------------------------------------
-    # 🐧 Matrix for GCC and Clang
-    # ------------------------------------------------------------
     strategy:
       fail-fast: false
       matrix:
         compiler: [gcc, clang]
 
     steps:
-      # ------------------------------------------------------------
-      # 1) Checkout source code
-      # ------------------------------------------------------------
       - uses: actions/checkout@v4
 
-      # ------------------------------------------------------------
-      # 2) Run Linux Benchmarks pipeline
-      # ------------------------------------------------------------
       - uses: ./.github/actions/linux-benchmarks
         with:
-          compiler: ${{ matrix.compiler }}
-    
+          compiler: ${{ matrix.compiler }} 

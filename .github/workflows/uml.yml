@@ -1,39 +1,76 @@
-name: UML Diagrams
+# 🧱 File: .github/workflows/uml-diagrams.yml
+# ---------------------------------------------------------------
+# 📌 Purpose      : Generate UML Diagrams (PlantUML → SVG + HTML)
+# 🧱 Layer        : Documentation → UML Auto-Generation
+# 👤 Maintainer   : Tasqly AI Assistant
+# 🗓️ Created      : 2025-11-22
+# 📝 Version      : 1.0.0
+#
+# 🧠 Description:
+#   Automated UML diagram generation pipeline that:
+#     • Watches changes in .puml files, UML configs, and export scripts
+#     • Runs the documentation generator on Linux runners
+#     • Produces SVG diagrams + index.html
+#     • Uploads all diagrams as a CI artifact
+#
+# 🎯 Trigger Strategy:
+#   • Runs ONLY when UML-related files change
+#   • Fast and isolated from other workflows
+#
+# 📦 Outputs:
+#   • docs/uml/exports/*.svg
+#   • docs/uml/exports/index.html
+#
+# ---------------------------------------------------------------
 
+name: UML Diagrams
 on:
   push:
     paths:
-      - 'docs/uml/**/*.puml'
-      - 'docs/uml/config/**'
-      - 'docs/uml/uml-export.sh'
+      - "docs/uml/**/*.puml"
+      - "docs/uml/config/**"
+      - "docs/uml/uml-export.sh"
+
   pull_request:
     paths:
-      - 'docs/uml/**/*.puml'
-      - 'docs/uml/config/**'
-      - 'docs/uml/uml-export.sh'
+      - "docs/uml/**/*.puml"
+      - "docs/uml/config/**"
+      - "docs/uml/uml-export.sh"
 
 jobs:
   generate-uml:
+    name: Generate UML Diagrams
     runs-on: ubuntu-latest
+
     steps:
+      # ------------------------------------------------------------
+      # 1) Checkout repository (with LFS enabled)
+      # ------------------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          lfs: true 
+          lfs: true
 
-      # Setup Java for PlantUML
+      # ------------------------------------------------------------
+      # 2) Setup Java for PlantUML
+      # ------------------------------------------------------------
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: "temurin"
+          java-version: "17"
 
-      # Run UML export script (script will ensure/download plantuml.jar)
+      # ------------------------------------------------------------
+      # 3) Run UML export script
+      #    (the script will auto-install/download plantuml.jar if needed)
+      # ------------------------------------------------------------
       - name: Run UML export script
         shell: bash
         run: bash docs/uml/uml-export.sh
 
-      # Upload UML diagrams as CI artifact (SVGs + index.html)
+      # ------------------------------------------------------------
+      # 4) Upload generated UML diagrams (SVG + index.html)
+      # ------------------------------------------------------------
       - name: Upload UML diagrams
         uses: actions/upload-artifact@v4
         with:
@@ -41,3 +78,4 @@ jobs:
           path: |
             docs/uml/exports/index.html
             docs/uml/**/exports/*.svg
+  

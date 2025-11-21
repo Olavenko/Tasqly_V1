@@ -19,10 +19,30 @@
 # ---------------------------------------------------------------
 
 name: Linux • Sanitizers • (GCC + Clang)
+
 on:
   push:
     branches: ["**"]
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "cmake/**"
+      - "CMakeLists.txt"
+      - "CMakePresets.json"
+      - "scripts/**"
+      - ".github/actions/linux-sanitizers/**"
+      - ".github/workflows/linux-sanitizers.yml"
+
   pull_request:
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "cmake/**"
+      - "CMakeLists.txt"
+      - "CMakePresets.json"
+      - "scripts/**"
+      - ".github/actions/linux-sanitizers/**"
+      - ".github/workflows/linux-sanitizers.yml"
 
 jobs:
 
@@ -61,17 +81,9 @@ jobs:
       PGDATABASE: tasqly_test
 
     steps:
-
-      # ------------------------------------------------------------
-      # 1) Checkout source code
-      # ------------------------------------------------------------
       - uses: actions/checkout@v4
 
-      # ------------------------------------------------------------
-      # 2) Run Linux Sanitizers pipeline
-      # ------------------------------------------------------------
       - uses: ./.github/actions/linux-sanitizers
         with:
           compiler: ${{ matrix.compiler }}
           pgpassword: ${{ secrets.POSTGRES_PASSWORD }}
-    
