@@ -79,7 +79,7 @@ runs:
       shell: bash
       run: |
         if [ "${{ steps.qt_setup.outputs.cache-hit }}" = "true" ]; then
-          echo "✔ Qt Cache Restored (HIT)"
+          echo "✔ Qt Cache Restored "
         else
           echo "✘ Qt Cache MISS — Qt will download now"
         fi

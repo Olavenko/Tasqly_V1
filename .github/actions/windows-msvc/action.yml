@@ -58,7 +58,7 @@ runs:
       shell: powershell
       run: |
         if ("${{ steps.ninja_cache.outputs.cache-hit }}" -eq "true") {
-          echo "✔ Ninja Cache Restored (HIT)"
+          echo "✔ Ninja Cache Restored "
         } else {
           echo "✘ Ninja Cache MISS — Ninja may be reinstalled"
         }

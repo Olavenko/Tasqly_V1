@@ -49,7 +49,7 @@ runs:
       shell: bash
       run: |
         if [ "${{ steps.cache_msys.outputs.cache-hit }}" = "true" ]; then
-          echo "✔ MSYS2 Cache Restored Successfully (HIT)"
+          echo "✔ MSYS2 Cache Restored Successfully "
         else
           echo "✘ MSYS2 Cache MISS — Full MSYS2 installation will run"
         fi
